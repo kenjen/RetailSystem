@@ -3,7 +3,11 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Image;
+import java.io.IOException;
+import java.net.URL;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class GUIBackBone  extends JFrame{
@@ -28,6 +32,12 @@ public class GUIBackBone  extends JFrame{
 				tabbedPane.addTab("Staff", panelStaff);
 				tabbedPane.addTab("Customer", panelCustomer);
 				tabbedPane.addTab("Supplier", panelSupplier);
+				tabbedPane.setIconAt(0, new ImageIcon(getClass().getResource("/CheckList.png")));
+				tabbedPane.setIconAt(1, new ImageIcon(getClass().getResource("/Cart.png")));
+				tabbedPane.setIconAt(2, new ImageIcon(getClass().getResource("/Icon.png")));
+				tabbedPane.setIconAt(3, new ImageIcon(getClass().getResource("/Staff.png")));
+				tabbedPane.setIconAt(4, new ImageIcon(getClass().getResource("/Customer.png")));
+				tabbedPane.setIconAt(5, new ImageIcon(getClass().getResource("/Supplier.png")));
 			}else{
 				tabbedPane.addTab("StockManagement", panelStockManagement);
 				tabbedPane.addTab("CustomerOrders", panelCustomerOrders);
@@ -45,6 +55,7 @@ public class GUIBackBone  extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 		setSize(1024,768);
-
+		setTitle("RetailSystem");
+		System.out.println(getClass());
 	}
 }
