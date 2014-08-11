@@ -1,13 +1,9 @@
 package gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.*;
 
 public class GUIBackBone  extends JFrame{
@@ -20,19 +16,35 @@ public class GUIBackBone  extends JFrame{
 	private StaffPanel panelStaff = new StaffPanel();
 	private CustomerPanel panelCustomer = new CustomerPanel();
 	private SupplierPanel panelSupplier = new SupplierPanel();
+	private static boolean userTypeAdmin = false;
 	
 	
-	public GUIBackBone(){
+	public GUIBackBone(boolean isAdmin){
+			if(isAdmin == true){
+				userTypeAdmin = true;
+				tabbedPane.addTab("StockManagement", panelStockManagement);
+				tabbedPane.addTab("CustomerOrders", panelCustomerOrders);
+				tabbedPane.addTab("Management", panelManagement);
+				tabbedPane.addTab("Staff", panelStaff);
+				tabbedPane.addTab("Customer", panelCustomer);
+				tabbedPane.addTab("Supplier", panelSupplier);
+			}else{
+				tabbedPane.addTab("StockManagement", panelStockManagement);
+				tabbedPane.addTab("CustomerOrders", panelCustomerOrders);
+				tabbedPane.addTab("Management", panelManagement);
+				tabbedPane.addTab("Customer", panelCustomer);
+				tabbedPane.addTab("Supplier", panelSupplier);
+			}
 			
-		tabbedPane.add("StockManagement", panelStockManagement);
-		tabbedPane.add("CustomerOrders", panelCustomerOrders);
-		tabbedPane.addTab("Management", panelManagement);
-		tabbedPane.addTab("Staff", panelStaff);
-		tabbedPane.addTab("Customer", panelCustomer);
-		tabbedPane.addTab("Supplier", panelSupplier);
-		
+			
 
-		getContentPane().add(tabbedPane);
+			JPanel contentPane = new JPanel();
+			contentPane.setLayout(new BorderLayout());
+			contentPane.add(tabbedPane, BorderLayout.CENTER);
+		setContentPane(contentPane);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setVisible(true);
+		setSize(1024,768);
 
 	}
 }
