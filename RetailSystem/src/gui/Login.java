@@ -73,7 +73,10 @@ public class Login extends JFrame {
 						&& textField.getText().length() > 0
 						&& passwordField.getPassword().length > 0) {
 					if (findLoginDetailsFromList()) {
-						JOptionPane.showMessageDialog(null, "True");
+						//redirect to main app, set user type = admin
+						new GUIBackBone(admin);
+						Login.this.setVisible(false);
+						dispose();
 					} else {
 						JOptionPane.showMessageDialog(null, "False");
 					}
@@ -102,7 +105,9 @@ public class Login extends JFrame {
 				if (textField.getText().length() > 0 && passwordField.getPassword().length > 0) {
 					if (findLoginDetailsFromList()) {
 						//redirect to main app, set user type = admin
-						JOptionPane.showMessageDialog(null, "True");
+						new GUIBackBone(admin);
+						Login.this.setVisible(false);
+						dispose();
 					} else {
 						JOptionPane.showMessageDialog(null, "False");
 					}
