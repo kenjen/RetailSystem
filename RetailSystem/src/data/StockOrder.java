@@ -7,15 +7,19 @@ import java.util.Date;
 
 public class StockOrder {
 	
-	int id;
-	Date date;
-	double total;
-	ArrayList<Product> products = new ArrayList<Product>();
-	Staff staff;
-	Date expectedDeliveryDate;
+	private static int nextId = 100;
+	
+	private int id;
+	private Date date;
+	private double total;
+	private ArrayList<Product> products;
+	private Staff staff;
+	private Date expectedDeliveryDate;
 
-	public StockOrder(int id, Date date, double total, ArrayList<Product> products, Staff staff) {
-		this.id = id;
+	public StockOrder(Date date, ArrayList<Product> products, Staff staff) {
+		this.id = nextId;
+		nextId++;
+		//TODO set up total
 		this.date = date;
 		this.total = total;
 		this.products = products;

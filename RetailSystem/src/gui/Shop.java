@@ -1,8 +1,11 @@
 package gui;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import data.Customer;
+import data.Product;
 import data.Staff;
 import data.Supplier;
 //import data.Product;
@@ -15,7 +18,7 @@ public class Shop {
 	private ArrayList<Staff> staffMembers = new ArrayList<Staff>();
 	private ArrayList<Customer> customers = new ArrayList<Customer>();
 	private ArrayList<Supplier> suppliers = new ArrayList<Supplier>();
-	//private ArrayList<Product> products = new ArrayList<Product>();
+	private ArrayList<Product> products = new ArrayList<Product>();
 	private ArrayList<StockOrder> stockOrders = new ArrayList<StockOrder>();
 	//private ArrayList<CustomerOrder> customerOrders = new ArrayList<CustomerOrder>();
 	
@@ -28,7 +31,7 @@ public class Shop {
 		//populateSuppliers();
 		//populateStaffMembers();
 		//populateProducts();
-		//populateStockOrders();
+		populateStockOrders();
 		//populateCustomerOrders();
 		
 		//run login
@@ -68,6 +71,15 @@ public class Shop {
 	}
 	
 	public void populateStockOrders(){
+		SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		ArrayList<Product> productsToOrder = new ArrayList<Product>();
+		try {
+			StockOrder stockOrder1 = new StockOrder(sd.parse("10/08/2014 13:36"), productsToOrder, new Staff("kian", "jennings", 300, "kJennings", "help"));
+			stockOrders.add(stockOrder1);
+			System.out.println("Order placed with id " + stockOrder1.getId());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
