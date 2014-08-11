@@ -19,7 +19,11 @@ public class StockOrder {
 	public StockOrder(Date date, ArrayList<Product> products, Staff staff) {
 		this.id = nextId;
 		nextId++;
-		//TODO set up total
+		int totalProd = 0;
+		for(Product product : products){
+			totalProd++;
+		}
+		this.total = totalProd;
 		this.date = date;
 		this.total = total;
 		this.products = products;
