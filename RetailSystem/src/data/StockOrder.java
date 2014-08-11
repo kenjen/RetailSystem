@@ -27,6 +27,7 @@ public class StockOrder {
 		/*
 		 * If all products in stock expected delivery date is two days from date
 		 */
+		//date.
 	}
 
 		//How To use dates
@@ -37,6 +38,10 @@ public class StockOrder {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}*/
+	
+	public void printInvoice(){
+		
+	}
 
 	public int getId() {
 		return id;
