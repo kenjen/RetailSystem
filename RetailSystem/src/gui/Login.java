@@ -29,6 +29,7 @@ public class Login extends JFrame {
 	private JPasswordField passwordField;
 	private JPanel panel;
 	private ArrayList<Staff> listOfMemebers = new ArrayList<Staff>();
+	private boolean admin = false;
 	
 	public Login(ArrayList<Staff> members){
 		listOfMemebers = members;
@@ -38,7 +39,6 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public void drawFrame() {
-		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		setTitle("Login");
@@ -56,6 +56,8 @@ public class Login extends JFrame {
 
 		passwordField = new JPasswordField();
 		passwordField.setColumns(20);
+		
+		//if enter is pressed treat it as if login would be pressed
 		passwordField.addKeyListener(new KeyListener() {
 
 			@Override
@@ -76,9 +78,9 @@ public class Login extends JFrame {
 						JOptionPane.showMessageDialog(null, "False");
 					}
 				}
-
 			}
 		});
+		
 
 		JButton btnLogin = new JButton("Login");
 
@@ -99,6 +101,7 @@ public class Login extends JFrame {
 			public void actionPerformed(ActionEvent event) {
 				if (textField.getText().length() > 0 && passwordField.getPassword().length > 0) {
 					if (findLoginDetailsFromList()) {
+						//redirect to main app, set user type = admin
 						JOptionPane.showMessageDialog(null, "True");
 					} else {
 						JOptionPane.showMessageDialog(null, "False");
@@ -115,8 +118,12 @@ public class Login extends JFrame {
 		boolean found = false;
 		for(Staff staff:listOfMemebers){
 			if(staff.getUsername().equalsIgnoreCase(textField.getText().toString()) &&
-					staff.getPassword().equals(new String(passwordField.getPassword()))){
+					staff.getPassword().equals(new String(passwordField.getPassword())) && 
+					staff.isDeleted() == false){
 				found = true;
+				if(staff.isAdmin()){
+					admin=true;
+				}
 				break;
 			}
 		}

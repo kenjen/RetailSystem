@@ -15,24 +15,29 @@ import data.StockOrder;
 
 
 public class Shop {
-	private ArrayList<Staff> staffMembers = new ArrayList<Staff>();
-	private ArrayList<Customer> customers = new ArrayList<Customer>();
-	private ArrayList<Supplier> suppliers = new ArrayList<Supplier>();
-	private ArrayList<Product> products = new ArrayList<Product>();
-	private ArrayList<StockOrder> stockOrders = new ArrayList<StockOrder>();
+	private static ArrayList<Staff> staffMembers = new ArrayList<Staff>();
+	private static ArrayList<Customer> customers = new ArrayList<Customer>();
+	private static ArrayList<Supplier> suppliers = new ArrayList<Supplier>();
+	private static ArrayList<Product> products = new ArrayList<Product>();
+	private static ArrayList<StockOrder> stockOrders = new ArrayList<StockOrder>();
 	//private ArrayList<CustomerOrder> customerOrders = new ArrayList<CustomerOrder>();
 	
 	//Initialize s of Type Supplier
 	Supplier s;
 		
 	public static void main(String[] args) {
-		new Shop();
+		new Shop(true);
 	}
-	public Shop() {
+	
+	public Shop(){
+		
+	}
+	
+	public Shop(boolean run) {
 		//populate data
 		populateCustomers();
 		//populateSuppliers();
-		//populateStaffMembers();
+		populateStaffMembers();
 		populateProducts();
 		populateStockOrders();
 		//populateCustomerOrders();
@@ -77,6 +82,7 @@ public class Shop {
 		staffMembers.add(mick);
 		staffMembers.add(angela);
 
+		System.out.println("Staff members populated");
 	}
 	
 	public void populateProducts(){
