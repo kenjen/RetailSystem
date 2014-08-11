@@ -1,23 +1,24 @@
 package data;
 
 public class Customer {
-
+	private static int nextID = 101;
 	private int customerID;
 	private String customerFName;
 	private String customerLName;
 	private String customerAddress;
 	private String customerMobile;
 	private String customerHome;
-	
-	public Customer(int customerID, String customerFName, String customerLName, String customerAddress, String customerMobile, String customerHome) {
+
+	public Customer(String customerFName, String customerLName,
+			String customerAddress, String customerMobile, String customerHome) {
 		// TODO Auto-generated constructor stub
-		this.customerID=customerID;
-		this.customerFName=customerFName;
-		this.customerLName=customerLName;
-		this.customerAddress=customerAddress;
-		this.customerMobile=customerMobile;
-		this.customerHome=customerHome;
-				
+		setCustomerID(nextID);
+		this.customerFName = customerFName;
+		this.customerLName = customerLName;
+		this.customerAddress = customerAddress;
+		this.customerMobile = customerMobile;
+		this.customerHome = customerHome;
+		nextID++;
 	}
 
 	public int getCustomerID() {
