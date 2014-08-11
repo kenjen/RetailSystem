@@ -53,8 +53,16 @@ public class Shop {
 		customers.add(c5);
 		
 		for(Customer customer:customers){
-			System.out.println(customer.getCustomerID());
+			System.out.println(customer.getCustomerID()+customer.getCustomerLName());
 		}
+		
+	}
+	
+	public void editCustomer(int customerID){
+		
+	}
+	
+	public void createCustomer(){
 		
 	}
 	
