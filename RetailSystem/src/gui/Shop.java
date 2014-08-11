@@ -38,7 +38,7 @@ public class Shop {
 	public Shop(boolean run) {
 		//populate data
 		populateCustomers();
-		//populateSuppliers();
+		populateSuppliers();
 		populateStaffMembers();
 		populateProducts();
 		populateStockOrders();
@@ -81,6 +81,14 @@ public class Shop {
 	}
 	
 	public void populateSuppliers(){
+		Supplier supplier1 = new Supplier(123,"Doyle's", "St.Stephens,Dublin");
+		Supplier supplier2 = new Supplier(234,"Profi", "Baldara, Ashbourne");
+		Supplier supplier3 = new Supplier(345,"Jane LTD", "Kileen, Cork");
+		Supplier supplier4 = new Supplier(456,"G&M", "Hunter's Lane, Navan");
+		suppliers.add(supplier1);
+		suppliers.add(supplier2);
+		suppliers.add(supplier3);
+		suppliers.add(supplier4);
 		
 	}
 	
