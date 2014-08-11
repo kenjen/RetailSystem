@@ -22,6 +22,9 @@ public class Shop {
 	private ArrayList<StockOrder> stockOrders = new ArrayList<StockOrder>();
 	//private ArrayList<CustomerOrder> customerOrders = new ArrayList<CustomerOrder>();
 	
+	//Initialize s of Type Supplier
+	Supplier s;
+		
 	public static void main(String[] args) {
 		new Shop();
 	}
@@ -30,7 +33,7 @@ public class Shop {
 		populateCustomers();
 		//populateSuppliers();
 		//populateStaffMembers();
-		//populateProducts();
+		populateProducts();
 		populateStockOrders();
 		//populateCustomerOrders();
 		
@@ -77,6 +80,26 @@ public class Shop {
 	}
 	
 	public void populateProducts(){
+		
+		Product p1 = new Product("Pear", "Food", 100, 0.23, s, true, 22);
+		Product p2 = new Product("Coat", "Clothing", 50, 29.99, s, true, 10);
+		Product p3 = new Product("Trousers", "Clothing", 80, 40.0, s, true, 15);
+		Product p4 = new Product("Ham", "Food", 120, 4.50, s, true, 60);
+		Product p5 = new Product("Broom", "Hygene", 20, 12.0, s, true, 3);
+		
+		products.add(p1);
+		products.add(p2);
+		products.add(p3);
+		products.add(p4);
+		products.add(p5);
+		
+		for(Product product : products){
+			System.out.println("Product: "+product.getName()+" Category: "+product.getCategory()+
+					" quantity: "+product.getQuantity()+" Price: "+product.getPrice()+
+					" Supplier: "+product.getSupplier()+
+					" Availability: "+product.isAvailable() +
+					"Low Stock Order: "+product.getLowStockOrder());
+		}
 		
 	}
 	
