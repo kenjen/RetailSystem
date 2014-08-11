@@ -1,7 +1,5 @@
 package data;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -17,12 +15,14 @@ public class StockOrder {
 	private Date expectedDeliveryDate;
 
 	public StockOrder(Date date, ArrayList<Product> products, Staff staff) {
+		System.out.println("setting up ");
 		this.id = nextId;
 		nextId++;
 		int totalProd = 0;
 		for(Product product : products){
 			totalProd++;
 		}
+		System.out.println("test why you no reach here");
 		this.total = totalProd;
 		this.date = date;
 		this.total = total;
@@ -33,7 +33,8 @@ public class StockOrder {
 		 */
 		//expectedDeliveryDate = date.
 		String temp = date.toString();
-		//int t = temp.charAt(1)
+		int t = temp.charAt(1);
+		System.out.println("int t is " + t);
 	}
 
 		//How To use dates
