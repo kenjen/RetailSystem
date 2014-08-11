@@ -23,7 +23,8 @@ public class Product {
 		
 	}
 	
-	public Product(String name, String category,  int quantity, double price, Supplier supplier, boolean available, int lowStockOrder){
+	public Product(String name, String category,  int quantity, double price, 
+			Supplier supplier, boolean available, int lowStockOrder){
 		this.name = name;
 		this.category = category;
 		this.quantity = quantity;
