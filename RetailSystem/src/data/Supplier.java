@@ -1,39 +1,42 @@
 package data;
 
 public class Supplier {
-	private int id;
-	private String name;
-	private String address;
-	private boolean deleted=false;
+	private int supplierId;
+	private String supplierName;
+	private String supplierAddress;
+	private boolean supplierDeleted=false;
 
 	public Supplier(int id, String name, String address) {
-		this.id=id;
-		this.name=name;
-		this.address=address;
+		this.supplierId=id;
+		this.supplierName=name;
+		this.supplierAddress=address;
+		
 	}
 
-	public int getId() {
-		return id;
+	public int getSupplierId() {
+		return supplierId;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setSupplierId(int supplierId) {
+		this.supplierId = supplierId;
 	}
 
-	public String getName() {
-		return name;
+	public String getSupplierName() {
+		return supplierName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setSupplierName(String supplierName) {
+		this.supplierName = supplierName;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getSupplierAddress() {
+		return supplierAddress;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setSupplierAddress(String supplierAddress) {
+		this.supplierAddress = supplierAddress;
 	}
+
+	
 	
 }
