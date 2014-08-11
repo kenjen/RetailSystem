@@ -15,9 +15,11 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
+import javax.swing.Timer;
 
 import data.Staff;
 
+import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
 
@@ -28,6 +30,8 @@ public class Login extends JFrame {
 	private JTextField textField;
 	private JPasswordField passwordField;
 	private JPanel panel;
+	private Timer timer;
+	private JLabel lblError;
 	private ArrayList<Staff> listOfMemebers = new ArrayList<Staff>();
 	private boolean admin = false;
 	
@@ -78,7 +82,7 @@ public class Login extends JFrame {
 						Login.this.setVisible(false);
 						dispose();
 					} else {
-						JOptionPane.showMessageDialog(null, "False");
+						displayErrorMessage("");
 					}
 				}
 			}
@@ -86,6 +90,9 @@ public class Login extends JFrame {
 		
 
 		JButton btnLogin = new JButton("Login");
+		lblError = new JLabel("Incorrect details!");
+		lblError.setForeground(Color.RED);
+		lblError.setVisible(false);
 
 		panel = new JPanel();
 
@@ -95,6 +102,7 @@ public class Login extends JFrame {
 		panel.add(lblPassword);
 		panel.add(passwordField, "wrap");
 		panel.add(btnLogin, "span, center");
+		panel.add(lblError, "span, center");
 
 		contentPane.add(panel);
 
@@ -109,7 +117,7 @@ public class Login extends JFrame {
 						Login.this.setVisible(false);
 						dispose();
 					} else {
-						JOptionPane.showMessageDialog(null, "False");
+						displayErrorMessage("");
 					}
 				}
 			}
@@ -133,6 +141,32 @@ public class Login extends JFrame {
 			}
 		}
 		return found;
+	}
+	
+	public void displayErrorMessage(String error){
+		if(error != ""){
+			lblError.setText(error);
+		}
+		setVisible(lblError);
+		timer = new Timer(2000, new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setVisible(lblError);
+				timer.stop();
+			}
+			
+		});
+		timer.start();
+	}
+	
+	public void setVisible(Object o){
+		JLabel error = (JLabel) o;
+		if(error.isVisible()==true){
+			error.setVisible(false);
+		}else{
+			error.setVisible(true);
+		}
 	}
 
 }
