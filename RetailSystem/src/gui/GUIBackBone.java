@@ -24,7 +24,7 @@ public class GUIBackBone  extends JFrame{
 				userTypeAdmin = true;
 				tabbedPane.addTab("StockManagement", panelStockManagement);
 				tabbedPane.addTab("CustomerOrders", panelCustomerOrders);
-				tabbedPane.addTab("Management", panelStockOrder);
+				tabbedPane.addTab("StockOrders", panelStockOrder);
 				tabbedPane.addTab("Staff", panelStaff);
 				tabbedPane.addTab("Customer", panelCustomer);
 				tabbedPane.addTab("Supplier", panelSupplier);

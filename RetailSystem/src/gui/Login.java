@@ -12,7 +12,6 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.Timer;
@@ -72,7 +71,6 @@ public class Login extends JFrame {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				// TODO Auto-generated method stub
 				if (e.getKeyCode() == KeyEvent.VK_ENTER
 						&& textField.getText().length() > 0
 						&& passwordField.getPassword().length > 0) {
@@ -95,7 +93,6 @@ public class Login extends JFrame {
 		lblError.setVisible(false);
 
 		panel = new JPanel();
-
 		panel.setLayout(new MigLayout());
 		panel.add(lblUsername);
 		panel.add(textField, "wrap");
@@ -123,6 +120,10 @@ public class Login extends JFrame {
 			}
 
 		});
+		
+		//Populate login details for quick login, Remove this when project is complete
+		textField.setText("admin");
+		passwordField.setText("admin");
 		
 		setVisible(true);
 	}

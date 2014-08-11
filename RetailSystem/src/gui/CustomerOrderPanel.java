@@ -8,12 +8,18 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
-import javax.swing.JTextPane;
+
 
 
 
 
 //import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+
+
+
+
+
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import data.Customer;
 
@@ -21,6 +27,7 @@ import data.Customer;
 public class CustomerOrderPanel extends JPanel{
 
 	private static final long serialVersionUID = 1L;
+	private JComboBox comboSelectCustomer;
 
 	public CustomerOrderPanel() {
 		setLayout(new MigLayout());
@@ -33,10 +40,11 @@ public class CustomerOrderPanel extends JPanel{
 		JLabel lblCustomer = new JLabel("Customer:");
 		add(lblCustomer);
 		
-		JComboBox comboBox = new JComboBox(customerNames.toArray());
-		add(comboBox);
-		comboBox.setEditable(true);
-		//AutoCompleteDecorator.decorate(comboBox);
+		comboSelectCustomer = new JComboBox(customerNames.toArray());
+		add(comboSelectCustomer);
+		comboSelectCustomer.setEditable(true);
+		AutoCompleteDecorator.decorate(comboSelectCustomer);
+		
 		
 		
 		
