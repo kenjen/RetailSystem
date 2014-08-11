@@ -12,25 +12,27 @@ import javax.swing.*;
 
 public class GUIBackBone  extends JFrame{
 	
-	//Create Panels for Tabbed Pane
-	JPanel panel1 = new JPanel();
-	JPanel panel2 = new JPanel();
-	
-	JLabel label1 = new JLabel();
-	JLabel label2 = new JLabel();
-
-			
 	//create the tabbed Pane
 	JTabbedPane tabbedPane = new JTabbedPane();
+	private CustomerOrderPanel panelCustomerOrders = new CustomerOrderPanel(); 
+	private ManagementPanel panelManagement = new ManagementPanel();
+	private StockManagementPanel panelStockManagement = new StockManagementPanel();
+	private StaffPanel panelStaff = new StaffPanel();
+	private CustomerPanel panelCustomer = new CustomerPanel();
+	private SupplierPanel panelSupplier = new SupplierPanel();
+	
 	
 	public GUIBackBone(){
+			
+		tabbedPane.add("StockManagement", panelStockManagement);
+		tabbedPane.add("CustomerOrders", panelCustomerOrders);
+		tabbedPane.addTab("Management", panelManagement);
+		tabbedPane.addTab("Staff", panelStaff);
+		tabbedPane.addTab("Customer", panelCustomer);
+		tabbedPane.addTab("Supplier", panelSupplier);
 		
-		panel1.add(label1);
-		panel2.add(label2);
-		
-		tabbedPane.add("Label1", panel1);
-		tabbedPane.add("label2", panel2);
-		
-		add(tabbedPane);
+
+		getContentPane().add(tabbedPane);
+
 	}
 }
