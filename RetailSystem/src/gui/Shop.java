@@ -80,6 +80,13 @@ public class Shop {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+		try {
+			StockOrder stockOrder1 = new StockOrder(sd.parse("10/08/2014 13:36"), productsToOrder, new Staff("kian", "jennings", 300, "kJennings", "help"));
+			stockOrders.add(stockOrder1);
+			System.out.println("Order placed with id " + stockOrder1.getId());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
