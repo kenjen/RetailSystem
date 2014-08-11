@@ -14,15 +14,13 @@ public class StockOrder {
 	private Staff staff;
 	private Date expectedDeliveryDate;
 
-	public StockOrder(Date date, ArrayList<Product> products, Staff staff) {
-		System.out.println("setting up ");
+	public StockOrder(Date date, ArrayList<Product> products, ArrayList<String> amountToOrder, Staff staff) {
 		this.id = nextId;
 		nextId++;
 		int totalProd = 0;
 		for(Product product : products){
 			totalProd++;
 		}
-		System.out.println("test why you no reach here");
 		this.total = totalProd;
 		this.date = date;
 		this.total = total;
@@ -30,21 +28,15 @@ public class StockOrder {
 		this.staff = staff;
 		/*
 		 * If all products in stock expected delivery date is two days from date
-		 */
+		 *
 		//expectedDeliveryDate = date.
 		String temp = date.toString();
 		int t = temp.charAt(1);
-		System.out.println("int t is " + t);
+		//System.out.println("int t is " + t);
+		 * */
 	}
 
-		//How To use dates
-		/*SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-		date = new Date();
-		try {
-			date = sd.parse("22/06/2012 16:12");
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}*/
+		
 	
 	public void printInvoice(){
 		
