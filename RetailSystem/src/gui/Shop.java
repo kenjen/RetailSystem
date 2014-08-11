@@ -71,23 +71,24 @@ public class Shop {
 	}
 	
 	public void populateStockOrders(){
+		//not completed as waiting for products to be populated and for staff to be passed from login to shop
+		
 		SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		ArrayList<Product> productsToOrder = new ArrayList<Product>();
 		try {
-			StockOrder stockOrder1 = new StockOrder(sd.parse("10/08/2014 13:36"), productsToOrder, new Staff("kian", "jennings", 300, "kJennings", "help"));
-			stockOrders.add(stockOrder1);
-			System.out.println("Order placed with id " + stockOrder1.getId());
+			StockOrder stockOrder = new StockOrder(sd.parse("10/08/2014 13:36"), productsToOrder, new Staff("kian", "jennings", 300, "kJennings", "help"));
+			stockOrders.add(stockOrder);
+			System.out.println("Order placed with id " + stockOrder.getId());
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		try {
-			StockOrder stockOrder1 = new StockOrder(sd.parse("10/08/2014 13:36"), productsToOrder, new Staff("kian", "jennings", 300, "kJennings", "help"));
-			stockOrders.add(stockOrder1);
-			System.out.println("Order placed with id " + stockOrder1.getId());
+			StockOrder stockOrder = new StockOrder(sd.parse("10/08/2014 13:36"), productsToOrder, new Staff("kian", "jennings", 300, "kJennings", "help"));
+			stockOrders.add(stockOrder);
+			System.out.println("Order placed with id " + stockOrder.getId());
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 	public void populateCustomerOrders(){
