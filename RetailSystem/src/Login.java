@@ -6,12 +6,14 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import java.awt.Font;
 
 
 public class Login extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField txtLoginHere;
+	private JTextField txtTestEdit;
 
 	/**
 	 * Launch the application.
@@ -45,6 +47,13 @@ public class Login extends JFrame {
 		txtLoginHere.setText("Login Here");
 		contentPane.add(txtLoginHere, BorderLayout.CENTER);
 		txtLoginHere.setColumns(10);
+		
+		txtTestEdit = new JTextField();
+		txtTestEdit.setHorizontalAlignment(SwingConstants.CENTER);
+		txtTestEdit.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		txtTestEdit.setText("Please Login");
+		contentPane.add(txtTestEdit, BorderLayout.NORTH);
+		txtTestEdit.setColumns(10);
 	}
 
 }
