@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import javax.swing.JFrame;
+
 import data.Customer;
 import data.Product;
 import data.Staff;
@@ -27,6 +29,8 @@ public class Shop {
 		
 	public static void main(String[] args) {
 		new Shop();
+		GUIBackBone bb = new GUIBackBone();
+		bb.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 	public Shop() {
 		//populate data
