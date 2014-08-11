@@ -12,7 +12,18 @@ public class Supplier {
 		this.supplierAddress=address;
 		
 	}
+	public Supplier(){
+		this.supplierId=0;
+		this.supplierName="";
+		this.supplierAddress="";
+	}
 
+	public boolean isSupplierDeleted() {
+		return supplierDeleted;
+	}
+	public void setSupplierDeleted(boolean supplierDeleted) {
+		this.supplierDeleted = supplierDeleted;
+	}
 	public int getSupplierId() {
 		return supplierId;
 	}
