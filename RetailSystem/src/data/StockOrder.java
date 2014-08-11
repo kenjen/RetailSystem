@@ -31,7 +31,9 @@ public class StockOrder {
 		/*
 		 * If all products in stock expected delivery date is two days from date
 		 */
-		//date.
+		//expectedDeliveryDate = date.
+		String temp = date.toString();
+		//int t = temp.charAt(1)
 	}
 
 		//How To use dates
