@@ -35,8 +35,8 @@ public class Shop {
 		//populateCustomerOrders();
 		
 		//run login
-		//Login login = new Login();
-		//login.drawFrame();
+		Login login = new Login(staffMembers);
+		login.drawFrame();
 		
 	}
 
@@ -63,7 +63,17 @@ public class Shop {
 	}
 	
 	public void populateStaffMembers(){
-		
+		Staff admin = new Staff("admin","admin",0,"admin","admin");
+		admin.setAdmin(true);
+		Staff john = new Staff("John","Doe",15.23,"JohnDoe","Firefly");
+		Staff mick = new Staff("Mick","Green",8.65,"MickGreen","Avalanche");
+		mick.setDeleted(true);
+		Staff angela = new Staff("Angela","Blue",23.5,"AngelaBlue","Onyx");
+		staffMembers.add(admin);
+		staffMembers.add(john);
+		staffMembers.add(mick);
+		staffMembers.add(angela);
+
 	}
 	
 	public void populateProducts(){
