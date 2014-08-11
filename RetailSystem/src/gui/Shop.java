@@ -69,6 +69,10 @@ public class Shop {
 		
 	}
 	
+	public void findCustomer(String FName, String LName){
+		
+	}
+	
 	public void populateSuppliers(){
 		
 	}
