@@ -11,7 +11,7 @@ public class GUIBackBone  extends JFrame{
 	//create the tabbed Pane
 	JTabbedPane tabbedPane = new JTabbedPane();
 	private CustomerOrderPanel panelCustomerOrders = new CustomerOrderPanel(); 
-	private ManagementPanel panelManagement = new ManagementPanel();
+	private StockOrderPanel panelStockOrder = new StockOrderPanel();
 	private StockManagementPanel panelStockManagement = new StockManagementPanel();
 	private StaffPanel panelStaff = new StaffPanel();
 	private CustomerPanel panelCustomer = new CustomerPanel();
@@ -24,14 +24,14 @@ public class GUIBackBone  extends JFrame{
 				userTypeAdmin = true;
 				tabbedPane.addTab("StockManagement", panelStockManagement);
 				tabbedPane.addTab("CustomerOrders", panelCustomerOrders);
-				tabbedPane.addTab("Management", panelManagement);
+				tabbedPane.addTab("Management", panelStockOrder);
 				tabbedPane.addTab("Staff", panelStaff);
 				tabbedPane.addTab("Customer", panelCustomer);
 				tabbedPane.addTab("Supplier", panelSupplier);
 			}else{
 				tabbedPane.addTab("StockManagement", panelStockManagement);
 				tabbedPane.addTab("CustomerOrders", panelCustomerOrders);
-				tabbedPane.addTab("Management", panelManagement);
+				tabbedPane.addTab("Management", panelStockOrder);
 				tabbedPane.addTab("Customer", panelCustomer);
 				tabbedPane.addTab("Supplier", panelSupplier);
 			}

@@ -2,9 +2,9 @@ package gui;
 
 import javax.swing.JPanel;
 
-public class ManagementPanel extends JPanel{
+public class StockOrderPanel extends JPanel{
 
-	public ManagementPanel() {
+	public StockOrderPanel() {
 		// TODO Auto-generated constructor stub
 	}
 

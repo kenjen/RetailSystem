@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 
 import data.Customer;
+import data.CustomerOrder;
 import data.Product;
 import data.Staff;
 import data.Supplier;
 //import data.Product;
 import data.StockOrder;
-//import data.CustomerOrder;
 
 
 
@@ -22,7 +22,7 @@ public class Shop {
 	private static ArrayList<Supplier> suppliers = new ArrayList<Supplier>();
 	private static ArrayList<Product> products = new ArrayList<Product>();
 	private static ArrayList<StockOrder> stockOrders = new ArrayList<StockOrder>();
-	//private ArrayList<CustomerOrder> customerOrders = new ArrayList<CustomerOrder>();
+	private ArrayList<CustomerOrder> customerOrders = new ArrayList<CustomerOrder>();
 	
 	//Initialize s of Type Supplier
 	Supplier s;
@@ -167,6 +167,14 @@ public class Shop {
 	
 	public void populateCustomerOrders(){
 		
+	}
+
+	public static ArrayList<Customer> getCustomers() {
+		return customers;
+	}
+
+	public static void setCustomers(ArrayList<Customer> customers) {
+		Shop.customers = customers;
 	}
 
 	
