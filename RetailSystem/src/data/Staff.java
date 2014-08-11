@@ -10,6 +10,7 @@ public class Staff {
 	private boolean admin = false;
 	private String username;
 	private String password;
+	private boolean deleted;
 
 	public Staff() {
 		
@@ -88,6 +89,14 @@ public class Staff {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 	
 
