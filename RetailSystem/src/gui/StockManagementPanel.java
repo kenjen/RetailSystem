@@ -1,6 +1,5 @@
 package gui;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -17,6 +16,7 @@ import javax.swing.SwingConstants;
 
 import net.miginfocom.swing.MigLayout;
 import data.Product;
+import data.Supplier;
 
 public class StockManagementPanel extends JSplitPane{
 	
@@ -70,7 +70,7 @@ public class StockManagementPanel extends JSplitPane{
 		txtId = new JTextField();
 		txtId.setHorizontalAlignment(SwingConstants.CENTER);
 		txtId.setColumns(20);
-		txtId.setText("Enter Id Of Product");
+		txtId.setText("Enter Id");
 		txtId.addFocusListener(new FocusListener(){
 			@Override
 			public void focusGained(FocusEvent arg0) {
@@ -123,6 +123,7 @@ public class StockManagementPanel extends JSplitPane{
 		});
 		panel.add(btnIdConfirm, "cell 3 1");
 		
+		//product name fields
 		txtName = new JTextField();
 		txtName.setEditable(false);
 		txtName.setHorizontalAlignment(SwingConstants.CENTER);
@@ -136,7 +137,28 @@ public class StockManagementPanel extends JSplitPane{
 		
 		JButton btnSaveName = new JButton("Save");
 		panel.add(btnSaveName, "cell 5 3");
+		btnSaveName.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int id = 0;
+				if(productLoaded){
+					String tempId = txtId.getText();
+					try{
+						id = Integer.parseInt(tempId);
+						for(Product product : Shop.getProducts()){
+							if(product.getId() == id){
+								product.setName(textName.getText());
+								System.out.println("Name saved succesfully");
+							}
+						}
+					}catch(NumberFormatException nfe){
+						System.out.println("number entered not an integer");
+					}
+				}
+			}
+		});
 		
+		//product category fields
 		txtCategory = new JTextField();
 		txtCategory.setHorizontalAlignment(SwingConstants.CENTER);
 		txtCategory.setEditable(false);
@@ -151,6 +173,28 @@ public class StockManagementPanel extends JSplitPane{
 		JButton btnSaveCategory = new JButton("Save");
 		panel.add(btnSaveCategory, "cell 5 5");
 		
+		btnSaveCategory.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int id = 0;
+				if(productLoaded){
+					String tempId = txtId.getText();
+					try{
+						id = Integer.parseInt(tempId);
+						for(Product product : Shop.getProducts()){
+							if(product.getId() == id){
+								product.setCategory(textCategory.getText());
+								System.out.println("Category saved succesfully");
+							}
+						}
+					}catch(NumberFormatException nfe){
+						System.out.println("number entered not an integer");
+					}
+				}
+			}
+		});
+		
+		//product quantity fields
 		txtQuantity = new JTextField();
 		txtQuantity.setText("Quantity");
 		txtQuantity.setEditable(false);
@@ -165,6 +209,31 @@ public class StockManagementPanel extends JSplitPane{
 		JButton btnSaveQuantity = new JButton("Save");
 		panel.add(btnSaveQuantity, "cell 5 7");
 		
+		btnSaveQuantity.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int id = 0;
+				int quantity = 0;
+				if(productLoaded){
+					String tempId = txtId.getText();
+					String tempQuantity = textQuantity.getText();
+					try{
+						id = Integer.parseInt(tempId);
+						quantity = Integer.parseInt(tempQuantity);
+						for(Product product : Shop.getProducts()){
+							if(product.getId() == id){
+								product.setQuantity(quantity);
+								System.out.println("Quantity saved succesfully");
+							}
+						}
+					}catch(NumberFormatException nfe){
+						System.out.println("number entered not an integer");
+					}
+				}
+			}
+		});
+		
+		//product price fields
 		txtPrice = new JTextField();
 		txtPrice.setHorizontalAlignment(SwingConstants.CENTER);
 		txtPrice.setEditable(false);
@@ -179,6 +248,31 @@ public class StockManagementPanel extends JSplitPane{
 		JButton btnSavePrice = new JButton("Save");
 		panel.add(btnSavePrice, "cell 5 9");
 		
+		btnSavePrice.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int id = 0;
+				int price = 0;
+				if(productLoaded){
+					String tempId = txtId.getText();
+					String tempPrice = textPrice.getText();
+					try{
+						id = Integer.parseInt(tempId);
+						price = Integer.parseInt(tempPrice);
+						for(Product product : Shop.getProducts()){
+							if(product.getId() == id){
+								product.setPrice(price);
+								System.out.println("Price saved succesfully");
+							}
+						}
+					}catch(NumberFormatException nfe){
+						System.out.println("number entered not an integer");
+					}
+				}
+			}
+		});
+		
+		//product supplier fields
 		txtSupplier = new JTextField();
 		txtSupplier.setHorizontalAlignment(SwingConstants.CENTER);
 		txtSupplier.setEditable(false);
@@ -192,5 +286,30 @@ public class StockManagementPanel extends JSplitPane{
 		
 		JButton btnSaveSupplier = new JButton("Save");
 		panel.add(btnSaveSupplier, "cell 5 11");
+		
+		btnSaveSupplier.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int id = 0;
+				if(productLoaded){
+					String tempId = txtId.getText();
+					try{
+						id = Integer.parseInt(tempId);
+						for(Supplier supplier : Shop.getSuppliers()){
+							if(supplier.getSupplierName().equalsIgnoreCase(textSupplier.getText())){
+								for(Product product : Shop.getProducts()){
+									if(product.getId() == id){
+										product.setSupplier(supplier);
+										System.out.println("Supplier saved successfully");
+									}
+								}
+							}
+						}
+					}catch(NumberFormatException nfe){
+						System.out.println("number entered not an integer");
+					}
+				}
+			}
+		});
 	}
 }

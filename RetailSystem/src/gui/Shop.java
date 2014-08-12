@@ -224,6 +224,8 @@ public class Shop {
 		Shop.products = products;
 	}
 
-	
+	public static ArrayList<Supplier> getSuppliers() {
+		return suppliers;
+	}
 
 }
