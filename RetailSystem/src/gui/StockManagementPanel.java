@@ -417,14 +417,27 @@ public class StockManagementPanel extends JSplitPane{
 								int quant = Integer.parseInt(textQuantity.getText());
 								try{
 									int price = Integer.parseInt(textPrice.getText());
+									for(Supplier supplier : Shop.getSuppliers()){
+										if(supplier.getSupplierName().equalsIgnoreCase(textSupplier.getText())){
+											Product product = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Integer.parseInt(textPrice.getText()), supplier, true, 20);
+											Shop.getProducts().add(product);
+											txtId.setText(""+product.getId());
+											textName.setText("");
+											textCategory.setText("");
+											textQuantity.setText("");
+											textPrice.setText("");
+											textSupplier.setText("");
+											break;
+										}
+									}
 								}catch(NumberFormatException nfe){
-									
+									System.out.println("number format exception");
 								}
 							}catch(NumberFormatException nfe){
-								
+								System.out.println("number format exception");
 							}
 						}else{
-							
+							System.out.println("Blank category");
 						}
 					}else{
 						System.out.println("Blank Name");
