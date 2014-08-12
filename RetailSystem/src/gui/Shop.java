@@ -42,7 +42,8 @@ public class Shop {
 		populateStaffMembers();
 		populateProducts();
 		populateStockOrders();
-		//populateCustomerOrders();
+		populateCustomerOrders();
+		printCustomerOrderInvoice();
 		
 		//run login
 		Login login = new Login(staffMembers);
@@ -109,11 +110,11 @@ public class Shop {
 	
 	public void populateProducts(){
 		
-		Product p1 = new Product("Pear", "Food", 100, 0.23, s, true, 22);
-		Product p2 = new Product("Coat", "Clothing", 50, 29.99, s, true, 10);
-		Product p3 = new Product("Trousers", "Clothing", 80, 40.0, s, true, 15);
-		Product p4 = new Product("Ham", "Food", 120, 4.50, s, true, 60);
-		Product p5 = new Product("Broom", "Hygene", 20, 12.0, s, true, 3);
+		Product p1 = new Product("Pear", "Food", 100, 0.23, suppliers.get(0), true, 22);
+		Product p2 = new Product("Coat", "Clothing", 50, 29.99, suppliers.get(1), true, 10);
+		Product p3 = new Product("Trousers", "Clothing", 80, 40.0, suppliers.get(1), true, 15);
+		Product p4 = new Product("Ham", "Food", 120, 4.50, suppliers.get(0), true, 60);
+		Product p5 = new Product("Broom", "Hygene", 20, 12.0, suppliers.get(3), true, 3);
 		
 		products.add(p1);
 		products.add(p2);
@@ -179,7 +180,33 @@ public class Shop {
 	
 	public void populateCustomerOrders(){
 		
+		CustomerOrder customerOrder1 = new CustomerOrder(1111, "11/08/14", 5.00, 5.65);
+		CustomerOrder customerOrder2 = new CustomerOrder(1112, "10/08/14", 30.00, 32.65);
+		CustomerOrder customerOrder3 = new CustomerOrder(1113, "09/08/14", 56.70, 59.35);
+		CustomerOrder customerOrder4 = new CustomerOrder(1114, "08/08/14", 3.00, 7.85);
+		
+		customerOrders.add(customerOrder1);
+		customerOrders.add(customerOrder2);
+		customerOrders.add(customerOrder3);
+		customerOrders.add(customerOrder4);
+		
 	}
+	
+	public void printCustomerOrderInvoice() {
+		for(CustomerOrder order: customerOrders){
+			if (order.isComplete() == true){
+			System.out.println("-----Invoice-------");
+			System.out.println("Order ID : " + order.getId() );
+			System.out.println("Customer ID : " + order.getCustomer());
+			System.out.println("Order received: " + order.getCreationDate());
+			System.out.println("Products ordered : " + order.getProducts());
+			System.out.println("Gross Total : " + order.getTotalGross());
+			System.out.println("Net Total (VAT @ 10%) : " + order.getTotalNet());
+			}
+		}
+			
+		}
+		
 
 	public static ArrayList<Customer> getCustomers() {
 		
@@ -190,6 +217,16 @@ public class Shop {
 		Shop.customers = customers;
 	}
 
-	
+	public static ArrayList<Product> getProducts() {
+		return products;
+	}
+
+	public static void setProducts(ArrayList<Product> products) {
+		Shop.products = products;
+	}
+
+	public static ArrayList<Supplier> getSuppliers() {
+		return suppliers;
+	}
 
 }
