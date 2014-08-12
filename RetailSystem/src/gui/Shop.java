@@ -126,7 +126,7 @@ public class Shop {
 	
 	public void populateProducts(){
 		
-		Product p1 = new Product("Pear", "Food", 100, 0.23, suppliers.get(0), true, 22);
+		Product p1 = new Product("Pear", "Food", 70, 0.23, suppliers.get(0), true, 80);
 		Product p2 = new Product("Coat", "Clothing", 50, 29.99, suppliers.get(1), true, 10);
 		Product p3 = new Product("Trousers", "Clothing", 80, 40.0, suppliers.get(1), true, 15);
 		Product p4 = new Product("Ham", "Food", 120, 4.50, suppliers.get(0), true, 60);
