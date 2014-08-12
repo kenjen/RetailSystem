@@ -22,7 +22,7 @@ public class Shop {
 	private static ArrayList<Supplier> suppliers = new ArrayList<Supplier>();
 	private static ArrayList<Product> products = new ArrayList<Product>();
 	private static ArrayList<StockOrder> stockOrders = new ArrayList<StockOrder>();
-	private ArrayList<CustomerOrder> customerOrders = new ArrayList<CustomerOrder>();
+	private static ArrayList<CustomerOrder> customerOrders = new ArrayList<CustomerOrder>();
 	
 	//Initialize s of Type Supplier
 	Supplier s;
@@ -255,6 +255,22 @@ public class Shop {
 
 	public static void setSuppliers(ArrayList<Supplier> suppliers) {
 		Shop.suppliers = suppliers;
+	}
+
+	public static ArrayList<StockOrder> getStockOrders() {
+		return stockOrders;
+	}
+
+	public static void setStockOrders(ArrayList<StockOrder> stockOrders) {
+		Shop.stockOrders = stockOrders;
+	}
+
+	public static ArrayList<CustomerOrder> getCustomerOrders() {
+		return customerOrders;
+	}
+
+	public static void setCustomerOrders(ArrayList<CustomerOrder> customerOrders) {
+		Shop.customerOrders = customerOrders;
 	}
 
 }

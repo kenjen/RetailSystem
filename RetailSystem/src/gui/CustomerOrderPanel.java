@@ -14,7 +14,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import net.miginfocom.swing.MigLayout;
@@ -37,17 +40,24 @@ public class CustomerOrderPanel extends JPanel{
 	private JLabel productListLabel;
 	private JButton btnOrder = null;
 	private Object myProducts[][] ;
-
+	private JLabel lblActiveCustomerText = null;
+	private JLabel lblActiveCustomer = null;
+	private JTable productsTable;
+	private JTable previousOrdersTable;
+	private JLabel lblPreviousCustomerOrder;
+	private Object ordersObject[][];
+	
 	public CustomerOrderPanel() {
 		setLayout(new MigLayout());
 		ArrayList<String> customerNames = new ArrayList<String>();
+		customerNames.add("");
 		for ( Customer customer: Shop.getCustomers()){
 			String name = customer.getCustomerFName()+" "+customer.getCustomerLName();
 			customerNames.add(name);
 		}
 		
 		JLabel lblCustomer = new JLabel("Customer:");
-		add(lblCustomer, "split 3");
+		add(lblCustomer, "split 5");
 		
 		comboSelectCustomer = new JComboBox(customerNames.toArray());
 		add(comboSelectCustomer);
@@ -55,7 +65,7 @@ public class CustomerOrderPanel extends JPanel{
 		AutoCompleteDecorator.decorate(comboSelectCustomer);
 		
 		selectCustomer = new JButton("Select");
-		add(selectCustomer, "wrap");
+		add(selectCustomer);
 		selectCustomer.addActionListener(new ActionListener(){
 
 			@Override
@@ -63,12 +73,19 @@ public class CustomerOrderPanel extends JPanel{
 				String concatenatedName = comboSelectCustomer.getSelectedItem().toString();
 				if(getCustomerFromConcatenatedName(concatenatedName) != null){
 					selectedCustomer = getCustomerFromConcatenatedName(concatenatedName);
+					lblActiveCustomer.setText(selectedCustomer.getCustomerFName()+" "+selectedCustomer.getCustomerLName());
 				}else{
 					JOptionPane.showMessageDialog(CustomerOrderPanel.this, "No such customer in the list");
 				}
 			}
 			
 		});
+		
+		lblActiveCustomerText = new JLabel("Active Customer: ");
+		lblActiveCustomer = new JLabel("");
+		add(lblActiveCustomerText, "gapx 20px");
+		add(lblActiveCustomer, "wrap");
+		
 		
 		productListLabel = new JLabel("Product list:");
 		add(productListLabel, "wrap");
@@ -97,20 +114,66 @@ public class CustomerOrderPanel extends JPanel{
 		//the table model takes in the array of objects you want to populate and array of column names
 		ProductTableModel productsTableModel = new ProductTableModel(myProducts, columnNames);
 		//make the actual table and pass it the table model
-		JTable productsTable = new JTable(productsTableModel);
+		productsTable = new JTable(productsTableModel);
 		//make the table sortable
 		productsTable.setAutoCreateRowSorter(true);
 		//add the table to scroll pane if the content is greater than the container
 		JScrollPane scrollPane = new JScrollPane(productsTable);
+		productsTable.setCellSelectionEnabled(true);
+		
+		productsTable.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				int row = productsTable.getSelectedRow();
+				productsTable.changeSelection(row, 7, false, false);
+				productsTable.requestFocus();
+				productsTable.editCellAt(row, 7);
+			}
+			
+		});
 		
 		add(scrollPane, "span 3, grow, push");
 		
 		//add the order button
 		btnOrder = new JButton("Order");
 		btnOrder.setToolTipText("All the products that have \"Amount to order\" greater than 0 will be placed on the order.");
-		add(btnOrder, "aligny top, alignx left");
+		add(btnOrder, "aligny top, alignx left, wrap");
 		btnOrder.addActionListener(new ButtonOrderHandler());
+		
+		
+		//add the gui elements to view previous orders of a customer
+		lblPreviousCustomerOrder = new JLabel("Previous Orders:");
+		add(lblPreviousCustomerOrder, "cell 0 3");
+		
+		// make column names for table. Must be the same size as the Object[][] you will populate it with.
+		String columnNames1[] = {"Id","Customer","Staff","Date","Total Net","Total Gross","Completed?"};
+		//ArrayList<CustomerOrder> custOrde = getCustomerOrders();
+		//ProductTableModel m = new ProductTableModel((Object[][]) custOrde.toArray(), columnNames1);
+		//previousOrdersTable = new JTable(m);
+		//JScrollPane x = new JScrollPane(previousOrdersTable);
+		//add(x);
+
+		
+		
+		
 	}//end constructor
+	
+	public ArrayList<CustomerOrder> getCustomerOrders(){
+		ArrayList<CustomerOrder> customerOrd = new ArrayList<CustomerOrder>();
+		boolean foundAtLeastOne = false;
+		for(CustomerOrder order:Shop.getCustomerOrders()){
+			if(order.getCustomer() == selectedCustomer){
+				customerOrd.add(order);
+				foundAtLeastOne = true;
+			}
+		}
+		if(foundAtLeastOne){
+			return customerOrd;
+		}else{
+			return null;
+		}
+	}
 	
 	public Customer getCustomerFromConcatenatedName(String name){
 		for(Customer customer:Shop.getCustomers()){
@@ -144,8 +207,8 @@ public class CustomerOrderPanel extends JPanel{
 				ArrayList<ProductToOrder> productsToOrder = new ArrayList<ProductToOrder>();
 				for(Object[] x : updatedProductList){
 					//add only products that have amount set to > 0
-					if((int) x[7] > 0){
-						int id = (int) x[0];
+					if((Integer) x[7] > 0){
+						int id = (Integer) x[0];
 						String name = (String) x[1];
 						Supplier tempSupplier = null;
 						boolean supplierFound = false;
@@ -161,21 +224,28 @@ public class CustomerOrderPanel extends JPanel{
 							return;
 						}
 						String category = (String) x[3];
-						double price = (double) x[4];
-						boolean discounted = (boolean) x[5];
-						int amount = (int) x[7];
+						double price = (Double) x[4];
+						boolean discounted = (Boolean) x[5];
+						int amount = (Integer) x[7];
 						productsToOrder.add(new ProductToOrder(id, name, tempSupplier, category, price, discounted, amount));	
 					}
 				}
 				
 				//create the actual order
-				CustomerOrder order = new CustomerOrder(CustomerOrderPanel.this.selectedCustomer, GUIBackBone.getLoggedStaffMember(), productsToOrder);
-				System.out.println("Order has been created\nOrder id:"+order.getId()+"\nOrder totalGross: "+order.getTotalGross()+"\nOrder totalNet: "+order.getTotalNet());
+				if(productsToOrder.size() > 0 && selectedCustomer != null){
+					CustomerOrder order = new CustomerOrder(CustomerOrderPanel.this.selectedCustomer, GUIBackBone.getLoggedStaffMember(), productsToOrder);
+					Shop.getCustomerOrders().add(order);
+					System.out.println("Order has been created\nOrder id:"+order.getId()+"\nOrder totalGross: "+order.getTotalGross()+"\nOrder totalNet: "+order.getTotalNet());
+				}else{
+					JOptionPane.showMessageDialog(null, "Nothing to order or you did not select a customer!");
+				}
 				
 		    }
 		}
 		
 	}
+	
+	
 }//end class CustomerOrderPanel
 
 

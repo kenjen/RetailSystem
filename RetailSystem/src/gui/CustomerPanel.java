@@ -97,7 +97,7 @@ public class CustomerPanel extends JPanel {
 		add(comboBox, "flowx,cell 1 2,alignx left, growy");
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				int chosen = (int) comboBox.getSelectedItem();
+				int chosen = (Integer) comboBox.getSelectedItem();
 				System.out.println(chosen);
 
 				for (Customer customer : Shop.getCustomers()) {
@@ -155,7 +155,7 @@ public class CustomerPanel extends JPanel {
 		customerEdit.setEnabled(false);
 		customerEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Shop.editCustomer((int) comboBox.getSelectedItem(),
+				Shop.editCustomer((Integer) comboBox.getSelectedItem(),
 						fNameInput.getText(), lNameInput.getText(),
 						addressInput.getText(), mobileInput.getText(),
 						homeInput.getText());
@@ -180,7 +180,7 @@ public class CustomerPanel extends JPanel {
 		customerDelete.setEnabled(false);
 		customerDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Shop.deleteCustomer((int) comboBox.getSelectedItem());
+				Shop.deleteCustomer((Integer) comboBox.getSelectedItem());
 			}
 
 		});
