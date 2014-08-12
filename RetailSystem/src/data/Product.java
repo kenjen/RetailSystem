@@ -16,6 +16,7 @@ public class Product {
 	private int quantity;
 	private int lowStockOrder;
 	private String category;
+	private boolean flaggedForOrder = false;
 	
 	private ArrayList<Product> products = new ArrayList<Product>();
 	
@@ -140,6 +141,14 @@ public class Product {
 
 	public void setProducts(ArrayList<Product> products) {
 		this.products = products;
+	}
+
+	public boolean isFlaggedForOrder() {
+		return flaggedForOrder;
+	}
+
+	public void setFlaggedForOrder(boolean flaggedForOrder) {
+		this.flaggedForOrder = flaggedForOrder;
 	}
 
 }
