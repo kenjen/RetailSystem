@@ -48,6 +48,8 @@ public class StockManagementPanel extends JSplitPane{
 	private boolean productLoaded = false;
 	private JTextField txtFlaggedForOrder;
 	private JButton btnCreateNewProduct;
+	private JButton btnDisplayAllProducts;
+	private JButton btnDisplayLowStock;
 	
 
 	public StockManagementPanel() {
@@ -56,7 +58,7 @@ public class StockManagementPanel extends JSplitPane{
 		list = new JList(listModel);
 		for(Product product : Shop.getProducts()){
 			if(!product.isDeleted()){
-				listModel.addElement("Id=" + product.getId() + "   " + product.getQuantity() + " Units    " + product.getName());
+				listModel.addElement("Id=" + product.getId() + "   " + product.getQuantity() + "/" + product.getLowStockOrder() + " " + " Units    " + product.getName());
 			}
 		}
 		
@@ -74,6 +76,7 @@ public class StockManagementPanel extends JSplitPane{
 		panel.setLayout(new MigLayout("", "[][100px:n][100px:n:100px,grow][100px:n:100px,grow][100px:100px:100px,grow,center][100px:n:100px][grow]", "[][20px:n][][][50px:n][][][][][][][][][][][50px:n][][20px:n][][20px:n][]"));
 		
 		txtId = new JTextField();
+		panel.add(txtId, "cell 4 2,alignx center");
 		txtId.setHorizontalAlignment(SwingConstants.CENTER);
 		txtId.setColumns(20);
 		txtId.setText("Enter Id");
@@ -89,7 +92,31 @@ public class StockManagementPanel extends JSplitPane{
 			}
 			
 		});
-		panel.add(txtId, "cell 4 2,alignx center");
+		
+		//display all products button
+		btnDisplayAllProducts = new JButton("Display All Products");
+		panel.add(btnDisplayAllProducts, "cell 1 1");
+		btnDisplayAllProducts.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				setupList();
+			}
+		});
+		
+		btnDisplayLowStock = new JButton("Display Low Stock");
+		panel.add(btnDisplayLowStock, "cell 1 2");
+		btnDisplayLowStock.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				listModel.clear();
+				list = new JList(listModel);
+				for(Product product : Shop.getProducts()){
+					if((!product.isDeleted()) && product.getQuantity()<=product.getLowStockOrder()){
+						listModel.addElement("Id=" + product.getId() + "   " + product.getQuantity() + "/" + product.getLowStockOrder() + " " + " Units    " + product.getName());
+					}
+				}
+			}
+		});
 		
 		//Setup button to load a products details
 		JButton btnIdConfirm = new JButton("Confirm");
@@ -331,7 +358,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//mark product as low stock and needing orders
 		btnFlagForOrder = new JButton("Flag For Order");
-		panel.add(btnFlagForOrder, "cell 4 16");
+		panel.add(btnFlagForOrder, "cell 3 16");
 		btnFlagForOrder.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -362,7 +389,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//Delete product button
 		btnDeleteProduct = new JButton("Delete");
-		panel.add(btnDeleteProduct, "cell 4 18");
+		panel.add(btnDeleteProduct, "cell 5 16");
 		btnDeleteProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -453,7 +480,7 @@ public class StockManagementPanel extends JSplitPane{
 		list = new JList(listModel);
 		for(Product product : Shop.getProducts()){
 			if(!product.isDeleted()){
-				listModel.addElement("Id=" + product.getId() + "   " + product.getQuantity() + " Units    " + product.getName());
+				listModel.addElement("Id=" + product.getId() + "   " + product.getQuantity() + "/" + product.getLowStockOrder() + " " + " Units    " + product.getName());
 			}
 		}
 	}
