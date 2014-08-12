@@ -22,7 +22,10 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import data.Customer;
+import data.CustomerOrder;
 import data.Product;
+import data.ProductToOrder;
+import data.Supplier;
 
 //this class deals with customer ordering only.
 public class CustomerOrderPanel extends JPanel{
@@ -74,17 +77,18 @@ public class CustomerOrderPanel extends JPanel{
 		int counter = 0;
 		//make products array to feed into the table model
 		for(Product product:Shop.getProducts()){
-			System.out.println(product.getId());
-			myProducts[counter][0] = product.getId();
-			myProducts[counter][1] = product.getName();
-			myProducts[counter][2] = product.getSupplier().getSupplierName();
-			myProducts[counter][3] = product.getCategory();
-			myProducts[counter][4] = product.getPrice();
-			myProducts[counter][5] = product.isDiscounted();
-			myProducts[counter][6] = product.getQuantity();
-			//this column will be editable
-			myProducts[counter][7] = 0;
-			counter ++;
+			if(product.isAvailable() && product.isDeleted()==false){
+				myProducts[counter][0] = product.getId();
+				myProducts[counter][1] = product.getName();
+				myProducts[counter][2] = product.getSupplier().getSupplierName();
+				myProducts[counter][3] = product.getCategory();
+				myProducts[counter][4] = product.getPrice();
+				myProducts[counter][5] = product.isDiscounted();
+				myProducts[counter][6] = product.getQuantity();
+				//this column will be editable
+				myProducts[counter][7] = 0;
+				counter ++;
+			}
 		}
 		
 		// make column names for table. Must be the same size as the Object[][] you will populate it with.
@@ -137,6 +141,36 @@ public class CustomerOrderPanel extends JPanel{
 			if (option == JOptionPane.OK_OPTION){
 				//get Updated product list
 				Object[][] updatedProductList = CustomerOrderPanel.this.getMyProducts();
+				ArrayList<ProductToOrder> productsToOrder = new ArrayList<ProductToOrder>();
+				for(Object[] x : updatedProductList){
+					//add only products that have amount set to > 0
+					if((int) x[7] > 0){
+						int id = (int) x[0];
+						String name = (String) x[1];
+						Supplier tempSupplier = null;
+						boolean supplierFound = false;
+						for(Supplier supplier:Shop.getSuppliers()){
+							if(supplier.getSupplierName() == (String) x[2]){
+								tempSupplier = supplier;
+								supplierFound = true;
+								break;
+							}
+						}
+						if(supplierFound == false){
+							JOptionPane.showMessageDialog(null, "No supplier has been found for at least on of the products. Make sure you do not edit suppliers and make the order in the same time.");
+							return;
+						}
+						String category = (String) x[3];
+						double price = (double) x[4];
+						boolean discounted = (boolean) x[5];
+						int amount = (int) x[7];
+						productsToOrder.add(new ProductToOrder(id, name, tempSupplier, category, price, discounted, amount));	
+					}
+				}
+				
+				//create the actual order
+				CustomerOrder order = new CustomerOrder(CustomerOrderPanel.this.selectedCustomer, GUIBackBone.getLoggedStaffMember(), productsToOrder);
+				System.out.println("Order has been created\nOrder id:"+order.getId()+"\nOrder totalGross: "+order.getTotalGross()+"\nOrder totalNet: "+order.getTotalNet());
 				
 		    }
 		}

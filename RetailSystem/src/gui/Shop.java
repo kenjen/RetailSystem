@@ -190,7 +190,7 @@ public class Shop {
 	
 	public void populateCustomerOrders(){
 		
-		CustomerOrder customerOrder1 = new CustomerOrder(1111, "11/08/14", 5.00, 5.65);
+		/*CustomerOrder customerOrder1 = new CustomerOrder(1111, "11/08/14", 5.00, 5.65);
 		CustomerOrder customerOrder2 = new CustomerOrder(1112, "10/08/14", 30.00, 32.65);
 		CustomerOrder customerOrder3 = new CustomerOrder(1113, "09/08/14", 56.70, 59.35);
 		CustomerOrder customerOrder4 = new CustomerOrder(1114, "08/08/14", 3.00, 7.85);
@@ -198,7 +198,7 @@ public class Shop {
 		customerOrders.add(customerOrder1);
 		customerOrders.add(customerOrder2);
 		customerOrders.add(customerOrder3);
-		customerOrders.add(customerOrder4);
+		customerOrders.add(customerOrder4);*/
 		
 	}
 	
@@ -233,10 +233,6 @@ public class Shop {
 
 	public static void setProducts(ArrayList<Product> products) {
 		Shop.products = products;
-	}
-
-	public static ArrayList<Supplier> getSuppliers() {
-		return suppliers;
 	}
 
 }
