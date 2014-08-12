@@ -5,20 +5,29 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
+
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.CardLayout;
+
 import net.miginfocom.swing.MigLayout;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+
 import javax.swing.BoxLayout;
+
+import data.Staff;
+
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 public class StaffPanel extends JPanel{
 
@@ -34,6 +43,12 @@ public class StaffPanel extends JPanel{
 
 	public StaffPanel() {
 		setLayout(new MigLayout("", "[][grow][grow][][][][][][][][]", "[][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
+		
+		ArrayList<String> staffMembers = new ArrayList<String>();
+		for(Staff s : Shop.getStaffMembers()){
+			String name = s.getName() +" "+ s.getSurname();
+			staffMembers.add(name);
+		}
 		
 		JLabel lblName = new JLabel("ADD NEW STAFF HERE: ");
 		add(lblName, "cell 0 0");
@@ -83,8 +98,9 @@ public class StaffPanel extends JPanel{
 		JLabel lblMembers = new JLabel("Members");
 		add(lblMembers, "cell 0 14");
 		
-		JComboBox comboBox = new JComboBox();
-		add(comboBox, "cell 1 14,growx");
+		JComboBox staffComboBox = new JComboBox(staffMembers.toArray());
+		add(staffComboBox, "wrap");
+		add(staffComboBox, "cell 1 14,growx");
 		
 		JButton btnRemove = new JButton("Remove");
 		add(btnRemove, "cell 3 25");

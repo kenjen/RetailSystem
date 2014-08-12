@@ -227,5 +227,13 @@ public class Shop {
 	public static ArrayList<Supplier> getSuppliers() {
 		return suppliers;
 	}
+	
+	public static void setStaffMembers(ArrayList<Staff> staffMembers) {
+		Shop.staffMembers = staffMembers;
+	}
+	
+	public static ArrayList<Staff> getStaffMembers() {
+		return staffMembers;
+	}
 
 }
