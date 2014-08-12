@@ -1,5 +1,7 @@
 package data;
 
+import java.util.ArrayList;
+
 
 public class CustomerOrder {
 	
@@ -9,7 +11,7 @@ public class CustomerOrder {
 	private String creationDate;
 	private Customer customer;
 	private Staff staff;
-	private Product products;
+	private ArrayList<Product> products;
 	private double totalGross;
 	private double totalNet;
 	private boolean complete = false;
@@ -70,12 +72,12 @@ public class CustomerOrder {
 	}
 
 
-	public Product getProducts() {
+	public ArrayList<Product> getProducts() {
 		return products;
 	}
 
 
-	public void setProducts(Product products) {
+	public void setProducts(ArrayList<Product> products) {
 		this.products = products;
 	}
 

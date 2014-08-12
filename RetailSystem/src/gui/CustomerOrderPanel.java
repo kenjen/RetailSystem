@@ -32,6 +32,8 @@ public class CustomerOrderPanel extends JPanel{
 	private JButton selectCustomer;
 	private Customer selectedCustomer;
 	private JLabel productListLabel;
+	private JButton btnOrder = null;
+	private Object myProducts[][] ;
 
 	public CustomerOrderPanel() {
 		setLayout(new MigLayout());
@@ -42,7 +44,7 @@ public class CustomerOrderPanel extends JPanel{
 		}
 		
 		JLabel lblCustomer = new JLabel("Customer:");
-		add(lblCustomer);
+		add(lblCustomer, "split 3");
 		
 		comboSelectCustomer = new JComboBox(customerNames.toArray());
 		add(comboSelectCustomer);
@@ -68,7 +70,7 @@ public class CustomerOrderPanel extends JPanel{
 		productListLabel = new JLabel("Product list:");
 		add(productListLabel, "wrap");
 		
-		Object myProducts[][] = new Object[Shop.getProducts().size()][8];
+		myProducts = new Object[Shop.getProducts().size()][8];
 		int counter = 0;
 		//make products array to feed into the table model
 		for(Product product:Shop.getProducts()){
@@ -80,18 +82,31 @@ public class CustomerOrderPanel extends JPanel{
 			myProducts[counter][4] = product.getPrice();
 			myProducts[counter][5] = product.isDiscounted();
 			myProducts[counter][6] = product.getQuantity();
+			//this column will be editable
 			myProducts[counter][7] = 0;
 			counter ++;
 		}
 		
+		// make column names for table. Must be the same size as the Object[][] you will populate it with.
 		String columnNames[] = {"Id","Name","Supplier","Category","Price","Discounted?","Quantity","Amount to Order"};
+		//this is your table model. See below is a class that implements AbstractTableModel
+		//the table model takes in the array of objects you want to populate and array of column names
 		ProductTableModel productsTableModel = new ProductTableModel(myProducts, columnNames);
+		//make the actual table and pass it the table model
 		JTable productsTable = new JTable(productsTableModel);
+		//make the table sortable
 		productsTable.setAutoCreateRowSorter(true);
+		//add the table to scroll pane if the content is greater than the container
 		JScrollPane scrollPane = new JScrollPane(productsTable);
 		
 		add(scrollPane, "span 3, grow, push");
-	}
+		
+		//add the order button
+		btnOrder = new JButton("Order");
+		btnOrder.setToolTipText("All the products that have \"Amount to order\" greater than 0 will be placed on the order.");
+		add(btnOrder, "aligny top, alignx left");
+		btnOrder.addActionListener(new ButtonOrderHandler());
+	}//end constructor
 	
 	public Customer getCustomerFromConcatenatedName(String name){
 		for(Customer customer:Shop.getCustomers()){
@@ -101,10 +116,37 @@ public class CustomerOrderPanel extends JPanel{
 			}
 		}
 		return null;
+	}//end getCustomerFromConcatenatedName()
+
+	public Object[][] getMyProducts() {
+		return myProducts;
+	}
+
+	public void setMyProducts(Object[][] myProducts) {
+		this.myProducts = myProducts;
 	}
 	
+	
+	public class ButtonOrderHandler implements ActionListener{
 
-}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int option = JOptionPane.showConfirmDialog(null, 
+					"All the products that have \"Amount to order\" greater than 0\n will be placed on the order." 
+					, "", JOptionPane.OK_CANCEL_OPTION);
+			if (option == JOptionPane.OK_OPTION){
+				//get Updated product list
+				Object[][] updatedProductList = CustomerOrderPanel.this.getMyProducts();
+				
+		    }
+		}
+		
+	}
+}//end class CustomerOrderPanel
+
+
+
+
 
 class ProductTableModel extends AbstractTableModel{
 	private static final long serialVersionUID = 1L;
@@ -133,7 +175,8 @@ class ProductTableModel extends AbstractTableModel{
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		//MAKE
+		//Make sure that if the user changes the value to null (deletes everything from cell) the integer remains parsed to int
+		//otherwise an exception is generated
 		if(columnIndex != columnNames.length-1){
 			return data[rowIndex][columnIndex];
 		}else{
@@ -145,7 +188,7 @@ class ProductTableModel extends AbstractTableModel{
 		}
 	}
 	
-	 public Class getColumnClass(int c) {
+	public Class<?> getColumnClass(int c) {
 	        return getValueAt(0, c).getClass();
 	 }
 		
@@ -171,4 +214,4 @@ class ProductTableModel extends AbstractTableModel{
     	}
     }
 	
-}
+}//end class ProductTableModel
