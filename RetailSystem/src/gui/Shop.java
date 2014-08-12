@@ -83,6 +83,12 @@ public class Shop {
 		System.out.println(customerID+customerFName);
 	}
 	
+	public static void deleteCustomer(int customerID){
+		for(Customer customer:customers){
+			customer.setDeleted(true);
+		}
+	}
+	
 	public void createCustomer(){
 		
 	}

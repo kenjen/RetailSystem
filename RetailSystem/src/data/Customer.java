@@ -10,6 +10,7 @@ public class Customer {
 	private String customerAddress;
 	private String customerMobile;
 	private String customerHome;
+	private boolean deleted = false;
 	//private ArrayList<Customer> customers = new ArrayList<Customer>();
 
 	public Customer(String customerFName, String customerLName,
@@ -21,6 +22,7 @@ public class Customer {
 		this.customerAddress = customerAddress;
 		this.customerMobile = customerMobile;
 		this.customerHome = customerHome;
+		setDeleted(deleted);
 		nextID++;
 	}
 
@@ -70,6 +72,14 @@ public class Customer {
 
 	public void setCustomerHome(String customerHome) {
 		this.customerHome = customerHome;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 }
