@@ -38,13 +38,14 @@ public class CustomerPanel extends JPanel {
 	private JLabel customerAddress;
 	private JTextArea addressInput;
 	private JButton btnNewButton;
-	private JButton btnNewButton_1;
-	private JButton btnNewButton_2;
+	private JButton customerDelete;
+	private JButton customerEdit;
 	private JLabel lblCustomer;
 	private JLabel lblCustomerId;
 	private JComboBox comboBox;
 	private JCheckBox chckbxEditdelete;
 
+	@SuppressWarnings("null")
 	public CustomerPanel() {
 		setLayout(new MigLayout("", "[62px][200px,grow]",
 				"[22px][][][][][][][][]"));
@@ -83,10 +84,39 @@ public class CustomerPanel extends JPanel {
 
 		lblCustomerId = new JLabel("Customer ID");
 		add(lblCustomerId, "cell 0 2,alignx trailing");
-		comboBox = new JComboBox();
+		ArrayList<Integer> num = new ArrayList<Integer>();
+		Integer[] ids = new Integer[Shop.getCustomers().size()];
+		for (Customer customer : Shop.getCustomers()) {
+
+			num.add(customer.getCustomerID());
+		}
+		ids = num.toArray(ids);
+		comboBox = new JComboBox(ids);
 		comboBox.setEnabled(false);
 		comboBox.setPreferredSize(new Dimension(225, 20));
 		add(comboBox, "flowx,cell 1 2,alignx left, growy");
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int chosen = (int) comboBox.getSelectedItem();
+				System.out.println(chosen);
+
+				for (Customer customer : Shop.getCustomers()) {
+					if (customer.getCustomerID() == chosen) {
+						String name = customer.getCustomerFName();
+						String surname = customer.getCustomerLName();
+						String address = customer.getCustomerAddress();
+						String mobile = customer.getCustomerMobile();
+						String home = customer.getCustomerHome();
+
+						fNameInput.setText(name);
+						lNameInput.setText(surname);
+						addressInput.setText(address);
+						mobileInput.setText(mobile);
+						homeInput.setText(home);
+					}
+				}
+			}
+		});
 
 		customerFName = new JLabel("First Name");
 		add(customerFName, "cell 0 3,alignx left,aligny center");
@@ -120,11 +150,34 @@ public class CustomerPanel extends JPanel {
 		add(homeInput, "cell 1 7,alignx left,growy");
 		add(btnNewButton, "flowx,cell 1 8");
 
-		btnNewButton_2 = new JButton("Edit Customer");
-		add(btnNewButton_2, "cell 1 8");
+		customerEdit = new JButton("Edit Customer");
+		add(customerEdit, "cell 1 8");
+		customerEdit.setEnabled(false);
+		customerEdit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Shop.editCustomer((int) comboBox.getSelectedItem(),
+						fNameInput.getText(), lNameInput.getText(),
+						addressInput.getText(), mobileInput.getText(),
+						homeInput.getText());
+				
+				fNameInput.setText("");
+				lNameInput.setText("");
+				addressInput.setText("");
+				mobileInput.setText("");
+				homeInput.setText("");
+				JOptionPane.showMessageDialog(null,
+						"You have editted customer "+comboBox.getSelectedItem());
+			}
 
-		btnNewButton_1 = new JButton("Delete Customer");
-		add(btnNewButton_1, "cell 1 8");
+		}
+
+		);
+
+	
+
+		customerDelete = new JButton("Delete Customer");
+		add(customerDelete, "cell 1 8");
+		customerDelete.setEnabled(false);
 
 		chckbxEditdelete = new JCheckBox("Edit/Delete");
 		add(chckbxEditdelete, "cell 1 2");
@@ -133,10 +186,19 @@ public class CustomerPanel extends JPanel {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				// TODO Auto-generated method stub
-				if(chckbxEditdelete.isSelected()){
+				if (chckbxEditdelete.isSelected()) {
 					comboBox.enable(true);
-				}else{
+					btnNewButton.setEnabled(false);
+					;
+					customerDelete.setEnabled(true);
+					customerEdit.setEnabled(true);
+					;
+				} else {
 					comboBox.enable(false);
+					btnNewButton.setEnabled(true);
+					customerDelete.setEnabled(false);
+					customerEdit.setEnabled(false);
+					;
 				}
 			}
 

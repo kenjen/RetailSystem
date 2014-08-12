@@ -69,8 +69,18 @@ public class Shop {
 		
 	}
 	
-	public void editCustomer(int customerID){
-		
+	public static void editCustomer(int customerID, String customerFName, String customerLName,
+			String customerAddress, String customerMobile, String customerHome){
+		for(Customer customer:customers){
+			if(customer.getCustomerID()==customerID){
+				customer.setCustomerFName(customerFName);
+				customer.setCustomerLName(customerLName);
+				customer.setCustomerAddress(customerAddress);
+				customer.setCustomerMobile(customerMobile);
+				customer.setCustomerHome(customerHome);
+			}
+		}
+		System.out.println(customerID+customerFName);
 	}
 	
 	public void createCustomer(){
