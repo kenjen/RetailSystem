@@ -182,6 +182,7 @@ public class Shop {
 	}
 
 	public static ArrayList<Customer> getCustomers() {
+		
 		return customers;
 	}
 
