@@ -1,5 +1,7 @@
 package data;
 
+import java.util.ArrayList;
+
 public class Customer {
 	private static int nextID = 101;
 	private int customerID;
@@ -8,6 +10,7 @@ public class Customer {
 	private String customerAddress;
 	private String customerMobile;
 	private String customerHome;
+	//private ArrayList<Customer> customers = new ArrayList<Customer>();
 
 	public Customer(String customerFName, String customerLName,
 			String customerAddress, String customerMobile, String customerHome) {
