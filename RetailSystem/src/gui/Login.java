@@ -33,6 +33,7 @@ public class Login extends JFrame {
 	private JLabel lblError;
 	private ArrayList<Staff> listOfMemebers = new ArrayList<Staff>();
 	private boolean admin = false;
+	private Staff loggedStaffMember;
 	
 	public Login(ArrayList<Staff> members){
 		listOfMemebers = members;
@@ -76,7 +77,7 @@ public class Login extends JFrame {
 						&& passwordField.getPassword().length > 0) {
 					if (findLoginDetailsFromList()) {
 						//redirect to main app, set user type = admin
-						new GUIBackBone(admin);
+						new GUIBackBone(admin, loggedStaffMember);
 						Login.this.setVisible(false);
 						dispose();
 					} else {
@@ -110,7 +111,7 @@ public class Login extends JFrame {
 				if (textField.getText().length() > 0 && passwordField.getPassword().length > 0) {
 					if (findLoginDetailsFromList()) {
 						//redirect to main app, set user type = admin
-						new GUIBackBone(admin);
+						new GUIBackBone(admin, loggedStaffMember);
 						Login.this.setVisible(false);
 						dispose();
 					} else {
@@ -138,6 +139,7 @@ public class Login extends JFrame {
 				if(staff.isAdmin()){
 					admin=true;
 				}
+				Login.this.loggedStaffMember = staff;
 				break;
 			}
 		}

@@ -1,32 +1,39 @@
 package data;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class CustomerOrder {
 	
 	
-
+	private static int nextId;
 	private int id;
-	private String creationDate;
+	private Date creationDate;
 	private Customer customer;
 	private Staff staff;
-	private ArrayList<Product> products;
+	private ArrayList<ProductToOrder> products;
 	private double totalGross;
 	private double totalNet;
 	private boolean complete = false;
 	
 	
+	public CustomerOrder(){
+		
+	}
 	
-	
-	public CustomerOrder(int id, String creationDate, double totalGross, double totalNet) {
-		this.id = id;
-		this.creationDate = creationDate;				
-		this.totalGross = totalGross;
+	public CustomerOrder(Customer customer, Staff staff, ArrayList<ProductToOrder> products) {
+		this.creationDate = new Date();				
+		nextId++;
+		this.id = nextId;
+		this.staff=staff;
+		this.products=products;
+		double totalNet = 0;
+		for(ProductToOrder product:products){
+			totalNet+=product.getPrice()*product.getAmount();
+		}
 		this.totalNet = totalNet;
-		
-		
-		
+		this.totalGross = totalNet*1.21;
 	}
 	
 	
@@ -42,12 +49,12 @@ public class CustomerOrder {
 	}
 
 
-	public String getCreationDate() {
+	public Date getCreationDate() {
 		return creationDate;
 	}
 
 
-	public void setCreationDate(String creationDate) {
+	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
 
@@ -72,12 +79,12 @@ public class CustomerOrder {
 	}
 
 
-	public ArrayList<Product> getProducts() {
+	public ArrayList<ProductToOrder> getProducts() {
 		return products;
 	}
 
 
-	public void setProducts(ArrayList<Product> products) {
+	public void setProducts(ArrayList<ProductToOrder> products) {
 		this.products = products;
 	}
 

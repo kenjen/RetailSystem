@@ -75,6 +75,7 @@ public class Product {
 	public double applyDiscount(double amount){
 		this.discountedPercentage = amount /100;
 		this.discounted = true;
+		this.price = this.price * discountedPercentage - price;
 		return this.price * discountedPercentage - price;
 	}
 
