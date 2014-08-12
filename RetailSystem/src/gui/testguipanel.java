@@ -123,7 +123,7 @@ public class testguipanel extends JFrame {
 		//add panel to right hand side
 		JPanel panel = new JPanel();
 		splitPane.setRightComponent(panel);
-		panel.setLayout(new MigLayout("", "[][100px:n:100px,grow][100px:n:100px,grow][100px:100px:100px][100px:n:100px][grow]", "[][][][][][][][][][][][]"));
+		panel.setLayout(new MigLayout("", "[][100px][100px,center][100px,center]", "[][][][][][][][][][][][]"));
 		
 		txtId = new JTextField();
 		txtId.setHorizontalAlignment(SwingConstants.CENTER);
@@ -142,7 +142,7 @@ public class testguipanel extends JFrame {
 			}
 			
 		});
-		panel.add(txtId, "cell 0 0 6 1,alignx center");
+		panel.add(txtId, "cell 2 0,alignx center");
 		
 		//Setup button to load a products details
 		JButton btnIdConfirm = new JButton("Confirm");
@@ -180,7 +180,7 @@ public class testguipanel extends JFrame {
 				}
 			}
 		});
-		panel.add(btnIdConfirm, "cell 3 1");
+		panel.add(btnIdConfirm, "cell 2 1");
 		
 		txtName = new JTextField();
 		txtName.setEditable(false);
@@ -190,11 +190,11 @@ public class testguipanel extends JFrame {
 		txtName.setColumns(10);
 		
 		textName = new JTextField();
-		panel.add(textName, "cell 3 3,growx");
+		panel.add(textName, "cell 2 3,growx");
 		textName.setColumns(10);
 		
 		JButton btnSaveName = new JButton("Save");
-		panel.add(btnSaveName, "cell 5 3");
+		panel.add(btnSaveName, "cell 3 3");
 		
 		txtCategory = new JTextField();
 		txtCategory.setHorizontalAlignment(SwingConstants.CENTER);
@@ -204,11 +204,11 @@ public class testguipanel extends JFrame {
 		txtCategory.setColumns(10);
 		
 		textCategory = new JTextField();
-		panel.add(textCategory, "cell 3 5,growx");
+		panel.add(textCategory, "cell 2 5,growx");
 		textCategory.setColumns(10);
 		
 		JButton btnSaveCategory = new JButton("Save");
-		panel.add(btnSaveCategory, "cell 5 5");
+		panel.add(btnSaveCategory, "cell 3 5");
 		
 		txtQuantity = new JTextField();
 		txtQuantity.setText("Quantity");
@@ -218,11 +218,11 @@ public class testguipanel extends JFrame {
 		txtQuantity.setColumns(10);
 		
 		textQuantity = new JTextField();
-		panel.add(textQuantity, "cell 3 7,growx");
+		panel.add(textQuantity, "cell 2 7,growx");
 		textQuantity.setColumns(10);
 		
 		JButton btnSaveQuantity = new JButton("Save");
-		panel.add(btnSaveQuantity, "cell 5 7");
+		panel.add(btnSaveQuantity, "cell 3 7");
 		
 		txtPrice = new JTextField();
 		txtPrice.setHorizontalAlignment(SwingConstants.CENTER);
@@ -232,11 +232,11 @@ public class testguipanel extends JFrame {
 		txtPrice.setColumns(10);
 		
 		textPrice = new JTextField();
-		panel.add(textPrice, "cell 3 9,growx");
+		panel.add(textPrice, "cell 2 9,growx");
 		textPrice.setColumns(10);
 		
 		JButton btnSavePrice = new JButton("Save");
-		panel.add(btnSavePrice, "cell 5 9");
+		panel.add(btnSavePrice, "cell 3 9");
 		
 		txtSupplier = new JTextField();
 		txtSupplier.setHorizontalAlignment(SwingConstants.CENTER);
@@ -246,10 +246,10 @@ public class testguipanel extends JFrame {
 		txtSupplier.setColumns(10);
 		
 		textSupplier = new JTextField();
-		panel.add(textSupplier, "cell 3 11,growx");
+		panel.add(textSupplier, "cell 2 11,growx");
 		textSupplier.setColumns(10);
 		
 		JButton btnSaveSupplier = new JButton("Save");
-		panel.add(btnSaveSupplier, "cell 5 11");
+		panel.add(btnSaveSupplier, "cell 3 11");
 	}
 }
