@@ -109,11 +109,11 @@ public class Shop {
 	
 	public void populateProducts(){
 		
-		Product p1 = new Product("Pear", "Food", 100, 0.23, s, true, 22);
-		Product p2 = new Product("Coat", "Clothing", 50, 29.99, s, true, 10);
-		Product p3 = new Product("Trousers", "Clothing", 80, 40.0, s, true, 15);
-		Product p4 = new Product("Ham", "Food", 120, 4.50, s, true, 60);
-		Product p5 = new Product("Broom", "Hygene", 20, 12.0, s, true, 3);
+		Product p1 = new Product("Pear", "Food", 100, 0.23, suppliers.get(0), true, 22);
+		Product p2 = new Product("Coat", "Clothing", 50, 29.99, suppliers.get(1), true, 10);
+		Product p3 = new Product("Trousers", "Clothing", 80, 40.0, suppliers.get(1), true, 15);
+		Product p4 = new Product("Ham", "Food", 120, 4.50, suppliers.get(0), true, 60);
+		Product p5 = new Product("Broom", "Hygene", 20, 12.0, suppliers.get(3), true, 3);
 		
 		products.add(p1);
 		products.add(p2);
@@ -187,6 +187,14 @@ public class Shop {
 
 	public static void setCustomers(ArrayList<Customer> customers) {
 		Shop.customers = customers;
+	}
+
+	public static ArrayList<Product> getProducts() {
+		return products;
+	}
+
+	public static void setProducts(ArrayList<Product> products) {
+		Shop.products = products;
 	}
 
 	
