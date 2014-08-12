@@ -1,28 +1,25 @@
 package data;
 
-//import java.text.ParseException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class CustomerOrder {
+	
+	
 
 	private int id;
-	private Date creationDate;
+	private String creationDate;
 	private Customer customer;
 	private Staff staff;
 	private Product products;
 	private double totalGross;
 	private double totalNet;
+	private boolean complete = false;
 	
 	
 	
-	public CustomerOrder(int id, Date creationDate, Customer customer, Staff staff, Product products, double totalGross, double totalNet) {
+	
+	public CustomerOrder(int id, String creationDate, double totalGross, double totalNet) {
 		this.id = id;
-		this.customer = customer;
-		this.creationDate = creationDate;		
-		this.staff = staff;
-		this.products = products;
+		this.creationDate = creationDate;				
 		this.totalGross = totalGross;
 		this.totalNet = totalNet;
 		
@@ -30,12 +27,8 @@ public class CustomerOrder {
 		
 	}
 	
-	String date= "2013-09-06T14:15:11.557";
-    DateFormat df=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-   // Date d=df.parse(date); {
-    //df=new SimpleDateFormat("yyyy-MMM-dd hh:mm");
-    //System.out.println(df.format(d));
-   // }
+	
+  
 
 	public int getId() {
 		return id;
@@ -47,12 +40,12 @@ public class CustomerOrder {
 	}
 
 
-	public Date getCreationDate() {
+	public String getCreationDate() {
 		return creationDate;
 	}
 
 
-	public void setCreationDate(Date creationDate) {
+	public void setCreationDate(String creationDate) {
 		this.creationDate = creationDate;
 	}
 
@@ -104,6 +97,20 @@ public class CustomerOrder {
 
 	public void setTotalNet(double totalNet) {
 		this.totalNet = totalNet;
+	}
+
+
+
+
+	public boolean isComplete() {
+		return complete;
+	}
+
+
+
+
+	public void setComplete(boolean complete) {
+		this.complete = complete;
 	}
 
 }

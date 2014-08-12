@@ -42,7 +42,8 @@ public class Shop {
 		populateStaffMembers();
 		populateProducts();
 		populateStockOrders();
-		//populateCustomerOrders();
+		populateCustomerOrders();
+		printCustomerOrderInvoice();
 		
 		//run login
 		Login login = new Login(staffMembers);
@@ -179,7 +180,33 @@ public class Shop {
 	
 	public void populateCustomerOrders(){
 		
+		CustomerOrder customerOrder1 = new CustomerOrder(1111, "11/08/14", 5.00, 5.65);
+		CustomerOrder customerOrder2 = new CustomerOrder(1112, "10/08/14", 30.00, 32.65);
+		CustomerOrder customerOrder3 = new CustomerOrder(1113, "09/08/14", 56.70, 59.35);
+		CustomerOrder customerOrder4 = new CustomerOrder(1114, "08/08/14", 3.00, 7.85);
+		
+		customerOrders.add(customerOrder1);
+		customerOrders.add(customerOrder2);
+		customerOrders.add(customerOrder3);
+		customerOrders.add(customerOrder4);
+		
 	}
+	
+	public void printCustomerOrderInvoice() {
+		for(CustomerOrder order: customerOrders){
+			if (order.isComplete() == true){
+			System.out.println("-----Invoice-------");
+			System.out.println("Order ID : " + order.getId() );
+			System.out.println("Customer ID : " + order.getCustomer());
+			System.out.println("Order received: " + order.getCreationDate());
+			System.out.println("Products ordered : " + order.getProducts());
+			System.out.println("Gross Total : " + order.getTotalGross());
+			System.out.println("Net Total (VAT @ 10%) : " + order.getTotalNet());
+			}
+		}
+			
+		}
+		
 
 	public static ArrayList<Customer> getCustomers() {
 		return customers;
