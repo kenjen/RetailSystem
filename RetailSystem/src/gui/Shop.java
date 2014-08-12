@@ -224,22 +224,20 @@ public class Shop {
 		Shop.products = products;
 	}
 
-	public static ArrayList<Staff> getStaffMembers() {
-		return staffMembers;
-	}
-
-	public static void setStaffMembers(ArrayList<Staff> staffMembers) {
-		Shop.staffMembers = staffMembers;
+	public static void setSuppliers(ArrayList<Supplier> suppliers) {
+		Shop.suppliers = suppliers;
 	}
 
 	public static ArrayList<Supplier> getSuppliers() {
 		return suppliers;
 	}
-
-	public static void setSuppliers(ArrayList<Supplier> suppliers) {
-		Shop.suppliers = suppliers;
-	}
-
 	
+	public static void setStaffMembers(ArrayList<Staff> staffMembers) {
+		Shop.staffMembers = staffMembers;
+	}
+	
+	public static ArrayList<Staff> getStaffMembers() {
+		return staffMembers;
+	}
 
 }
