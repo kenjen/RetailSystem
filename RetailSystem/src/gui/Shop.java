@@ -160,7 +160,7 @@ public class Shop {
 		productsToOrder.add(products.get(0));
 		
 		try {
-			StockOrder stockOrder = new StockOrder(sd.parse("10/08/2014 13:36"), productsToOrder, amountToOrder, new Staff("kian", "jennings", 300, "kJennings", "help"));
+			StockOrder stockOrder = new StockOrder(sd.parse("10/08/2014 13:36"), productsToOrder, amountToOrder, staffMembers.get(2));
 			stockOrders.add(stockOrder);
 			System.out.println("Order placed with id " + stockOrder.getId());
 		} catch (ParseException e) {
@@ -174,7 +174,7 @@ public class Shop {
 		productsToOrder.add(products.get(2));
 		amountToOrder.add("7");
 		try {
-			StockOrder stockOrder = new StockOrder(sd.parse("26/07/2014 10:15"), productsToOrder, amountToOrder, new Staff("kian", "jennings", 300, "kJennings", "help"));
+			StockOrder stockOrder = new StockOrder(sd.parse("26/07/2014 10:15"), productsToOrder, amountToOrder, staffMembers.get(1));
 			stockOrders.add(stockOrder);
 			System.out.println("Order placed with id " + stockOrder.getId());
 		} catch (ParseException e) {
@@ -187,13 +187,15 @@ public class Shop {
 		productsToOrder.add(products.get(3));
 		productsToOrder.add(products.get(4));
 		try {
-			StockOrder stockOrder = new StockOrder(sd.parse("06/08/2014 13:00"), productsToOrder, amountToOrder, new Staff("kian", "jennings", 300, "kJennings", "help"));
+			StockOrder stockOrder = new StockOrder(sd.parse("06/08/2014 13:00"), productsToOrder, amountToOrder, staffMembers.get(3));
 			stockOrders.add(stockOrder);
 			System.out.println("Order placed with id " + stockOrder.getId());
 		} catch (ParseException e) {
 			e.printStackTrace();
 			System.out.println("Order not placed as error with date");
 		}
+		
+		System.out.println(stockOrders.get(2).getInvoice());
 	}
 	
 	public void populateCustomerOrders(){
