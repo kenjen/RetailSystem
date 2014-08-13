@@ -72,7 +72,7 @@ public class CustomerPanel extends JPanel {
 				}
 				JOptionPane.showMessageDialog(null,
 						"You have added a customer!");
-
+				comboBox.addItem(c1.getCustomerID());
 				fNameInput.setText("");
 				lNameInput.setText("");
 				addressInput.setText("");
@@ -101,7 +101,8 @@ public class CustomerPanel extends JPanel {
 				System.out.println(chosen);
 
 				for (Customer customer : Shop.getCustomers()) {
-					if (customer.getCustomerID() == chosen && customer.isDeleted()==false) {
+					if (customer.getCustomerID() == chosen
+							&& customer.isDeleted() == false) {
 						String name = customer.getCustomerFName();
 						String surname = customer.getCustomerLName();
 						String address = customer.getCustomerAddress();
@@ -181,8 +182,14 @@ public class CustomerPanel extends JPanel {
 		customerDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Shop.deleteCustomer((Integer) comboBox.getSelectedItem());
+				comboBox.removeItem(comboBox.getSelectedItem());
+				/*fNameInput.setText("");
+				lNameInput.setText("");
+				addressInput.setText("");
+				mobileInput.setText("");
+				homeInput.setText("");*/
+				
 			}
-
 		});
 
 		chckbxEditdelete = new JCheckBox("Edit/Delete");
