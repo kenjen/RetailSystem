@@ -27,6 +27,7 @@ public class CustomerOrder {
 		nextId++;
 		this.id = nextId;
 		this.staff=staff;
+		this.customer = customer;
 		this.products=products;
 		double totalNet = 0;
 		for(ProductToOrder product:products){
