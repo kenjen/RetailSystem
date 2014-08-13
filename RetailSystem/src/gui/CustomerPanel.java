@@ -44,11 +44,14 @@ public class CustomerPanel extends JPanel {
 	private JLabel lblCustomerId;
 	private JComboBox comboBox;
 	private JCheckBox chckbxEditdelete;
+	private JLabel lblEnterSurnameTo;
+	private JTextField searchString;
+	private JButton btnSearch;
 
 	@SuppressWarnings("null")
 	public CustomerPanel() {
-		setLayout(new MigLayout("", "[62px][200px,grow]",
-				"[22px][][][][][][][][]"));
+		setLayout(new MigLayout("", "[62px][200px,grow][]",
+				"[22px][][][][][][][][][]"));
 
 		lblCustomer = new JLabel("CUSTOMER DETAILS");
 		lblCustomer.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -94,7 +97,7 @@ public class CustomerPanel extends JPanel {
 		comboBox = new JComboBox(ids);
 		comboBox.setEnabled(false);
 		comboBox.setPreferredSize(new Dimension(225, 20));
-		add(comboBox, "flowx,cell 1 2,alignx left, growy");
+		add(comboBox, "flowx,cell 1 2,alignx left,growy");
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				int chosen = (Integer) comboBox.getSelectedItem();
@@ -183,12 +186,41 @@ public class CustomerPanel extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				Shop.deleteCustomer((Integer) comboBox.getSelectedItem());
 				comboBox.removeItem(comboBox.getSelectedItem());
-				/*fNameInput.setText("");
-				lNameInput.setText("");
-				addressInput.setText("");
-				mobileInput.setText("");
-				homeInput.setText("");*/
-				
+				/*
+				 * fNameInput.setText(""); lNameInput.setText("");
+				 * addressInput.setText(""); mobileInput.setText("");
+				 * homeInput.setText("");
+				 */
+
+			}
+		});
+
+		lblEnterSurnameTo = new JLabel("Enter Surname to find:");
+		add(lblEnterSurnameTo, "flowx,cell 1 9");
+		searchString = new JTextField();
+		add(searchString, "cell 1 9,alignx trailing");
+		searchString.setColumns(10);
+		btnSearch = new JButton("Search");
+		add(btnSearch, "cell 1 9");
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				ArrayList<Integer> idLocations = new ArrayList<Integer>();
+				String find = searchString.getText();
+				for (Customer customer : Shop.getCustomers()) {
+					if (find.equals(customer.getCustomerLName())) {
+						idLocations.add(customer.getCustomerID());
+						// System.out.println(idLocations);
+					}
+				}
+				if (idLocations.size() == 0) {
+					JOptionPane
+							.showMessageDialog(null,
+									"There are no customers of this name in the system");
+				} else {
+					JOptionPane
+					.showMessageDialog(null,
+							"Customer "+idLocations+" have the surname "+find);
+				}
 			}
 		});
 

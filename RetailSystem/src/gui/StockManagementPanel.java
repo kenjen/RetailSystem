@@ -24,6 +24,7 @@ import data.Supplier;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class StockManagementPanel extends JSplitPane{
@@ -37,12 +38,15 @@ public class StockManagementPanel extends JSplitPane{
 	private JTextField txtQuantity;
 	private JTextField txtThreshold;
 	private JTextField txtPrice;
+	private JTextField txtDiscountedAmount;
+	private JTextField txtDiscountedPrice;
 	private JTextField txtSupplier;
 	private JTextField textName;
 	private JTextField textCategory;
 	private JTextField textQuantity;
 	private JTextField textThreshold;
 	private JTextField textPrice;
+	private JTextField textDiscountedPrice;
 	private JComboBox<String> comboSelectSupplier;
 
 	private boolean productLoaded = false;
@@ -53,6 +57,7 @@ public class StockManagementPanel extends JSplitPane{
 	private JButton btnDisplayDeletedStock;
 	private JButton btnDisplayAllProducts;
 	private JButton btnFlagForOrder;
+	private JButton btnDiscountProduct;
 	private JButton btnDeleteProduct;
 	
 	
@@ -65,19 +70,20 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//Add scroll pane to left size with list of products
 		JScrollPane scrollPane = new JScrollPane(list);
-		this.setDividerLocation(300);
+		//TODO
+		//this.setDividerLocation(300);
 		setLeftComponent(scrollPane);
 		
 		
 		//add panel to right hand side
 		JPanel panel = new JPanel();
 		setRightComponent(panel);
-		panel.setLayout(new MigLayout("", "[][100px:n][100px:n:100px,grow][100px:n:100px,grow][100px:100px:100px,grow,center][100px:n:100px][grow]", "[][20px:n][][][][][][][][][][][][][][][][50px:n][][20px:n][][20px:n][]"));
+		panel.setLayout(new MigLayout("", "[][100px:n][10px,grow][100px:n:100px,grow][100px:n:100px,grow][100px:100px:100px,grow,center][100px:n:100px][grow]", "[][20px:n][][][][][][][][][][][][][][][][][][50px:n][][20px:n][][20px:n][]"));
 		
 		
 		//text field to enter id of product
 		txtId = new JTextField();
-		panel.add(txtId, "cell 4 2,alignx center");
+		panel.add(txtId, "cell 5 2,alignx center");
 		txtId.setHorizontalAlignment(SwingConstants.CENTER);
 		txtId.setColumns(20);
 		txtId.setText("Enter Id");
@@ -141,7 +147,7 @@ public class StockManagementPanel extends JSplitPane{
 				
 		//Setup button to load a products details
 		JButton btnIdConfirm = new JButton("Confirm");
-		panel.add(btnIdConfirm, "cell 4 3");
+		panel.add(btnIdConfirm, "cell 5 3");
 		btnIdConfirm.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				loadProductDetails();
@@ -157,7 +163,7 @@ public class StockManagementPanel extends JSplitPane{
 		txtFlaggedForOrder.setVisible(false);
 		txtFlaggedForOrder.setHorizontalAlignment(SwingConstants.CENTER);
 		txtFlaggedForOrder.setText("FLAGGED FOR ORDER");
-		panel.add(txtFlaggedForOrder, "cell 3 4 3 1,growx");
+		panel.add(txtFlaggedForOrder, "cell 4 4 3 1,growx");
 		txtFlaggedForOrder.setColumns(10);
 		
 		
@@ -166,13 +172,13 @@ public class StockManagementPanel extends JSplitPane{
 		txtName.setEditable(false);
 		txtName.setHorizontalAlignment(SwingConstants.CENTER);
 		txtName.setText("Name");
-		panel.add(txtName, "cell 2 6,growx");
+		panel.add(txtName, "cell 3 6,growx");
 		txtName.setColumns(10);
 		textName = new JTextField();
-		panel.add(textName, "cell 4 6,growx");
+		panel.add(textName, "cell 5 6,growx");
 		textName.setColumns(10);
 		JButton btnSaveName = new JButton("Save");
-		panel.add(btnSaveName, "cell 6 6");
+		panel.add(btnSaveName, "cell 7 6");
 		btnSaveName.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -186,13 +192,13 @@ public class StockManagementPanel extends JSplitPane{
 		txtCategory.setHorizontalAlignment(SwingConstants.CENTER);
 		txtCategory.setEditable(false);
 		txtCategory.setText("Category");
-		panel.add(txtCategory, "cell 2 8,growx");
+		panel.add(txtCategory, "cell 3 8,growx");
 		txtCategory.setColumns(10);
 		textCategory = new JTextField();
-		panel.add(textCategory, "cell 4 8,growx");
+		panel.add(textCategory, "cell 5 8,growx");
 		textCategory.setColumns(10);
 		JButton btnSaveCategory = new JButton("Save");
-		panel.add(btnSaveCategory, "cell 6 8");
+		panel.add(btnSaveCategory, "cell 7 8");
 		btnSaveCategory.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -206,13 +212,13 @@ public class StockManagementPanel extends JSplitPane{
 		txtQuantity.setText("Quantity");
 		txtQuantity.setEditable(false);
 		txtQuantity.setHorizontalAlignment(SwingConstants.CENTER);
-		panel.add(txtQuantity, "cell 2 10,growx");
+		panel.add(txtQuantity, "cell 3 10,growx");
 		txtQuantity.setColumns(10);
 		textQuantity = new JTextField();
-		panel.add(textQuantity, "cell 4 10,growx");
+		panel.add(textQuantity, "cell 5 10,growx");
 		textQuantity.setColumns(10);
 		JButton btnSaveQuantity = new JButton("Save");
-		panel.add(btnSaveQuantity, "cell 6 10");
+		panel.add(btnSaveQuantity, "cell 7 10");
 		btnSaveQuantity.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -222,23 +228,23 @@ public class StockManagementPanel extends JSplitPane{
 		
 		
 		//product threshold fields
-				txtThreshold = new JTextField();
-				txtThreshold.setText("Threshold");
-				txtThreshold.setEditable(false);
-				txtThreshold.setHorizontalAlignment(SwingConstants.CENTER);
-				panel.add(txtThreshold, "cell 2 12,growx");
-				txtThreshold.setColumns(10);
-				textThreshold = new JTextField();
-				panel.add(textThreshold, "cell 4 12,growx");
-				textThreshold.setColumns(10);
-				JButton btnSaveThreshold = new JButton("Save");
-				panel.add(btnSaveThreshold, "cell 6 12");
-				btnSaveThreshold.addActionListener(new ActionListener(){
-					@Override
-					public void actionPerformed(ActionEvent arg0) {
-						saveThreshold();
-					}
-				});
+		txtThreshold = new JTextField();
+		txtThreshold.setText("Threshold");
+		txtThreshold.setEditable(false);
+		txtThreshold.setHorizontalAlignment(SwingConstants.CENTER);
+		panel.add(txtThreshold, "cell 3 12,growx");
+		txtThreshold.setColumns(10);
+		textThreshold = new JTextField();
+		panel.add(textThreshold, "cell 5 12,growx");
+		textThreshold.setColumns(10);
+		JButton btnSaveThreshold = new JButton("Save");
+		panel.add(btnSaveThreshold, "cell 7 12");
+		btnSaveThreshold.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				saveThreshold();
+			}
+		});
 		
 		
 		//product price fields
@@ -246,13 +252,13 @@ public class StockManagementPanel extends JSplitPane{
 		txtPrice.setHorizontalAlignment(SwingConstants.CENTER);
 		txtPrice.setEditable(false);
 		txtPrice.setText("Price");
-		panel.add(txtPrice, "cell 2 14,growx");
+		panel.add(txtPrice, "cell 3 14,growx");
 		txtPrice.setColumns(10);
 		textPrice = new JTextField();
-		panel.add(textPrice, "cell 4 14,growx");
+		panel.add(textPrice, "cell 5 14,growx");
 		textPrice.setColumns(10);
 		JButton btnSavePrice = new JButton("Save");
-		panel.add(btnSavePrice, "cell 6 14");
+		panel.add(btnSavePrice, "cell 7 14");
 		btnSavePrice.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -261,12 +267,30 @@ public class StockManagementPanel extends JSplitPane{
 		});
 		
 		
+		//product discounted price fields
+		txtDiscountedPrice = new JTextField();
+		txtDiscountedPrice.setHorizontalAlignment(SwingConstants.CENTER);
+		txtDiscountedPrice.setEditable(false);
+		txtDiscountedPrice.setText("Discounted Price");
+		panel.add(txtDiscountedPrice, "cell 3 16,growx");
+		txtDiscountedPrice.setColumns(10);
+		textDiscountedPrice = new JTextField();
+		panel.add(textDiscountedPrice, "cell 5 16,growx");
+		textDiscountedPrice.setColumns(10);
+		txtDiscountedAmount = new JTextField();
+		txtDiscountedAmount.setHorizontalAlignment(SwingConstants.CENTER);
+		txtDiscountedAmount.setEditable(false);
+		txtDiscountedAmount.setText("");
+		panel.add(txtDiscountedAmount, "cell 7 16");
+		txtDiscountedAmount.setColumns(5);
+		
+		
 		//product supplier fields
 		txtSupplier = new JTextField();
 		txtSupplier.setHorizontalAlignment(SwingConstants.CENTER);
 		txtSupplier.setEditable(false);
 		txtSupplier.setText("Supplier");
-		panel.add(txtSupplier, "cell 2 16,growx");
+		panel.add(txtSupplier, "cell 3 18,growx");
 		txtSupplier.setColumns(10);
 		ArrayList<String> supplierNames = new ArrayList<String>();
 		supplierNames.add("");
@@ -275,11 +299,11 @@ public class StockManagementPanel extends JSplitPane{
 			supplierNames.add(name);
 		}
 		comboSelectSupplier = new JComboBox(supplierNames.toArray());
-		panel.add(comboSelectSupplier, "cell 4 16");
+		panel.add(comboSelectSupplier, "cell 5 18");
 		comboSelectSupplier.setEditable(true);
 		AutoCompleteDecorator.decorate(comboSelectSupplier);
 		JButton btnSaveSupplier = new JButton("Save");
-		panel.add(btnSaveSupplier, "cell 6 16");
+		panel.add(btnSaveSupplier, "cell 7 18");
 		btnSaveSupplier.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -290,7 +314,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//mark product as low stock and needing orders
 		btnFlagForOrder = new JButton("Flag For Order");
-		panel.add(btnFlagForOrder, "cell 3 18");
+		panel.add(btnFlagForOrder, "cell 4 20");
 		btnFlagForOrder.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -299,9 +323,20 @@ public class StockManagementPanel extends JSplitPane{
 		});
 		
 		
+		//discount product by percentage
+		btnDiscountProduct = new JButton("Discount");
+		panel.add(btnDiscountProduct, "cell 5 20,grow");
+		btnDiscountProduct.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				discountProduct();
+			}
+		});
+		
+		
 		//Delete product button
 		btnDeleteProduct = new JButton("Delete");
-		panel.add(btnDeleteProduct, "cell 5 18");
+		panel.add(btnDeleteProduct, "cell 6 20,grow");
 		btnDeleteProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -312,7 +347,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//create new product button
 		btnCreateNewProduct = new JButton("New Product");
-		panel.add(btnCreateNewProduct, "cell 4 22");
+		panel.add(btnCreateNewProduct, "cell 5 24");
 		btnCreateNewProduct.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -330,6 +365,7 @@ public class StockManagementPanel extends JSplitPane{
 			textCategory.setText("");
 			textQuantity.setText("");
 			textPrice.setText("");
+			textDiscountedPrice.setText("");
 			txtFlaggedForOrder.setVisible(false);
 			comboSelectSupplier.setSelectedIndex(0);
 		}else{
@@ -350,6 +386,7 @@ public class StockManagementPanel extends JSplitPane{
 										textCategory.setText("");
 										textQuantity.setText("");
 										textPrice.setText("");
+										textDiscountedPrice.setText("");
 										comboSelectSupplier.setSelectedIndex(0);
 										System.out.println("Product Created Succesfully");
 										break;
@@ -412,6 +449,37 @@ public class StockManagementPanel extends JSplitPane{
 				deleted = "  *DELETED*";
 			}
 			listModel.addElement("Id=" + product.getId() + "   " + product.getQuantity() + "/" + product.getLowStockOrder() + " " + " Units    " + product.getName() + deleted);
+		}
+	}
+	
+	public void discountProduct(){
+		int id = 0;
+		if(productLoaded){
+			String tempId = txtId.getText();
+			try{
+				id = Integer.parseInt(tempId);
+				for(Product product : Shop.getProducts()){
+					if(product.getId() == id && !(product.isDeleted())){
+						String input = JOptionPane.showInputDialog("Enter percentage to discount \n"+"Pevious discount "+product.getDiscountedPercentage()+"%");
+						if(input!=null){
+							try{
+								Double percent = Double.parseDouble(input);
+								product.setDiscountedPercentage(percent);
+								if(percent==0){
+									product.setDiscounted(false);
+								}else{
+									product.setDiscounted(true);
+								}
+								loadProductDetails();
+							}catch(NumberFormatException nfe){
+								System.out.println("Entered value not a valid integer");
+							}
+						}
+					}
+				}
+			}catch(NumberFormatException nfe){
+				System.out.println("number entered not an integer");
+			}
 		}
 	}
 	
@@ -510,7 +578,11 @@ public class StockManagementPanel extends JSplitPane{
 			textQuantity.setText(""+tempProduct.getQuantity());
 			textThreshold.setText(""+tempProduct.getLowStockOrder());
 			textPrice.setText(""+tempProduct.getPrice());
+			Double discountPrice = tempProduct.getPrice() - (tempProduct.getPrice()*(tempProduct.getDiscountedPercentage()/100));
+			DecimalFormat df = new DecimalFormat("#.###");
+			textDiscountedPrice.setText(""+(df.format(discountPrice)));
 			txtFlaggedForOrder.setVisible(tempProduct.isFlaggedForOrder());
+			txtDiscountedAmount.setText(tempProduct.getDiscountedPercentage() + "%");
 			int index = 0;
 			for(Supplier supplier : Shop.getSuppliers()){
 				index++;
@@ -574,6 +646,7 @@ public class StockManagementPanel extends JSplitPane{
 					if(product.getId() == id && !(product.isDeleted())){
 						product.setPrice(price);
 						System.out.println("Price saved succesfully");
+						loadProductDetails();
 					}
 				}
 			}catch(NumberFormatException nfe){
