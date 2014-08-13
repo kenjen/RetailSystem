@@ -31,7 +31,8 @@ public class CustomerOrder {
 		this.products=products;
 		double totalNet = 0;
 		for(ProductToOrder product:products){
-			totalNet+=product.getPrice()*product.getAmount();
+			double x =product.getPrice()*product.getAmount();
+			totalNet = totalNet+x;
 		}
 		this.totalNet = totalNet;
 		this.totalGross = totalNet*1.21;

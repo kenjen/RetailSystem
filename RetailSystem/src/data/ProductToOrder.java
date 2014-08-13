@@ -1,5 +1,7 @@
 package data;
 
+import java.text.DecimalFormat;
+
 public class ProductToOrder {
 
 	private int id;
@@ -80,6 +82,12 @@ public class ProductToOrder {
 		this.amount = amount;
 	}
 	
+	public String toHtmlString(){
+		DecimalFormat df = new DecimalFormat("#.00");
+		String returnable ="<tr><td>"+id+"</td><td>"+name+"</td><td>"+supplier.getSupplierName()+"</td><td>"+category+"</td><td>"+price+"</td><td>"+amount+"</td><td>"+df.format(amount*price)+"</td></tr>";
+		return returnable;
+		
+	}
 	
 
 }
