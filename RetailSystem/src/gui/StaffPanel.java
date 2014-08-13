@@ -43,6 +43,7 @@ public class StaffPanel extends JPanel{
 	private JTextField passwordField;
 	
 	ArrayList<String> staffMembers = new ArrayList<String>();
+	JComboBox staffComboBox = new JComboBox(staffMembers.toArray());
 	
 	private Shop shop;
 
@@ -52,6 +53,7 @@ public class StaffPanel extends JPanel{
 		for(Staff s : Shop.getStaffMembers()){
 			String name = s.getName() +" "+ s.getSurname();
 			staffMembers.add(name);
+			staffComboBox.addItem(s.getName());
 		}
 		
 		JLabel lblName = new JLabel("ADD NEW STAFF HERE: ");
@@ -111,12 +113,19 @@ public class StaffPanel extends JPanel{
 					shop = new Shop();
 					ArrayList<Staff> staffMembers = shop.getStaffMembers();
 					
+					//Remove items from Combo Box and
+					staffComboBox.removeAllItems();
 					staffMembers.add(s);
 					
 					for(Staff staff : staffMembers){
 						System.out.println("Staff" + staff.getName());
+						
+						//Add new Staff To ComboBox "staffComboBox"	
+					    
+					        staffComboBox.addItem(staff.getName());
+					        	//staffComboBox.addItem(s.getName());
 					}
-					
+				
 					System.out.println("New Staff Member Added");
 				}
 				else{
@@ -129,10 +138,10 @@ public class StaffPanel extends JPanel{
 		JLabel lblMembers = new JLabel("Members");
 		add(lblMembers, "cell 0 14");
 		
-		JComboBox staffComboBox = new JComboBox(staffMembers.toArray());
+		
 		add(staffComboBox, "wrap");
 		add(staffComboBox, "cell 1 14,growx");
-		
+
 		JButton btnRemove = new JButton("Remove");
 		add(btnRemove, "cell 3 25");
 		
