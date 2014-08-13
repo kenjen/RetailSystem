@@ -97,6 +97,8 @@ public class StaffPanel extends JPanel{
 		passwordField.setColumns(10);
 		
 		//Get the Values from each textField and save them to their respective slots in the StaffMenbers Array
+		//Add a new Staff Member with these values
+		//Reset the form
 		JButton btnAddStaff = new JButton("Add Staff Member");
 		btnAddStaff.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -125,6 +127,12 @@ public class StaffPanel extends JPanel{
 					        staffComboBox.addItem(staff.getName());
 					        	//staffComboBox.addItem(s.getName());
 					}
+					
+					nameField.setText(""); 
+					surNameField.setText("");
+					salaryField.setText("");
+					userNameField.setText("");
+					passwordField.setText("");
 				
 					System.out.println("New Staff Member Added");
 				}
@@ -149,6 +157,4 @@ public class StaffPanel extends JPanel{
 		add(btnEditdetails, "cell 4 25");
 		
 	}
-	
-
 }
