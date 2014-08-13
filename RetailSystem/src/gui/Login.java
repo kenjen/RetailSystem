@@ -1,6 +1,8 @@
 package gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -62,6 +64,15 @@ public class Login extends JFrame {
 		passwordField.setColumns(20);
 		
 		//if enter is pressed treat it as if login would be pressed
+		passwordField.addFocusListener(new FocusListener() {	
+			@Override
+			public void focusLost(FocusEvent arg0) {
+			}
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				passwordField.setText("");
+			}
+		});
 		passwordField.addKeyListener(new KeyListener() {
 
 			@Override
