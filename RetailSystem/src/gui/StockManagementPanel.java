@@ -7,6 +7,7 @@ import java.awt.event.FocusListener;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -15,22 +16,21 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+
 import net.miginfocom.swing.MigLayout;
 import data.Product;
 import data.Supplier;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.ArrayList;
 
 public class StockManagementPanel extends JSplitPane{
 	
-	private DefaultListModel listModel = new DefaultListModel();
-	private JList list;
+	private DefaultListModel<String> listModel = new DefaultListModel<String>();
+	private JList<String> list;
 	
-	private JTextField textField;
-	private JTextField txtEnterProductId;
-	private JTextField textField_1;
-	private JTextField textField_2;
 	private JTextField txtId;
 	private JTextField txtName;
 	private JTextField txtCategory;
@@ -41,9 +41,9 @@ public class StockManagementPanel extends JSplitPane{
 	private JTextField textCategory;
 	private JTextField textQuantity;
 	private JTextField textPrice;
-	private JTextField textSupplier;
 	private JButton btnFlagForOrder;
 	private JButton btnDeleteProduct;
+	private JComboBox<String> comboSelectSupplier;
 
 	private boolean productLoaded = false;
 	private JTextField txtFlaggedForOrder;
@@ -51,11 +51,13 @@ public class StockManagementPanel extends JSplitPane{
 	private JButton btnDisplayAllProducts;
 	private JButton btnDisplayLowStock;
 	
+	
+	
 
 	public StockManagementPanel() {
 		
 		//setup list with products
-		list = new JList(listModel);
+		list = new JList<String>(listModel);
 		for(Product product : Shop.getProducts()){
 			if(!product.isDeleted()){
 				listModel.addElement("Id=" + product.getId() + "   " + product.getQuantity() + "/" + product.getLowStockOrder() + " " + " Units    " + product.getName());
@@ -65,7 +67,7 @@ public class StockManagementPanel extends JSplitPane{
 
 		//Add scroll pane to left size with list of products
 		JScrollPane scrollPane = new JScrollPane(list);
-		//this.setDividerLocation(300);
+		this.setDividerLocation(300);
 		setLeftComponent(scrollPane);
 		
 		
@@ -109,7 +111,7 @@ public class StockManagementPanel extends JSplitPane{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				listModel.clear();
-				list = new JList(listModel);
+				list = new JList<String>(listModel);
 				for(Product product : Shop.getProducts()){
 					if((!product.isDeleted()) && product.getQuantity()<=product.getLowStockOrder()){
 						listModel.addElement("Id=" + product.getId() + "   " + product.getQuantity() + "/" + product.getLowStockOrder() + " " + " Units    " + product.getName());
@@ -151,8 +153,15 @@ public class StockManagementPanel extends JSplitPane{
 					textCategory.setText(tempProduct.getCategory());
 					textQuantity.setText(""+tempProduct.getQuantity());
 					textPrice.setText(""+tempProduct.getPrice());
-					textSupplier.setText(tempProduct.getSupplier().getSupplierName());
 					txtFlaggedForOrder.setVisible(tempProduct.isFlaggedForOrder());
+					int index = 0;
+					for(Supplier supplier : Shop.getSuppliers()){
+						index++;
+						if(supplier.getSupplierName() == tempProduct.getSupplier().getSupplierName()){
+							break;
+						}
+					}
+					comboSelectSupplier.setSelectedIndex(index);
 				}
 			}
 		});
@@ -324,9 +333,16 @@ public class StockManagementPanel extends JSplitPane{
 		panel.add(txtSupplier, "cell 2 14,growx");
 		txtSupplier.setColumns(10);
 		
-		textSupplier = new JTextField();
-		panel.add(textSupplier, "cell 4 14,growx");
-		textSupplier.setColumns(10);
+		ArrayList<String> supplierNames = new ArrayList<String>();
+		supplierNames.add("");
+		for (Supplier supplier : Shop.getSuppliers()){
+			String name = supplier.getSupplierName();
+			supplierNames.add(name);
+		}
+		comboSelectSupplier = new JComboBox(supplierNames.toArray());
+		panel.add(comboSelectSupplier, "cell 4 14");
+		comboSelectSupplier.setEditable(true);
+		AutoCompleteDecorator.decorate(comboSelectSupplier);
 		
 		JButton btnSaveSupplier = new JButton("Save");
 		panel.add(btnSaveSupplier, "cell 6 14");
@@ -340,7 +356,7 @@ public class StockManagementPanel extends JSplitPane{
 					try{
 						id = Integer.parseInt(tempId);
 						for(Supplier supplier : Shop.getSuppliers()){
-							if(supplier.getSupplierName().equalsIgnoreCase(textSupplier.getText())){
+							if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
 								for(Product product : Shop.getProducts()){
 									if(product.getId() == id && !(product.isDeleted())){
 										product.setSupplier(supplier);
@@ -434,28 +450,33 @@ public class StockManagementPanel extends JSplitPane{
 					textCategory.setText("");
 					textQuantity.setText("");
 					textPrice.setText("");
-					textSupplier.setText("");
 					txtFlaggedForOrder.setVisible(false);
+					comboSelectSupplier.setSelectedIndex(0);
 				}else{
 					//take in new details and create new product
 					if(!textName.equals("")){
 						if(!(textCategory.getText().equals(""))){
 							try{
-								int quant = Integer.parseInt(textQuantity.getText());
+								Integer.parseInt(textQuantity.getText());
 								try{
-									int price = Integer.parseInt(textPrice.getText());
-									for(Supplier supplier : Shop.getSuppliers()){
-										if(supplier.getSupplierName().equalsIgnoreCase(textSupplier.getText())){
-											Product product = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Integer.parseInt(textPrice.getText()), supplier, true, 20);
-											Shop.getProducts().add(product);
-											txtId.setText(""+product.getId());
-											textName.setText("");
-											textCategory.setText("");
-											textQuantity.setText("");
-											textPrice.setText("");
-											textSupplier.setText("");
-											break;
+									Integer.parseInt(textPrice.getText());
+									if(comboSelectSupplier.getSelectedIndex()>0){
+										for(Supplier supplier : Shop.getSuppliers()){
+											if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
+												Product product = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Integer.parseInt(textPrice.getText()), supplier, true, 20);
+												Shop.getProducts().add(product);
+												txtId.setText(""+product.getId());
+												textName.setText("");
+												textCategory.setText("");
+												textQuantity.setText("");
+												textPrice.setText("");
+												comboSelectSupplier.setSelectedIndex(0);
+												System.out.println("Product Created Succesfully");
+												break;
+											}
 										}
+									}else{
+										System.out.println("No supplier selected");
 									}
 								}catch(NumberFormatException nfe){
 									System.out.println("number format exception");
@@ -483,5 +504,20 @@ public class StockManagementPanel extends JSplitPane{
 				listModel.addElement("Id=" + product.getId() + "   " + product.getQuantity() + "/" + product.getLowStockOrder() + " " + " Units    " + product.getName());
 			}
 		}
+	}
+	
+	public void focusGained(FocusEvent fe) {
+		setupList();
+		
+		ArrayList<String> supplierNames = new ArrayList<String>();
+		supplierNames.add("");
+		for (Supplier supplier : Shop.getSuppliers()){
+			String name = supplier.getSupplierName();
+			supplierNames.add(name);
+		}
+		comboSelectSupplier = new JComboBox(supplierNames.toArray());
+		add(comboSelectSupplier, "cell 1 6");
+		comboSelectSupplier.setEditable(true);
+		AutoCompleteDecorator.decorate(comboSelectSupplier);
 	}
 }
