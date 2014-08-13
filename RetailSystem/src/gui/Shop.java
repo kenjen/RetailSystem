@@ -85,7 +85,10 @@ public class Shop {
 	
 	public static void deleteCustomer(int customerID){
 		for(Customer customer:customers){
-			customer.setDeleted(true);
+			if(customer.getCustomerID()==customerID){
+				customer.setDeleted(true);
+			}
+			
 		}
 	}
 	
