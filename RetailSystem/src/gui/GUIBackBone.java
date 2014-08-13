@@ -49,6 +49,11 @@ public class GUIBackBone  extends JFrame{
 				tabbedPane.addTab("Management", panelStockOrder);
 				tabbedPane.addTab("Customer", panelCustomer);
 				tabbedPane.addTab("Supplier", panelSupplier);
+				tabbedPane.setIconAt(0, new ImageIcon(getClass().getResource("/CheckList.png")));
+				tabbedPane.setIconAt(1, new ImageIcon(getClass().getResource("/Cart.png")));
+				tabbedPane.setIconAt(2, new ImageIcon(getClass().getResource("/Icon.png")));
+				tabbedPane.setIconAt(3, new ImageIcon(getClass().getResource("/Customer.png")));
+				tabbedPane.setIconAt(4, new ImageIcon(getClass().getResource("/Supplier.png")));
 			}
 			
 			
