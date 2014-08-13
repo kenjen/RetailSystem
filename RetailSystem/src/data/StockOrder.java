@@ -11,6 +11,7 @@ public class StockOrder {
 	private Date date;
 	private double total;
 	private ArrayList<Product> products;
+	private ArrayList<String> productAmounts;
 	private Staff staff;
 	private Date expectedDeliveryDate;
 
@@ -21,25 +22,23 @@ public class StockOrder {
 		for(Product product : products){
 			totalProd++;
 		}
+		this.productAmounts = amountToOrder;
 		this.total = totalProd;
 		this.date = date;
 		this.total = total;
 		this.products = products;
 		this.staff = staff;
-		/*
-		 * If all products in stock expected delivery date is two days from date
-		 *
-		//expectedDeliveryDate = date.
-		String temp = date.toString();
-		int t = temp.charAt(1);
-		//System.out.println("int t is " + t);
-		 * */
-	}
-
-		
+	}	
 	
-	public void printInvoice(){
-		
+	public String getInvoice(){
+		String invoice = "\n \n" + "****** INVOICE ******" + "\n";
+		invoice = invoice + "Ordered by " + staff.getName() + "\n" + "Date - " + date.toString() + "\n";
+		int i=0;
+		for(Product product : products){
+			invoice = invoice + Integer.parseInt(productAmounts.get(i)) + "      " + product.getName() + "\n";
+			i++;
+		}
+		return invoice;
 	}
 
 	public int getId() {

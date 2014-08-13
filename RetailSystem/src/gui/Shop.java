@@ -48,7 +48,6 @@ public class Shop {
 		//run login
 		Login login = new Login(staffMembers);
 		login.drawFrame();
-		
 	}
 
 	public void populateCustomers(){
