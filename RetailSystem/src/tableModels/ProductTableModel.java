@@ -62,10 +62,10 @@ public class ProductTableModel extends AbstractTableModel{
 
 	//allow saves ONLY on last column
     public void setValueAt(Object value, int row, int col) {
-    	if(col == columnNames.length-1){
+    	//if(col == columnNames.length-1){
         data[row][col] = value;
         fireTableCellUpdated(row, col);
-    	}
+    	//}
     }
 	
 }//end class ProductTableModel

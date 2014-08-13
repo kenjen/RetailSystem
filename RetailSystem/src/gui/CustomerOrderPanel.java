@@ -1,5 +1,7 @@
 package gui;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -7,10 +9,10 @@ import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -36,136 +38,162 @@ public class CustomerOrderPanel extends JPanel{
 
 	private static final long serialVersionUID = 1L;
 	private JComboBox comboSelectCustomer;
-	private JButton selectCustomer;
+	private JButton btnSelectCustomer;
 	private Customer selectedCustomer = null;;
-	private JLabel productListLabel;
+	private JLabel lblProductList;
 	private JButton btnOrder = null;
-	private Object myProducts[][] ;
+	private Object[][] availableProductsArray ;
 	private JLabel lblActiveCustomerText = null;
 	private JLabel lblActiveCustomer = null;
-	private JTable productsTable;
-	private JTable previousOrdersTable;
+	private JTable tableAvailableProducts;
+	private JTable tableOrders;
 	private JLabel lblPreviousCustomerOrder;
-	private Object[][] custOrders;
-	private Object[][] activeCustomerOrders;
-	private JScrollPane previousOrderScrollPane;
-	private ProductTableModel previousOrderTableModel;
+	private Object[][] ordersArray;
+	private Object[][] ordersArrayOfSelectedCustomer;
+	private JScrollPane scrollPaneForOrdersTable;
+	private ProductTableModel tableModelForOrdersTable;
 	private JButton btnDisplayOrdersForSelectedCustomer = new JButton("Customer Orders");
 	private JButton btnUpdateOrderCompletion = new JButton("Update order");
 	private JButton btnDisplayAllOrders = new JButton("All orders");
 	private boolean isActiveCustomerOrderTablePopulated;
 	
+	/**
+	 * Adds all the GUI components on the panel
+	 */
 	public CustomerOrderPanel() {
 		setLayout(new MigLayout());
-		ArrayList<String> customerNames = new ArrayList<String>();
-		customerNames.add("");
-		for ( Customer customer: Shop.getCustomers()){
-			String name = customer.getCustomerFName()+" "+customer.getCustomerLName();
-			customerNames.add(name);
-		}
 		
 		JLabel lblCustomer = new JLabel("Customer:");
 		add(lblCustomer, "split 5");
 		
+		ArrayList<String> customerNames = new ArrayList<String>();
+		customerNames.add("");
+		
+		//concatenate customer names and add them to the combo box
+		for ( Customer customer: Shop.getCustomers()){
+			String name = customer.getCustomerFName()+" "+customer.getCustomerLName();
+			customerNames.add(name);
+		}		
 		comboSelectCustomer = new JComboBox(customerNames.toArray());
 		add(comboSelectCustomer);
+		//allow for auto-completion
 		comboSelectCustomer.setEditable(true);
 		AutoCompleteDecorator.decorate(comboSelectCustomer);
 		
-		selectCustomer = new JButton("Select");
-		add(selectCustomer);
-		selectCustomer.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String concatenatedName = comboSelectCustomer.getSelectedItem().toString();
-				if(getCustomerFromConcatenatedName(concatenatedName) != null){
-					selectedCustomer = getCustomerFromConcatenatedName(concatenatedName);
-					lblActiveCustomer.setText(selectedCustomer.getCustomerFName()+" "+selectedCustomer.getCustomerLName());
-				}else{
-					JOptionPane.showMessageDialog(CustomerOrderPanel.this, "No such customer in the list");
-				}
-			}
-			
-		});
+		btnSelectCustomer = new JButton("Select");
+		add(btnSelectCustomer);
+		btnSelectCustomer.addActionListener(new ButtonHandlerForSelectingCustomer());
 		
 		lblActiveCustomerText = new JLabel("Active Customer: ");
 		lblActiveCustomer = new JLabel("");
 		add(lblActiveCustomerText, "gapx 20px");
 		add(lblActiveCustomer, "wrap");
 		
+		lblProductList = new JLabel("Product list:");
+		add(lblProductList, "wrap");
 		
-		productListLabel = new JLabel("Product list:");
-		add(productListLabel, "wrap");
-		
-		myProducts = new Object[Shop.getProducts().size()][8];
+		availableProductsArray = new Object[Shop.getProducts().size()][8];
 		int counter = 0;
 		//make products array to feed into the table model
 		for(Product product:Shop.getProducts()){
 			if(product.isAvailable() && product.isDeleted()==false){
-				myProducts[counter][0] = product.getId();
-				myProducts[counter][1] = product.getName();
-				myProducts[counter][2] = product.getSupplier().getSupplierName();
-				myProducts[counter][3] = product.getCategory();
-				myProducts[counter][4] = product.getPrice();
-				myProducts[counter][5] = product.isDiscounted();
-				myProducts[counter][6] = product.getQuantity();
+				availableProductsArray[counter][0] = product.getId();
+				availableProductsArray[counter][1] = product.getName();
+				availableProductsArray[counter][2] = product.getSupplier().getSupplierName();
+				availableProductsArray[counter][3] = product.getCategory();
+				availableProductsArray[counter][4] = product.getPrice();
+				availableProductsArray[counter][5] = product.isDiscounted();
+				availableProductsArray[counter][6] = product.getQuantity();
 				//this column will be editable
-				myProducts[counter][7] = 0;
+				availableProductsArray[counter][7] = 0;
 				counter ++;
 			}
 		}
 		
-		// make column names for table. Must be the same size as the Object[][] you will populate it with.
 		String columnNames[] = {"Id","Name","Supplier","Category","Price","Discounted?","Quantity","Amount to Order"};
-		//this is your table model. See below is a class that implements AbstractTableModel
-		//the table model takes in the array of objects you want to populate and array of column names
-		ProductTableModel productsTableModel = new ProductTableModel(myProducts, columnNames);
-		//make the actual table and pass it the table model
-		productsTable = new JTable(productsTableModel);
-		//make the table sortable
-		productsTable.setAutoCreateRowSorter(true);
-		//add the table to scroll pane if the content is greater than the container
-		JScrollPane scrollPane = new JScrollPane(productsTable);
-		productsTable.setCellSelectionEnabled(true);
-		
-		productsTable.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener(){
-
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				int row = productsTable.getSelectedRow();
-				productsTable.changeSelection(row, 7, false, false);
-				productsTable.requestFocus();
-				productsTable.editCellAt(row, 7);
+		ProductTableModel productsTableModel = new ProductTableModel(availableProductsArray, columnNames);
+		tableAvailableProducts = new JTable(productsTableModel);
+		tableAvailableProducts.setAutoCreateRowSorter(true);
+		tableAvailableProducts.setRowSelectionAllowed(true);
+		tableAvailableProducts.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e) {
+			      if (e.getClickCount() == 2) {
+			         JTable target = (JTable)e.getSource();
+			         int row = target.getSelectedRow();
+			         int cell = 7;
+			         String choice = JOptionPane.showInputDialog(CustomerOrderPanel.this, "Enter the amount");
+			         try{
+			        	 if(choice != null){
+			        		 int parsedChoice = Integer.parseInt(choice);
+			        		 System.out.println("Parsed choice: "+parsedChoice);
+			        		 target.setValueAt(parsedChoice, row, cell);
+			        	 }
+			         }catch (InputMismatchException ex){
+			        	 ex.printStackTrace();
+			         }catch (NumberFormatException nfe){
+			        	 System.out.println("Invalid Input");
+			        	 //do nothing, swallow the exception
+			        	 //not ideal but will do for now
+			         }
+			      }
 			}
 			
 		});
+		tableAvailableProducts.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				int row = tableAvailableProducts.getSelectedRow();
+				//tableAvailableProducts.editCellAt(row, 7);
+				tableAvailableProducts.changeSelection(row, 7, false, false);
+			}
+		});
 		
-		add(scrollPane, "span 3, grow, push");
+		JScrollPane scrollPane = new JScrollPane(tableAvailableProducts);
+		add(scrollPane, "span 5, grow, push");
 		
 		//add the order button
-		btnOrder = new JButton("Order");
+		btnOrder = new JButton("New Order");
 		btnOrder.setToolTipText("All the products that have \"Amount to order\" greater than 0 will be placed on the order.");
-		add(btnOrder, "aligny top, alignx left, wrap");
+		JPanel panelx = new JPanel();
+		panelx.setLayout(new MigLayout());
+		panelx.add(btnOrder,"growx, pushx");
+		add(panelx, "aligny top, alignx left, wrap, growx");
 		btnOrder.addActionListener(new ButtonOrderHandler());
 		
 		
 		//add the gui elements to view previous orders of a customer
 		lblPreviousCustomerOrder = new JLabel("Previous Orders:");
-		add(lblPreviousCustomerOrder, "cell 0 3, split 4");
-		add(btnDisplayAllOrders);
-		btnDisplayAllOrders.addActionListener(new ButtonDisplayOrdersForAllCustomersHandler());
-		add(btnDisplayOrdersForSelectedCustomer);
-		btnDisplayOrdersForSelectedCustomer.addActionListener(new ButtonDisplayOrdersForSelectedCustomersHandler());
-		add(btnUpdateOrderCompletion, "wrap");
-		btnUpdateOrderCompletion.addActionListener(new UpdateOrdersHandler());
+		add(lblPreviousCustomerOrder, "cell 0 3, wrap");
 		
-		previousOrderScrollPane = new JScrollPane();
-		add(previousOrderScrollPane, "span 3, grow, push");
+		scrollPaneForOrdersTable = new JScrollPane();
+		add(scrollPaneForOrdersTable, "span 5 3, grow, push");
 		displayPreviousCustomerOrderTable(false);
+		
+		JPanel oneCellPanel = new JPanel();
+		oneCellPanel.setLayout(new MigLayout());
+		oneCellPanel.add(btnDisplayAllOrders, "wrap, growx, aligny top");
+		btnDisplayAllOrders.addActionListener(new ButtonDisplayOrdersForAllCustomersHandler());
+		oneCellPanel.add(btnDisplayOrdersForSelectedCustomer, "wrap, growx, aligny top");
+		btnDisplayOrdersForSelectedCustomer.addActionListener(new ButtonDisplayOrdersForSelectedCustomersHandler());
+		oneCellPanel.add(btnUpdateOrderCompletion, "wrap, growx, aligny top");
+		btnUpdateOrderCompletion.addActionListener(new UpdateOrdersHandler());
+		add(oneCellPanel, "aligny top");
 		
 	}//end constructor
 	
+	public class ButtonHandlerForSelectingCustomer implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String concatenatedName = comboSelectCustomer.getSelectedItem().toString();
+			if(getCustomerFromConcatenatedName(concatenatedName) != null){
+				selectedCustomer = getCustomerFromConcatenatedName(concatenatedName);
+				lblActiveCustomer.setText(selectedCustomer.getCustomerFName()+" "+selectedCustomer.getCustomerLName());
+			}else{
+				JOptionPane.showMessageDialog(CustomerOrderPanel.this, "No such customer in the list");
+			}
+		}
+	}
 	
 	public class ButtonOrderHandler implements ActionListener{
 
@@ -180,7 +208,7 @@ public class CustomerOrderPanel extends JPanel{
 					, "", JOptionPane.OK_CANCEL_OPTION);
 			if (option == JOptionPane.OK_OPTION){
 				//get Updated product list
-				Object[][] updatedProductList = CustomerOrderPanel.this.getMyProducts();
+				Object[][] updatedProductList = CustomerOrderPanel.this.getAvailableProductsArray();
 				ArrayList<ProductToOrder> productsToOrder = new ArrayList<ProductToOrder>();
 				for(Object[] x : updatedProductList){
 					//add only products that have amount set to > 0
@@ -227,7 +255,7 @@ public class CustomerOrderPanel extends JPanel{
 					for(ProductToOrder x:productsToOrder){
 						decrementProductAvalableQuantity(x.getId(),x.getAmount());
 					}
-					AbstractTableModel model = (AbstractTableModel) productsTable.getModel();
+					AbstractTableModel model = (AbstractTableModel) tableAvailableProducts.getModel();
 					model.fireTableDataChanged();
 					
 					//update previousCustomerOrderTable with the new order.
@@ -244,6 +272,21 @@ public class CustomerOrderPanel extends JPanel{
 			if(selectedCustomer != null && getSelectedCustomerOrders() != null){
 				isActiveCustomerOrderTablePopulated = true;
 				displayPreviousCustomerOrderTable(true);
+			}else{
+				System.out.println("clearTable");
+				String columnNames1[] = {"Id","Customer","Staff","Date","Total Net","Total Gross","Completed?"};
+				Object[][] emptyObjectArray = new Object[1][7];
+				emptyObjectArray[0][0] = "";
+				emptyObjectArray[0][1] = "";
+				emptyObjectArray[0][2] = "";
+				emptyObjectArray[0][3] = "";
+				emptyObjectArray[0][4] = "";
+				emptyObjectArray[0][5] = "";
+				emptyObjectArray[0][6] = "";
+				
+				tableModelForOrdersTable = new ProductTableModel(emptyObjectArray, columnNames1);
+				tableOrders = new JTable(tableModelForOrdersTable);
+				scrollPaneForOrdersTable.getViewport().add(tableOrders);
 			}
 		}//end actionPerformed
 		
@@ -263,12 +306,15 @@ public class CustomerOrderPanel extends JPanel{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			if(ordersArray == null || ordersArrayOfSelectedCustomer == null){
+				return;
+			}
 			//find all orders that have "completed" value changed to true
 			Object[][] orders = null;
 			if (isActiveCustomerOrderTablePopulated == true){
-				orders = CustomerOrderPanel.this.getActiveCustomerOrders();
+				orders = CustomerOrderPanel.this.getOrdersArrayOfSelectedCustomer();
 			}else{
-				orders = CustomerOrderPanel.this.getCustOrders();
+				orders = CustomerOrderPanel.this.getOrdersArray();
 			}
 			for(Object[] x:orders){
 				if((boolean) x[6] == true){
@@ -277,7 +323,7 @@ public class CustomerOrderPanel extends JPanel{
 					changeOrderCompletion((int)x[0], false);
 				}
 			}
-			AbstractTableModel model = (AbstractTableModel) previousOrdersTable.getModel();
+			AbstractTableModel model = (AbstractTableModel) tableOrders.getModel();
 			model.fireTableDataChanged();
 			
 			//update previousCustomerOrderTable with the new order.
@@ -323,32 +369,32 @@ public class CustomerOrderPanel extends JPanel{
 		return null;
 	}//end getCustomerFromConcatenatedName()
 
-	public Object[][] getMyProducts() {
-		return myProducts;
+	public Object[][] getAvailableProductsArray() {
+		return availableProductsArray;
 	}
 
-	public void setMyProducts(Object[][] myProducts) {
-		this.myProducts = myProducts;
+	public void setAvailableProductsArray(Object[][] availableProductsArray) {
+		this.availableProductsArray = availableProductsArray;
 	}
 	
-	public Object[][] getCustOrders() {
-		return custOrders;
+	public Object[][] getOrdersArray() {
+		return ordersArray;
 	}
 
-	public void setCustOrders(Object[][] custOrders) {
-		this.custOrders = custOrders;
+	public void setOrdersArray(Object[][] ordersArray) {
+		this.ordersArray = ordersArray;
 	}
 
-	public Object[][] getActiveCustomerOrders() {
-		return activeCustomerOrders;
+	public Object[][] getOrdersArrayOfSelectedCustomer() {
+		return ordersArrayOfSelectedCustomer;
 	}
 
-	public void setActiveCustomerOrders(Object[][] activeCustomerOrders) {
-		this.activeCustomerOrders = activeCustomerOrders;
+	public void setOrdersArrayOfSelectedCustomer(Object[][] ordersArrayOfSelectedCustomer) {
+		this.ordersArrayOfSelectedCustomer = ordersArrayOfSelectedCustomer;
 	}
 
 	public boolean decrementProductAvalableQuantity(int productId, int deductableAmount){
-		Object[][] productList = CustomerOrderPanel.this.getMyProducts();
+		Object[][] productList = CustomerOrderPanel.this.getAvailableProductsArray();
 		for(Object[] x:productList){
 			if((int) x[0] == productId){
 				x[6] = (int) x[6] - deductableAmount;
@@ -365,36 +411,36 @@ public class CustomerOrderPanel extends JPanel{
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		DecimalFormat df = new DecimalFormat("#.00");
 		ArrayList<CustomerOrder> currentCustomerOrders = Shop.getCustomerOrders();
-		custOrders = new Object[currentCustomerOrders.size()][7];
+		ordersArray = new Object[currentCustomerOrders.size()][7];
 		
 		//if forCustomerOnly = false then display all orders in the CustomeOrder array, otherwise only for the selected customer
 		if(forCustomerOnly == false){
 			for(int i=0; i< currentCustomerOrders.size(); i++){
-				custOrders[i][0] = currentCustomerOrders.get(i).getId();
-				custOrders[i][1] = currentCustomerOrders.get(i).getCustomer().getCustomerFName()+" "+currentCustomerOrders.get(i).getCustomer().getCustomerLName();
-				custOrders[i][2] = currentCustomerOrders.get(i).getStaff().getName()+" "+currentCustomerOrders.get(i).getStaff().getSurname();
-				custOrders[i][3] = sdf.format(currentCustomerOrders.get(i).getCreationDate());
-				custOrders[i][4] = df.format(currentCustomerOrders.get(i).getTotalNet());
-				custOrders[i][5] = df.format(currentCustomerOrders.get(i).getTotalGross());
-				custOrders[i][6] = currentCustomerOrders.get(i).isComplete();
+				ordersArray[i][0] = currentCustomerOrders.get(i).getId();
+				ordersArray[i][1] = currentCustomerOrders.get(i).getCustomer().getCustomerFName()+" "+currentCustomerOrders.get(i).getCustomer().getCustomerLName();
+				ordersArray[i][2] = currentCustomerOrders.get(i).getStaff().getName()+" "+currentCustomerOrders.get(i).getStaff().getSurname();
+				ordersArray[i][3] = sdf.format(currentCustomerOrders.get(i).getCreationDate());
+				ordersArray[i][4] = df.format(currentCustomerOrders.get(i).getTotalNet());
+				ordersArray[i][5] = df.format(currentCustomerOrders.get(i).getTotalGross());
+				ordersArray[i][6] = currentCustomerOrders.get(i).isComplete();
 			}
-			previousOrderTableModel = new ProductTableModel(custOrders, columnNames1);
-			previousOrdersTable = new JTable(previousOrderTableModel);
-			previousOrdersTable.setAutoCreateRowSorter(true);
+			tableModelForOrdersTable = new ProductTableModel(ordersArray, columnNames1);
+			tableOrders = new JTable(tableModelForOrdersTable);
+			tableOrders.setAutoCreateRowSorter(true);
 			
 			//Handle double clicking on table to display details of the double-clicked row's order
-			previousOrdersTable.addMouseListener(new MouseAdapter() {
+			tableOrders.addMouseListener(new MouseAdapter() {
 				   public void mouseClicked(MouseEvent e) {
 				      if (e.getClickCount() == 2) {
 				         JTable target = (JTable)e.getSource();
 				         int row = target.getSelectedRow();
 				         
-				         int id = (int) custOrders[row][0];
-				         String customer = (String) custOrders[row][1];
-				         String staff = (String) custOrders[row][2];
-				         String date = (String) custOrders[row][3];
-				         String totalNet = (String) custOrders[row][4];
-				         String totalGross = (String) custOrders[row][5];
+				         int id = (int) ordersArray[row][0];
+				         String customer = (String) ordersArray[row][1];
+				         String staff = (String) ordersArray[row][2];
+				         String date = (String) ordersArray[row][3];
+				         String totalNet = (String) ordersArray[row][4];
+				         String totalGross = (String) ordersArray[row][5];
 				         String htmlString = "<html><span style='color:rgb(92, 150, 238); font-size:1.2em'>Order ID:</span> "+id+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> For Customer:</span> "+
 				         customer+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> Made by staff member:</span> "+staff+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> On date:</span> "+date+"<br>";
 				         CustomerOrder doubleClickedOrder = null;
@@ -413,39 +459,39 @@ public class CustomerOrderPanel extends JPanel{
 				         }
 				   }
 				});
-			previousOrderScrollPane.getViewport().add(previousOrdersTable);
+			scrollPaneForOrdersTable.getViewport().add(tableOrders);
 		}else{
 			int counter = 0;
 			ArrayList<CustomerOrder> thisCustomerOrders = getSelectedCustomerOrders();
-			activeCustomerOrders = new Object[thisCustomerOrders.size()][7];
+			ordersArrayOfSelectedCustomer = new Object[thisCustomerOrders.size()][7];
 			for(int j=0; j < thisCustomerOrders.size(); j++){
 				if(thisCustomerOrders.get(j).getCustomer().equals(selectedCustomer)){
-					activeCustomerOrders[counter][0] = thisCustomerOrders.get(j).getId();
-					activeCustomerOrders[counter][1] = thisCustomerOrders.get(j).getCustomer().getCustomerFName()+" "+thisCustomerOrders.get(j).getCustomer().getCustomerLName();
-					activeCustomerOrders[counter][2] = thisCustomerOrders.get(j).getStaff().getName()+" "+thisCustomerOrders.get(j).getStaff().getSurname();
-					activeCustomerOrders[counter][3] = sdf.format(thisCustomerOrders.get(j).getCreationDate());
-					activeCustomerOrders[counter][4] = df.format(thisCustomerOrders.get(j).getTotalNet());
-					activeCustomerOrders[counter][5] = df.format(thisCustomerOrders.get(j).getTotalGross());
-					activeCustomerOrders[counter][6] = thisCustomerOrders.get(j).isComplete();
+					ordersArrayOfSelectedCustomer[counter][0] = thisCustomerOrders.get(j).getId();
+					ordersArrayOfSelectedCustomer[counter][1] = thisCustomerOrders.get(j).getCustomer().getCustomerFName()+" "+thisCustomerOrders.get(j).getCustomer().getCustomerLName();
+					ordersArrayOfSelectedCustomer[counter][2] = thisCustomerOrders.get(j).getStaff().getName()+" "+thisCustomerOrders.get(j).getStaff().getSurname();
+					ordersArrayOfSelectedCustomer[counter][3] = sdf.format(thisCustomerOrders.get(j).getCreationDate());
+					ordersArrayOfSelectedCustomer[counter][4] = df.format(thisCustomerOrders.get(j).getTotalNet());
+					ordersArrayOfSelectedCustomer[counter][5] = df.format(thisCustomerOrders.get(j).getTotalGross());
+					ordersArrayOfSelectedCustomer[counter][6] = thisCustomerOrders.get(j).isComplete();
 					counter++;
 				}
 			}
-			previousOrderTableModel = new ProductTableModel(activeCustomerOrders, columnNames1);
-			previousOrdersTable = new JTable(previousOrderTableModel);
-			previousOrdersTable.setAutoCreateRowSorter(true);
+			tableModelForOrdersTable = new ProductTableModel(ordersArrayOfSelectedCustomer, columnNames1);
+			tableOrders = new JTable(tableModelForOrdersTable);
+			tableOrders.setAutoCreateRowSorter(true);
 			//Handle double clicking on table to display details of the double-clicked row's order
-			previousOrdersTable.addMouseListener(new MouseAdapter() {
+			tableOrders.addMouseListener(new MouseAdapter() {
 				   public void mouseClicked(MouseEvent e) {
 					      if (e.getClickCount() == 2) {
 						         JTable target = (JTable)e.getSource();
 						         int row = target.getSelectedRow();
 						         
-						         int id = (int) activeCustomerOrders[row][0];
-						         String customer = (String) activeCustomerOrders[row][1];
-						         String staff = (String) activeCustomerOrders[row][2];
-						         String date = (String) activeCustomerOrders[row][3];
-						         String totalNet = (String) activeCustomerOrders[row][4];
-						         String totalGross = (String) activeCustomerOrders[row][5];
+						         int id = (int) ordersArrayOfSelectedCustomer[row][0];
+						         String customer = (String) ordersArrayOfSelectedCustomer[row][1];
+						         String staff = (String) ordersArrayOfSelectedCustomer[row][2];
+						         String date = (String) ordersArrayOfSelectedCustomer[row][3];
+						         String totalNet = (String) ordersArrayOfSelectedCustomer[row][4];
+						         String totalGross = (String) ordersArrayOfSelectedCustomer[row][5];
 						         String htmlString = "<html><span style='color:rgb(92, 150, 238); font-size:1.2em'>Order ID:</span> "+id+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> For Customer:</span> "+
 						         customer+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> Made by staff member:</span> "+staff+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> On date:</span> "+date+"<br>";
 						         CustomerOrder doubleClickedOrder = null;
@@ -464,7 +510,7 @@ public class CustomerOrderPanel extends JPanel{
 						         }
 				   }
 				});
-			previousOrderScrollPane.getViewport().add(previousOrdersTable);
+			scrollPaneForOrdersTable.getViewport().add(tableOrders);
 		}//end else
 	}//end displayPreviousCustomerOrderTable
 	

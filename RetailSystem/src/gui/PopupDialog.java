@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -10,6 +11,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -19,6 +21,8 @@ public class PopupDialog extends JDialog implements ActionListener {
 	public PopupDialog(String text) {	
 		System.out.println("test");
 		JPanel contentPanePanel = new JPanel();
+		JScrollPane scrollPane = new JScrollPane(contentPanePanel);
+		scrollPane.setMaximumSize(new Dimension(1024,768));
 		contentPanePanel.setLayout(new MigLayout());
 		setLayout(new GridBagLayout());
 		JLabel lblText = new JLabel(text);
@@ -26,7 +30,7 @@ public class PopupDialog extends JDialog implements ActionListener {
 		btnOk.addActionListener(this);
 		contentPanePanel.add(lblText, "wrap, push");
 		contentPanePanel.add(btnOk,"pushx, alignx center");
-		setContentPane(contentPanePanel);
+		setContentPane(scrollPane);
 		
 		pack();
 		setVisible(true);
