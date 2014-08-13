@@ -96,6 +96,9 @@ public class StaffPanel extends JPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				if(nameField.getText().length() > 0 && surNameField.getText().length() > 0 && salaryField.getText().length() > 0 
 						&& userNameField.getText().length() > 0 && passwordField.getText().length() > 0){
+					
+					//add the values to the array
+					
 					System.out.println("New Staff Member Added");
 				}
 				else{
