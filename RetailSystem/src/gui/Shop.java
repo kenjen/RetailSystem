@@ -143,7 +143,7 @@ public class Shop {
 		for(Product product : products){
 			System.out.println("Product: "+product.getName()+" Category: "+product.getCategory()+
 					" quantity: "+product.getQuantity()+" Price: "+product.getPrice()+
-					" Supplier: "+product.getSupplier()+
+					" Supplier: "+product.getSupplier().getSupplierName()+
 					" Availability: "+product.isAvailable() +
 					"Low Stock Order: "+product.getLowStockOrder());
 		}
