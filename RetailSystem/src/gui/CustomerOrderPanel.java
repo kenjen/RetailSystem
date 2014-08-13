@@ -47,11 +47,13 @@ public class CustomerOrderPanel extends JPanel{
 	private JTable previousOrdersTable;
 	private JLabel lblPreviousCustomerOrder;
 	private Object[][] custOrders;
+	private Object[][] activeCustomerOrders;
 	private JScrollPane previousOrderScrollPane;
 	private ProductTableModel previousOrderTableModel;
 	private JButton btnDisplayOrdersForSelectedCustomer = new JButton("Customer Orders");
 	private JButton btnUpdateOrderCompletion = new JButton("Update order");
 	private JButton btnDisplayAllOrders = new JButton("All orders");
+	private boolean isActiveCustomerOrderTablePopulated;
 	
 	public CustomerOrderPanel() {
 		setLayout(new MigLayout());
@@ -240,6 +242,7 @@ public class CustomerOrderPanel extends JPanel{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if(selectedCustomer != null && getSelectedCustomerOrders() != null){
+				isActiveCustomerOrderTablePopulated = true;
 				displayPreviousCustomerOrderTable(true);
 			}
 		}//end actionPerformed
@@ -250,6 +253,7 @@ public class CustomerOrderPanel extends JPanel{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			isActiveCustomerOrderTablePopulated = false;
 			displayPreviousCustomerOrderTable(false);
 		}//end actionPerformed
 		
@@ -260,7 +264,13 @@ public class CustomerOrderPanel extends JPanel{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			//find all orders that have "completed" value changed to true
-			for(Object[] x:CustomerOrderPanel.this.getCustOrders()){
+			Object[][] orders = null;
+			if (isActiveCustomerOrderTablePopulated == true){
+				orders = CustomerOrderPanel.this.getActiveCustomerOrders();
+			}else{
+				orders = CustomerOrderPanel.this.getCustOrders();
+			}
+			for(Object[] x:orders){
 				if((boolean) x[6] == true){
 					changeOrderCompletion((int)x[0], true);
 				}else{
@@ -327,6 +337,14 @@ public class CustomerOrderPanel extends JPanel{
 
 	public void setCustOrders(Object[][] custOrders) {
 		this.custOrders = custOrders;
+	}
+
+	public Object[][] getActiveCustomerOrders() {
+		return activeCustomerOrders;
+	}
+
+	public void setActiveCustomerOrders(Object[][] activeCustomerOrders) {
+		this.activeCustomerOrders = activeCustomerOrders;
 	}
 
 	public boolean decrementProductAvalableQuantity(int productId, int deductableAmount){
@@ -399,31 +417,51 @@ public class CustomerOrderPanel extends JPanel{
 		}else{
 			int counter = 0;
 			ArrayList<CustomerOrder> thisCustomerOrders = getSelectedCustomerOrders();
-			Object[][] selectedCustomerOrders = new Object[thisCustomerOrders.size()][7];
+			activeCustomerOrders = new Object[thisCustomerOrders.size()][7];
 			for(int j=0; j < thisCustomerOrders.size(); j++){
 				if(thisCustomerOrders.get(j).getCustomer().equals(selectedCustomer)){
-					selectedCustomerOrders[counter][0] = thisCustomerOrders.get(j).getId();
-					selectedCustomerOrders[counter][1] = thisCustomerOrders.get(j).getCustomer().getCustomerFName()+" "+thisCustomerOrders.get(j).getCustomer().getCustomerLName();
-					selectedCustomerOrders[counter][2] = thisCustomerOrders.get(j).getStaff().getName()+" "+thisCustomerOrders.get(j).getStaff().getSurname();
-					selectedCustomerOrders[counter][3] = sdf.format(thisCustomerOrders.get(j).getCreationDate());
-					selectedCustomerOrders[counter][4] = df.format(thisCustomerOrders.get(j).getTotalNet());
-					selectedCustomerOrders[counter][5] = df.format(thisCustomerOrders.get(j).getTotalGross());
-					selectedCustomerOrders[counter][6] = thisCustomerOrders.get(j).isComplete();
+					activeCustomerOrders[counter][0] = thisCustomerOrders.get(j).getId();
+					activeCustomerOrders[counter][1] = thisCustomerOrders.get(j).getCustomer().getCustomerFName()+" "+thisCustomerOrders.get(j).getCustomer().getCustomerLName();
+					activeCustomerOrders[counter][2] = thisCustomerOrders.get(j).getStaff().getName()+" "+thisCustomerOrders.get(j).getStaff().getSurname();
+					activeCustomerOrders[counter][3] = sdf.format(thisCustomerOrders.get(j).getCreationDate());
+					activeCustomerOrders[counter][4] = df.format(thisCustomerOrders.get(j).getTotalNet());
+					activeCustomerOrders[counter][5] = df.format(thisCustomerOrders.get(j).getTotalGross());
+					activeCustomerOrders[counter][6] = thisCustomerOrders.get(j).isComplete();
 					counter++;
 				}
 			}
-			previousOrderTableModel = new ProductTableModel(selectedCustomerOrders, columnNames1);
+			previousOrderTableModel = new ProductTableModel(activeCustomerOrders, columnNames1);
 			previousOrdersTable = new JTable(previousOrderTableModel);
 			previousOrdersTable.setAutoCreateRowSorter(true);
 			//Handle double clicking on table to display details of the double-clicked row's order
 			previousOrdersTable.addMouseListener(new MouseAdapter() {
 				   public void mouseClicked(MouseEvent e) {
-				      if (e.getClickCount() == 2) {
-				         JTable target = (JTable)e.getSource();
-				         int row = target.getSelectedRow();
-				         System.out.println("the id of the selected row's order is "+custOrders[row][0]);
-				        // JDialog.setDefaultLookAndFeelDecorated(true);
-				         }
+					      if (e.getClickCount() == 2) {
+						         JTable target = (JTable)e.getSource();
+						         int row = target.getSelectedRow();
+						         
+						         int id = (int) activeCustomerOrders[row][0];
+						         String customer = (String) activeCustomerOrders[row][1];
+						         String staff = (String) activeCustomerOrders[row][2];
+						         String date = (String) activeCustomerOrders[row][3];
+						         String totalNet = (String) activeCustomerOrders[row][4];
+						         String totalGross = (String) activeCustomerOrders[row][5];
+						         String htmlString = "<html><span style='color:rgb(92, 150, 238); font-size:1.2em'>Order ID:</span> "+id+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> For Customer:</span> "+
+						         customer+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> Made by staff member:</span> "+staff+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> On date:</span> "+date+"<br>";
+						         CustomerOrder doubleClickedOrder = null;
+						         for(CustomerOrder order:Shop.getCustomerOrders()){
+						        	 if(order.getId() == id){
+						        		 doubleClickedOrder = order;
+						        	 }
+						         }
+						         	htmlString += "<br><span style='color:rgb(92, 150, 238); font-size:1.2em'>Products: </span><br>";
+						         	htmlString +="<table style='text-align:left;'><tr style='color:rgb(240, 157, 52)'><th>ID</th><th>Name</th><th>Supplier</th><th>Category</th><th>Price</th><th>Amount</th><th>Total</th></tr>";
+						         for(ProductToOrder prod:doubleClickedOrder.getProducts()){
+						        	 htmlString +=prod.toHtmlString();
+						         }
+						         htmlString +="</table><br><span style='color:rgb(92, 150, 238); font-size:1.2em'>Total Net:</span> "+totalNet+" <span style='color:rgb(92, 150, 238); font-size:1.2em'>Total Gross:</span> "+totalGross+"</html>";
+						         new PopupDialog(htmlString);
+						         }
 				   }
 				});
 			previousOrderScrollPane.getViewport().add(previousOrdersTable);
