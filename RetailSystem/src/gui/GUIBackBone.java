@@ -10,6 +10,8 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import data.Staff;
+
 public class GUIBackBone  extends JFrame{
 	
 	//create the tabbed Pane
@@ -21,11 +23,13 @@ public class GUIBackBone  extends JFrame{
 	private CustomerPanel panelCustomer = new CustomerPanel();
 	private SupplierPanel panelSupplier = new SupplierPanel();
 	private static boolean userTypeAdmin = false;
+	private static Staff loggedStaffMember;
 	
 	
-	public GUIBackBone(boolean isAdmin){
+	public GUIBackBone(boolean isAdmin, Staff loggedStaffMember){
 			if(isAdmin == true){
 				userTypeAdmin = true;
+				this.loggedStaffMember = loggedStaffMember;
 				tabbedPane.addTab("StockManagement", panelStockManagement);
 				tabbedPane.addTab("CustomerOrders", panelCustomerOrders);
 				tabbedPane.addTab("StockOrders", panelStockOrder);
@@ -39,6 +43,7 @@ public class GUIBackBone  extends JFrame{
 				tabbedPane.setIconAt(4, new ImageIcon(getClass().getResource("/Customer.png")));
 				tabbedPane.setIconAt(5, new ImageIcon(getClass().getResource("/Supplier.png")));
 			}else{
+				this.loggedStaffMember = loggedStaffMember;
 				tabbedPane.addTab("StockManagement", panelStockManagement);
 				tabbedPane.addTab("CustomerOrders", panelCustomerOrders);
 				tabbedPane.addTab("Management", panelStockOrder);
@@ -57,5 +62,15 @@ public class GUIBackBone  extends JFrame{
 		setSize(1024,768);
 		setTitle("RetailSystem");
 		System.out.println(getClass());
+	}
+
+
+	public static Staff getLoggedStaffMember() {
+		return loggedStaffMember;
+	}
+
+
+	public static void setLoggedStaffMember(Staff loggedStaffMember) {
+		GUIBackBone.loggedStaffMember = loggedStaffMember;
 	}
 }

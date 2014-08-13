@@ -1,5 +1,7 @@
 package data;
 
+import java.util.ArrayList;
+
 public class Customer {
 	private static int nextID = 101;
 	private int customerID;
@@ -8,6 +10,8 @@ public class Customer {
 	private String customerAddress;
 	private String customerMobile;
 	private String customerHome;
+	private boolean deleted = false;
+	//private ArrayList<Customer> customers = new ArrayList<Customer>();
 
 	public Customer(String customerFName, String customerLName,
 			String customerAddress, String customerMobile, String customerHome) {
@@ -18,6 +22,7 @@ public class Customer {
 		this.customerAddress = customerAddress;
 		this.customerMobile = customerMobile;
 		this.customerHome = customerHome;
+		setDeleted(deleted);
 		nextID++;
 	}
 
@@ -67,6 +72,14 @@ public class Customer {
 
 	public void setCustomerHome(String customerHome) {
 		this.customerHome = customerHome;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 }

@@ -22,7 +22,7 @@ public class Shop {
 	private static ArrayList<Supplier> suppliers = new ArrayList<Supplier>();
 	private static ArrayList<Product> products = new ArrayList<Product>();
 	private static ArrayList<StockOrder> stockOrders = new ArrayList<StockOrder>();
-	private ArrayList<CustomerOrder> customerOrders = new ArrayList<CustomerOrder>();
+	private static ArrayList<CustomerOrder> customerOrders = new ArrayList<CustomerOrder>();
 	
 	//Initialize s of Type Supplier
 	Supplier s;
@@ -69,8 +69,24 @@ public class Shop {
 		
 	}
 	
-	public void editCustomer(int customerID){
-		
+	public static void editCustomer(int customerID, String customerFName, String customerLName,
+			String customerAddress, String customerMobile, String customerHome){
+		for(Customer customer:customers){
+			if(customer.getCustomerID()==customerID){
+				customer.setCustomerFName(customerFName);
+				customer.setCustomerLName(customerLName);
+				customer.setCustomerAddress(customerAddress);
+				customer.setCustomerMobile(customerMobile);
+				customer.setCustomerHome(customerHome);
+			}
+		}
+		System.out.println(customerID+customerFName);
+	}
+	
+	public static void deleteCustomer(int customerID){
+		for(Customer customer:customers){
+			customer.setDeleted(true);
+		}
 	}
 	
 	public void createCustomer(){
@@ -110,7 +126,7 @@ public class Shop {
 	
 	public void populateProducts(){
 		
-		Product p1 = new Product("Pear", "Food", 100, 0.23, suppliers.get(0), true, 22);
+		Product p1 = new Product("Pear", "Food", 70, 0.23, suppliers.get(0), true, 80);
 		Product p2 = new Product("Coat", "Clothing", 50, 29.99, suppliers.get(1), true, 10);
 		Product p3 = new Product("Trousers", "Clothing", 80, 40.0, suppliers.get(1), true, 15);
 		Product p4 = new Product("Ham", "Food", 120, 4.50, suppliers.get(0), true, 60);
@@ -180,7 +196,7 @@ public class Shop {
 	
 	public void populateCustomerOrders(){
 		
-		CustomerOrder customerOrder1 = new CustomerOrder(1111, "11/08/14", 5.00, 5.65);
+		/*CustomerOrder customerOrder1 = new CustomerOrder(1111, "11/08/14", 5.00, 5.65);
 		CustomerOrder customerOrder2 = new CustomerOrder(1112, "10/08/14", 30.00, 32.65);
 		CustomerOrder customerOrder3 = new CustomerOrder(1113, "09/08/14", 56.70, 59.35);
 		CustomerOrder customerOrder4 = new CustomerOrder(1114, "08/08/14", 3.00, 7.85);
@@ -188,7 +204,7 @@ public class Shop {
 		customerOrders.add(customerOrder1);
 		customerOrders.add(customerOrder2);
 		customerOrders.add(customerOrder3);
-		customerOrders.add(customerOrder4);
+		customerOrders.add(customerOrder4);*/
 		
 	}
 	
@@ -209,6 +225,7 @@ public class Shop {
 		
 
 	public static ArrayList<Customer> getCustomers() {
+		
 		return customers;
 	}
 
@@ -224,16 +241,36 @@ public class Shop {
 		Shop.products = products;
 	}
 
-	public static ArrayList<Supplier> getSuppliers() {
-		return suppliers;
+	public static ArrayList<Staff> getStaffMembers() {
+		return staffMembers;
 	}
-	
+
 	public static void setStaffMembers(ArrayList<Staff> staffMembers) {
 		Shop.staffMembers = staffMembers;
 	}
-	
-	public static ArrayList<Staff> getStaffMembers() {
-		return staffMembers;
+
+	public static ArrayList<Supplier> getSuppliers() {
+		return suppliers;
+	}
+
+	public static void setSuppliers(ArrayList<Supplier> suppliers) {
+		Shop.suppliers = suppliers;
+	}
+
+	public static ArrayList<StockOrder> getStockOrders() {
+		return stockOrders;
+	}
+
+	public static void setStockOrders(ArrayList<StockOrder> stockOrders) {
+		Shop.stockOrders = stockOrders;
+	}
+
+	public static ArrayList<CustomerOrder> getCustomerOrders() {
+		return customerOrders;
+	}
+
+	public static void setCustomerOrders(ArrayList<CustomerOrder> customerOrders) {
+		Shop.customerOrders = customerOrders;
 	}
 
 }
