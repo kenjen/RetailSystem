@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -88,9 +89,7 @@ public class StockOrderPanel extends JPanel {
 					@Override
 					public void keyPressed(KeyEvent e) {
 						if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-							populateProductsTable(comboSuppliers.getItemAt(
-									comboSuppliers.getSelectedIndex())
-									.toString());
+							populateProductsTable(comboSuppliers.getItemAt(comboSuppliers.getSelectedIndex()).toString());
 						}
 
 					}
@@ -112,56 +111,42 @@ public class StockOrderPanel extends JPanel {
 		});
 		
 		add(lblProductsSearch,"gapx 50");
-		String[] xxx = {"hello","hello1"};
-		comboSearchForProducts = new JComboBox(xxx);
+		String[] comboArray = getProductNamesForComboBox();
+		comboSearchForProducts = new JComboBox(comboArray);
 		add(comboSearchForProducts, "wrap");
+		comboSearchForProducts.setEditable(true);
+		AutoCompleteDecorator.decorate(comboSearchForProducts);
+		comboSearchForProducts.getEditor().getEditorComponent().addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent event) {
+				if(event.getKeyCode() == KeyEvent.VK_ENTER){
+					displayProductsTable(comboSearchForProducts.getSelectedItem().toString());
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 
 		lblProductList = new JLabel("Supplier's Product list:");
 		add(lblProductList, "wrap");
-
-		arrayTableProducts = new Object[Shop.getProducts().size()][9];
-		int counter = 0;
-
-		for (Product products : Shop.getProducts()) {
-
-			arrayTableProducts[counter][0] = products.getId();
-			arrayTableProducts[counter][1] = products.getName();
-			arrayTableProducts[counter][2] = products.getCategory();
-			arrayTableProducts[counter][3] = products.getPrice();
-			arrayTableProducts[counter][4] = products.getSupplier()
-					.getSupplierName();
-			arrayTableProducts[counter][5] = products.getQuantity();
-			arrayTableProducts[counter][6] = products.isAvailable();
-			arrayTableProducts[counter][7] = products.isFlaggedForOrder();
-
-			arrayTableProducts[counter][8] = 0;
-			counter++;
-		}
-
-		String columnNames[] = { "Id", "Name", "Category", "Price", "Supplier",
-				"Quantity", "In Shop?", "Required", "Amount to Order" };
-		ProductTableModel productsTableModel = new ProductTableModel(
-				arrayTableProducts, columnNames);
-
-		tableProducts = new JTable(productsTableModel);
-		tableProducts.setAutoCreateRowSorter(true);
-
-		scrollPaneProducts = new JScrollPane(tableProducts);
-		// tableProducts.setCellSelectionEnabled(true);
-		tableProducts.setAutoCreateRowSorter(true);
-		tableProducts.getColumnModel().getSelectionModel()
-				.addListSelectionListener(new ListSelectionListener() {
-
-					public void valueChanged(ListSelectionEvent e) {
-						int row = tableProducts.getSelectedRow();
-						tableProducts.requestFocus();
-						// tableProducts.editCellAt(row, 7);
-						tableProducts.changeSelection(row, 8, false, false);
-					}
-
-				});
-
+//--------------------//
+//---Products table---//
+//--------------------//
+		scrollPaneProducts = new JScrollPane();
 		add(scrollPaneProducts, "span 3, grow, push");
+		displayProductsTable("");
 
 		JPanel tempPanel = new JPanel();
 		tempPanel.setLayout(new MigLayout());
@@ -171,16 +156,18 @@ public class StockOrderPanel extends JPanel {
 
 		btnAddToOrder.addActionListener(new ButtonTemporaryOrderHandler());
 		btnOrder.addActionListener(new ButtonOrderHandler());
-
-		// ORDER TABLE
 		JLabel lblOrders = new JLabel("Orders:");
 		add(lblOrders);
 		add(lblError, "pushx, alignx center, wrap");
 		lblError.setVisible(false);
 		lblError.setFont(new Font("Serif",Font.BOLD,15));
+//-----------------//
+//---ORDER TABLE---//
+//-----------------//
 		scrollPaneOrders = new JScrollPane();
 		add(scrollPaneOrders, "push,grow,span 3");
 		displayOrderTable();
+		
 		JPanel panelx = new JPanel();
 		panelx.setLayout(new MigLayout());
 		panelx.add(btnDisplayCurrentOrder,"growx, wrap");
@@ -188,6 +175,28 @@ public class StockOrderPanel extends JPanel {
 		add(panelx,"alignx left, aligny top");
 
 	}// end Constructor
+	
+	//returns an array of product names
+	public String[] getProductNamesForComboBox(){
+		ArrayList<String> names = new ArrayList<String>();
+		int counter = 0;
+		for(Product product:Shop.getProducts()){
+			boolean found = false;
+			innerFor:for(String s:names){
+				if(product.getName().equalsIgnoreCase(s)){
+					found=true;
+					break innerFor;
+				}
+			}
+			if(found==false){
+				names.add(product.getName());
+			}
+		}
+		String[] arrayToSort = new String[names.size()];
+		arrayToSort = (String[]) names.toArray(new String[names.size()]);
+		Arrays.sort(arrayToSort);
+		return arrayToSort;
+	}
 
 	public void populateProductsTable(String forSupplier) {
 		boolean supplierFound = false;
@@ -317,7 +326,9 @@ public class StockOrderPanel extends JPanel {
 			timer.start();
 		}
 	}
-
+//-------------------------//
+//---Display Order Table---//
+//-------------------------//
 	public void displayOrderTable() {
 		String columnNamesForOrders[] = { "Id", "Staff member",
 				"Date of order", "Total", "Completed" };
@@ -354,8 +365,70 @@ public class StockOrderPanel extends JPanel {
 					}
 
 				});
-	}
+	}//end displayOrderTable
+	
+//-------------------------
+//---Display Products Table 
+//-------------------------
+	public void displayProductsTable(String productName){
+		if(productName != ""){
+		//get products that contain that name
+			ArrayList<Product> productsArrayList = new ArrayList<Product>();
+			for(Product product:Shop.getProducts()){
+				if(product.getName().equalsIgnoreCase(productName)){
+					productsArrayList.add(product);
+				}
+			}
+			arrayTableProducts = new Object[productsArrayList.size()][9];
+			int counter = 0;
+			for (Product products : productsArrayList) {
+				arrayTableProducts[counter][0] = products.getId();
+				arrayTableProducts[counter][1] = products.getName();
+				arrayTableProducts[counter][2] = products.getCategory();
+				arrayTableProducts[counter][3] = products.getPrice();
+				arrayTableProducts[counter][4] = products.getSupplier().getSupplierName();
+				arrayTableProducts[counter][5] = products.getQuantity();
+				arrayTableProducts[counter][6] = products.isAvailable();
+				arrayTableProducts[counter][7] = products.isFlaggedForOrder();
+				arrayTableProducts[counter][8] = 0;
+				counter++;
+			}
+		}else{
+			arrayTableProducts = new Object[Shop.getProducts().size()][9];
+			int counter = 0;
+			for (Product products : Shop.getProducts()) {
+				arrayTableProducts[counter][0] = products.getId();
+				arrayTableProducts[counter][1] = products.getName();
+				arrayTableProducts[counter][2] = products.getCategory();
+				arrayTableProducts[counter][3] = products.getPrice();
+				arrayTableProducts[counter][4] = products.getSupplier().getSupplierName();
+				arrayTableProducts[counter][5] = products.getQuantity();
+				arrayTableProducts[counter][6] = products.isAvailable();
+				arrayTableProducts[counter][7] = products.isFlaggedForOrder();
+				arrayTableProducts[counter][8] = 0;
+				counter++;
+			}
+		}
 
+		String columnNames[] = { "Id", "Name", "Category", "Price", "Supplier",
+				"Quantity", "In Shop?", "Required", "Amount to Order" };
+		ProductTableModel productsTableModel = new ProductTableModel(arrayTableProducts, columnNames);
+		tableProducts = new JTable(productsTableModel);
+		tableProducts.setAutoCreateRowSorter(true);
+		tableProducts.setAutoCreateRowSorter(true);
+		tableProducts.getColumnModel().getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
+
+					public void valueChanged(ListSelectionEvent e) {
+						int row = tableProducts.getSelectedRow();
+						tableProducts.requestFocus();
+						tableProducts.changeSelection(row, 8, false, false);
+					}
+
+				});	
+		scrollPaneProducts.getViewport().add(tableProducts);
+	}//end displayProductsTable
+	
 	public class ButtonTemporaryOrderHandler implements ActionListener {
 
 		@Override
