@@ -378,25 +378,32 @@ public class StockManagementPanel extends JSplitPane{
 					try{
 						Integer.parseInt(textQuantity.getText());
 						try{
-							Integer.parseInt(textPrice.getText());
-							if(comboSelectSupplier.getSelectedIndex()>0){
-								for(Supplier supplier : Shop.getSuppliers()){
-									if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
-										Product product = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Integer.parseInt(textPrice.getText()), supplier, true, 20);
-										Shop.getProducts().add(product);
-										txtId.setText(""+product.getId());
-										textName.setText("");
-										textCategory.setText("");
-										textQuantity.setText("");
-										textPrice.setText("");
-										textDiscountedPrice.setText("");
-										comboSelectSupplier.setSelectedIndex(0);
-										System.out.println("Product Created Succesfully");
-										break;
+							Double.parseDouble(textPrice.getText());
+							try{
+								Integer.parseInt(textThreshold.getText());
+								if(comboSelectSupplier.getSelectedIndex()>0){
+									for(Supplier supplier : Shop.getSuppliers()){
+										if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
+											Product product = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Double.parseDouble(textPrice.getText()), supplier, true, 20);
+											product.setLowStockOrder(Integer.parseInt(textThreshold.getText()));
+											Shop.getProducts().add(product);
+											txtId.setText(""+product.getId());
+											textName.setText("");
+											textCategory.setText("");
+											textQuantity.setText("");
+											textThreshold.setText("");
+											textPrice.setText("");
+											textDiscountedPrice.setText("");
+											comboSelectSupplier.setSelectedIndex(0);
+											System.out.println("Product Created Succesfully");
+											break;
+										}
 									}
+								}else{
+									System.out.println("No supplier selected");
 								}
-							}else{
-								System.out.println("No supplier selected");
+							}catch(NumberFormatException nfe){
+								System.out.println("number format exception");
 							}
 						}catch(NumberFormatException nfe){
 							System.out.println("number format exception");
@@ -410,6 +417,7 @@ public class StockManagementPanel extends JSplitPane{
 			}else{
 				System.out.println("Blank Name");
 			}
+			saveDetails();
 			setupList();
 		}
 	}
@@ -440,6 +448,7 @@ public class StockManagementPanel extends JSplitPane{
 				System.out.println("number entered not an integer");
 			}
 		}
+		saveDetails();
 	}
 	
 	
@@ -616,7 +625,7 @@ public class StockManagementPanel extends JSplitPane{
 		textToSave = numberOfProducts + " " + textToSave;
 		System.out.println(textToSave);
 		try{
-			writer = new BufferedWriter( new FileWriter( "Test.txt"));
+			writer = new BufferedWriter( new FileWriter( "Products.txt"));
 			writer.write(textToSave);
 		}catch ( IOException e){
 			e.printStackTrace();
