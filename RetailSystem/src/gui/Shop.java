@@ -183,7 +183,6 @@ public class Shop {
 		try {
 			Scanner in = new Scanner(new FileReader("Products.txt"));
 			int repititions = in.nextInt();
-			System.out.println("Repititions = " + repititions);
 			Product loadedProduct;
 			for(int i=0; i<repititions; i++){
 				int supplierId = in.nextInt();
