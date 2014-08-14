@@ -91,6 +91,15 @@ public class Shop {
 		}
 	}
 	
+	public static void deleteStaff(String Username){
+		for(Staff staff :staffMembers){
+			if(staff.getUsername()==Username){
+				staff.setDeleted(true);
+			}
+			
+		}
+	}
+	
 	public void createCustomer(){
 		
 	}
@@ -116,7 +125,6 @@ public class Shop {
 		admin.setAdmin(true);
 		Staff john = new Staff("John","Doe",15.23,"JohnDoe","Firefly");
 		Staff mick = new Staff("Mick","Green",8.65,"MickGreen","Avalanche");
-		mick.setDeleted(true);
 		Staff angela = new Staff("Angela","Blue",23.5,"AngelaBlue","Onyx");
 		staffMembers.add(admin);
 		staffMembers.add(john);

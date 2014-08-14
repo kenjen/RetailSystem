@@ -48,7 +48,7 @@ public class StaffPanel extends JPanel{
 	ArrayList<String> staffMembers = new ArrayList<String>();
 	JComboBox staffComboBox = new JComboBox(staffMembers.toArray());
 	
-	private Shop shop;
+	//private Shop shop;
 
 	public StaffPanel() {
 		setLayout(new MigLayout("", "[][grow][grow][][][][][][][][]", "[][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
@@ -56,7 +56,9 @@ public class StaffPanel extends JPanel{
 		for(Staff s : Shop.getStaffMembers()){
 			String name = s.getName() +" "+ s.getSurname();
 			staffMembers.add(name);
-			staffComboBox.addItem(s.getName());
+			if(s.isDeleted() == false){
+				staffComboBox.addItem(s.getUsername());
+			}
 		}
 		
 		JLabel lblName = new JLabel("ADD NEW STAFF HERE: ");
@@ -116,8 +118,8 @@ public class StaffPanel extends JPanel{
 							,userNameField.getText(),passwordField.getText());
 					
 					//Access the Shop class and the staffMembers Array
-					shop = new Shop();
-					ArrayList<Staff> staffMembers = shop.getStaffMembers();
+					//shop = new Shop();
+					ArrayList<Staff> staffMembers = Shop.getStaffMembers();
 					
 					//Remove items from Combo Box and re-add the entire list, which
 					//contains the new Staff Member
@@ -128,9 +130,11 @@ public class StaffPanel extends JPanel{
 					for(Staff staff : staffMembers){
 						System.out.println("Staff" + staff.getName());
 						
-						//Add new Staff To ComboBox "staffComboBox"						    
-					    staffComboBox.addItem(staff.getName());
+						//Add new Staff To ComboBox "staffComboBox"
+						if(staff.isDeleted() == false){
+					    staffComboBox.addItem(staff.getUsername());
 					    //staffComboBox.addItem(s.getName());
+						}
 					}
 					
 					//Reset each TextField
@@ -163,22 +167,8 @@ public class StaffPanel extends JPanel{
 		btnRemove.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				
-				String staffName = staffComboBox.getSelectedItem().toString();
-				if(getStaffName(staffName) != null){
-					activeMember = getStaffName(staffName);
-					
-					//Remove the Selected Item from the ComboBox
-					staffComboBox.removeItem(staffName);
-					
-					//Remove the selected item from the Array staffArray also
-					//Find the StaffName in the Array using .Equals and Remove
-					staffMembers.remove(staffName);
-					for(Staff s : Shop.getStaffMembers()){
-					System.out.println("Test: " + s.getName());
-					}
-				}else{
-					System.out.println("Invalid Selection");
-				}
+				Shop.deleteStaff((String) staffComboBox.getSelectedItem());
+				staffComboBox.removeItem(staffComboBox.getSelectedItem());
 			}
 		});
 		
