@@ -172,8 +172,51 @@ public class StaffPanel extends JPanel{
 			}
 		});
 		
+		
+		//Edit Details
 		JButton btnEditdetails = new JButton("EditDetails");
 		add(btnEditdetails, "cell 4 25");
+		
+		btnEditdetails.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				
+				//variables for parsing
+				double salaryD = Double.parseDouble(salaryField.getText());
+				
+				System.out.println("Edit listener");
+				Shop.EditDetails(nameField.getText(), surNameField.getText(), salaryD,
+						userNameField.getText(), passwordField.getText());
+				
+			}
+		});
+		
+		staffComboBox.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				
+				Object selectedStaff = staffComboBox.getSelectedItem();
+				
+				System.out.println("Combo Select: " + selectedStaff);
+				
+				
+				for(Staff s : Shop.getStaffMembers()){
+					
+					if(s.getUsername().equals(selectedStaff)){
+						System.out.println(s.getUsername());
+						//Shop.deleteStaff((String) staffComboBox.getSelectedItem());
+						//staffComboBox.removeItem(staffComboBox.getSelectedItem());
+						
+						nameField.setText(s.getName()); 
+						surNameField.setText(s.getSurname());
+						salaryField.setText(String.valueOf(s.getSalary()));
+						userNameField.setText(s.getUsername());
+						passwordField.setText(s.getPassword());
+						System.out.println("Here");
+					}
+				}
+					//selectedStaff = null;
+				
+			}
+		});
 		
 	}
 	

@@ -100,6 +100,23 @@ public class Shop {
 		}
 	}
 	
+	public static void EditDetails(String name, String surname, double salary, String username, String password){
+		for(Staff staff :staffMembers){
+			if(staff.getUsername().equals(username)){
+						
+				System.out.println("Edit Details loop");
+				
+				staff.setName(name);
+				staff.setSurname(surname);
+				staff.setSalary(salary);
+				staff.setUsername(username);
+				staff.setPassword(password);
+				System.out.println("Edit Details loop");
+			}
+		}
+		
+	}
+	
 	public void createCustomer(){
 		
 	}
