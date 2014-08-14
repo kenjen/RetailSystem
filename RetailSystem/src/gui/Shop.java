@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import data.Customer;
 import data.CustomerOrder;
 import data.Product;
+import data.ProductToOrder;
 import data.Staff;
 import data.Supplier;
 //import data.Product;
@@ -162,13 +163,11 @@ public class Shop {
 		//not completed as waiting for staff to be passed from login to shop
 		
 		SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-		ArrayList<Product> productsToOrder = new ArrayList<Product>();
-		ArrayList<String> amountToOrder = new ArrayList<String>();
-		amountToOrder.add("21");
-		productsToOrder.add(products.get(0));
+		ArrayList<ProductToOrder> toOrder = new ArrayList<ProductToOrder>();
+		toOrder.add(new ProductToOrder(Shop.getProducts().get(0), 20));
 		
 		try {
-			StockOrder stockOrder = new StockOrder(sd.parse("10/08/2014 13:36"), productsToOrder, amountToOrder, staffMembers.get(2));
+			StockOrder stockOrder = new StockOrder(sd.parse("10/08/2014 13:36"), toOrder, staffMembers.get(2));
 			stockOrders.add(stockOrder);
 			System.out.println("Order placed with id " + stockOrder.getId());
 		} catch (ParseException e) {
@@ -176,34 +175,30 @@ public class Shop {
 			System.out.println("Order not placed as error with date");
 		}
 		
+		
+		toOrder.add(new ProductToOrder(Shop.getProducts().get(1), 5));
+		toOrder.add(new ProductToOrder(Shop.getProducts().get(2), 5));
+		
+		try {
+			StockOrder stockOrder = new StockOrder(sd.parse("26/07/2014 10:15"), toOrder, staffMembers.get(2));
+			stockOrders.add(stockOrder);
+			System.out.println("Order placed with id " + stockOrder.getId());
+		} catch (ParseException e) {
+			e.printStackTrace();
+			System.out.println("Order not placed as error with date");
+		}
 
-		productsToOrder = new ArrayList<Product>();
-		productsToOrder.add(products.get(1));
-		productsToOrder.add(products.get(2));
-		amountToOrder.add("7");
+		toOrder.add(new ProductToOrder(Shop.getProducts().get(3), 5));
+		toOrder.add(new ProductToOrder(Shop.getProducts().get(4), 5));
+		
 		try {
-			StockOrder stockOrder = new StockOrder(sd.parse("26/07/2014 10:15"), productsToOrder, amountToOrder, staffMembers.get(1));
+			StockOrder stockOrder = new StockOrder(sd.parse("06/08/2014 13:00"), toOrder, staffMembers.get(2));
 			stockOrders.add(stockOrder);
 			System.out.println("Order placed with id " + stockOrder.getId());
 		} catch (ParseException e) {
 			e.printStackTrace();
 			System.out.println("Order not placed as error with date");
 		}
-		
-		
-		productsToOrder = new ArrayList<Product>();
-		productsToOrder.add(products.get(3));
-		productsToOrder.add(products.get(4));
-		try {
-			StockOrder stockOrder = new StockOrder(sd.parse("06/08/2014 13:00"), productsToOrder, amountToOrder, staffMembers.get(3));
-			stockOrders.add(stockOrder);
-			System.out.println("Order placed with id " + stockOrder.getId());
-		} catch (ParseException e) {
-			e.printStackTrace();
-			System.out.println("Order not placed as error with date");
-		}
-		
-		System.out.println(stockOrders.get(2).getInvoice());
 	}
 	
 	public void populateCustomerOrders(){

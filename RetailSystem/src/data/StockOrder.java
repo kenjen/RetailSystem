@@ -1,5 +1,7 @@
 package data;
 
+import gui.Shop;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -10,36 +12,49 @@ public class StockOrder {
 	private int id;
 	private Date date;
 	private double total;
-	private ArrayList<Product> products;
-	private ArrayList<String> productAmounts;
 	private Staff staff;
 	private Date expectedDeliveryDate;
+	private ArrayList<ProductToOrder> productsToOrder;
+	private boolean completed = false;
 
-	public StockOrder(Date date, ArrayList<Product> products, ArrayList<String> amountToOrder, Staff staff) {
+	public StockOrder(Date date, ArrayList<ProductToOrder> productsToOrder, Staff staff) {
 		this.id = nextId;
 		nextId++;
-		int totalProd = 0;
-		for(Product product : products){
-			totalProd++;
-		}
-		this.productAmounts = amountToOrder;
-		this.total = totalProd;
 		this.date = date;
-		this.total = total;
-		this.products = products;
 		this.staff = staff;
+		this.productsToOrder = productsToOrder;
+		double tempTotal = 0;
+		for(ProductToOrder product:productsToOrder){
+			tempTotal +=product.getPrice()*product.getAmount();
+		}
+		this.total=tempTotal;
+		this.completed=false;
 	}	
 	
-	public String getInvoice(){
+	public StockOrder(ArrayList<ProductToOrder> products, Staff staff){
+		productsToOrder = products;
+		this.staff=staff;
+		this.date = new Date();
+		nextId++;
+		this.id=nextId;
+		double tempTotal = 0;
+		for(ProductToOrder product:products){
+			tempTotal +=product.getPrice()*product.getAmount();
+		}
+		this.total=tempTotal;
+		this.completed=false;
+	}
+	
+	/*public String getInvoice(){
 		String invoice = "\n \n" + "****** INVOICE ******" + "\n";
 		invoice = invoice + "Ordered by " + staff.getName() + "\n" + "Date - " + date.toString() + "\n";
 		int i=0;
-		for(Product product : products){
+		for(StockOrder stockOrder : Shop.getStockOrders()){
 			invoice = invoice + Integer.parseInt(productAmounts.get(i)) + "      " + product.getName() + "\n";
 			i++;
 		}
 		return invoice;
-	}
+	}*/
 
 	public int getId() {
 		return id;
@@ -65,14 +80,6 @@ public class StockOrder {
 		this.total = total;
 	}
 
-	public ArrayList<Product> getProducts() {
-		return products;
-	}
-
-	public void setProducts(ArrayList<Product> products) {
-		this.products = products;
-	}
-
 	public Staff getStaff() {
 		return staff;
 	}
@@ -87,6 +94,22 @@ public class StockOrder {
 
 	public void setExpectedDeliveryDate(Date expectedDeliveryDate) {
 		this.expectedDeliveryDate = expectedDeliveryDate;
+	}
+
+	public ArrayList<ProductToOrder> getProductsToOrder() {
+		return productsToOrder;
+	}
+
+	public void setProductsToOrder(ArrayList<ProductToOrder> productsToOrder) {
+		this.productsToOrder = productsToOrder;
+	}
+
+	public boolean isCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(boolean completed) {
+		this.completed = completed;
 	}
 
 }

@@ -22,6 +22,19 @@ public class ProductToOrder {
 		this.amount=amount;
 	}
 	
+	
+	public ProductToOrder(Product product, int amount) {
+		this.id = product.getId();
+		this.name = product.getName();
+		this.supplier = product.getSupplier();
+		this.price = product.getPrice();
+		this.discounted=product.isDiscounted();
+		this.category = product.getCategory();
+		this.amount=amount;
+	}
+	
+	
+	
 	public ProductToOrder(){
 		
 	}
