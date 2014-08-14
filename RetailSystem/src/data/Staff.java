@@ -25,6 +25,7 @@ public class Staff {
 		this.holidayDaysLeft = 21;
 		nextId ++;
 		this.id=nextId;
+		setDeleted(false);
 	}
 
 	public int getId() {
