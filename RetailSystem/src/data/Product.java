@@ -10,6 +10,7 @@ public class Product {
 	private Supplier supplier;
 	private boolean available = false;
 	private double price;
+	private double markupPrice;
 	private boolean deleted = false;
 	private boolean discounted;
 	private double discountedPercentage;
@@ -35,6 +36,7 @@ public class Product {
 		this.lowStockOrder = lowStockOrder;
 		nextId++;
 		this.id = nextId;
+		this.markupPrice=price*1.20;
 	}
 	
 	public String getName(){
@@ -134,6 +136,14 @@ public class Product {
 
 	public void setLowStockOrder(int lowStockOrder) {
 		this.lowStockOrder = lowStockOrder;
+	}
+
+	public double getMarkupPrice() {
+		return markupPrice;
+	}
+
+	public void setMarkupPrice(double markupPrice) {
+		this.markupPrice = markupPrice;
 	}
 
 	public ArrayList<Product> getProducts() {
