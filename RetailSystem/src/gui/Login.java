@@ -1,28 +1,26 @@
 package gui;
+import java.awt.Color;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
-
-import javax.swing.JLabel;
-import javax.swing.JButton;
-import javax.swing.JTextField;
-import javax.swing.JPasswordField;
-import javax.swing.Timer;
-
 import data.Staff;
-
-import java.awt.Color;
-import java.awt.GridBagLayout;
-import java.util.ArrayList;
 
 public class Login extends JFrame {
 
@@ -103,9 +101,12 @@ public class Login extends JFrame {
 		lblError = new JLabel("Incorrect details!");
 		lblError.setForeground(Color.RED);
 		lblError.setVisible(false);
+		
+		ImageIcon icon = new ImageIcon(this.getClass().getResource("/Lock.png"));
 
 		panel = new JPanel();
 		panel.setLayout(new MigLayout());
+		panel.add(new JLabel(icon),"pushx, alignx center, wrap, span");
 		panel.add(lblUsername);
 		panel.add(textField, "wrap");
 		panel.add(lblPassword);
