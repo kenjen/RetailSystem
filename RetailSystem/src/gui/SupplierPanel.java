@@ -118,7 +118,7 @@ public class SupplierPanel extends JPanel{
 		JButton edited = new JButton("ADD Edited Supplier");
 		edited.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-			//	editedSupplier();
+				addEditedSupplier();
 			}
 		});
 		editPanel.add(edited);
@@ -132,6 +132,14 @@ public class SupplierPanel extends JPanel{
 		remove.setActionCommand(removeSupplier);
 		remove.addActionListener(new Remove());
 		deletePanel.add(remove);		
+		
+		JButton showDeleted = new JButton("Show deleted suppliers");
+		showDeleted.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				showDeletedSuppliers();
+			}
+		});
+		deletePanel.add(showDeleted);
 		add(deletePanel, BorderLayout.PAGE_END);
 
 
@@ -169,66 +177,83 @@ public class SupplierPanel extends JPanel{
 			}
 
 		}
-			if(isValid){
-				suppliers.add(newSupplier);
-				listModel.addElement("Id: "+newSupplier.getSupplierId()+", name: " + newSupplier.getSupplierName()+
+		if(isValid){
+			suppliers.add(newSupplier);
+			listModel.addElement("Id: "+newSupplier.getSupplierId()+", name: " + newSupplier.getSupplierName()+
 					", address: "+ newSupplier.getSupplierAddress());
-			}
-			else{
+		}
+		else{
 			JOptionPane.showMessageDialog(null, "The ID entered exists. Please enter another ID");
-			}
+		}
 	}
 
 	class Remove implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-				int index = suppliersList.getSelectedIndex();
-				if (index != -1) {
-					listModel.remove(index);
-				}
-				for(Supplier supplier:suppliers){
+			int index = suppliersList.getSelectedIndex();
+			if (index != -1) {
+				listModel.remove(index);
+			}
+			for(Supplier supplier:suppliers){
 				Supplier s= suppliers.get(index);
 				s.setSupplierDeleted(true);
-				}
-			
+			}
+
 		}
 	}
 	class Edit implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			
+
+			Supplier tempSupplier = null;
 			for(Supplier supplier:suppliers){	
 				int index = suppliersList.getSelectedIndex();
-				suppliers.get(index);
-				int id = supplier.getSupplierId( );
+				tempSupplier = suppliers.get(index);
+				int id = tempSupplier.getSupplierId( );
 				String idS = Integer.toString(id);
-				
+
 				if(supplier.getSupplierId()==id){
 					editIdField.setText(idS);
 					editNameField.setText(supplier.getSupplierName());
 					editAddressField.setText(supplier.getSupplierAddress());
-					
-				
 				}
-			//	suppliers.remove(index);
-	//	supplier.setSupplierId(id);
-		//supplier.setSupplierName(editNameField.getText());
-	//	supplier.setSupplierAddress(editAddressField.getText());
-	//	Supplier editedSupplier = new Supplier(id, editNameField.getText(), editAddressField.getText());
-	//			suppliers.add(editedSupplier);
-		}	
-		
+				
+			}	
+
 		}
 	}
+
+	public void addEditedSupplier(){
+		Supplier tempSupplier = null;
+		for(Supplier supplier:suppliers){	
+			int index = suppliersList.getSelectedIndex();
+			tempSupplier = suppliers.get(index);
+			int id = tempSupplier.getSupplierId( );
+			
+			if(supplier.getSupplierId()==id){
+				supplier.setSupplierId(id);
+				supplier.setSupplierName(editNameField.getText());
+				supplier.setSupplierAddress(editAddressField.getText());
 	
-	public void editedSupplier(){
-		
-		
-		listModel.addElement("Id: "+ editIdField.getText() +", name: " + editNameField.getText()+
-						", address: "+ editAddressField.getText());
-										
+				Object newElement="Id: "+ editIdField.getText() +", name: " + editNameField.getText()+
+					", address: "+ editAddressField.getText();
+				listModel.setElementAt(newElement, index);
+
 				editIdField.setText("");
 				editNameField.setText("");
 				editAddressField.setText("");
-					
+			
+			}
+		}		
+	}
+	
+	public void showDeletedSuppliers(){
+		for(Supplier supplier:suppliers){
+			if(supplier.isSupplierDeleted()==true){
+				int id=supplier.getSupplierId();
+				String idS = Integer.toString(id);
+				listModel.addElement("Deleted supplier: "+"  Id: "+ idS +", name: " + supplier.getSupplierName()+
+					", address: "+ supplier.getSupplierAddress());
+			}
+		}
 	}
 }
 
