@@ -1,7 +1,7 @@
 package gui;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -18,6 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -56,6 +57,8 @@ public class CustomerOrderPanel extends JPanel{
 	private JButton btnUpdateOrderCompletion = new JButton("Update order");
 	private JButton btnDisplayAllOrders = new JButton("All orders");
 	private boolean isActiveCustomerOrderTablePopulated;
+	private JLabel lblError = new JLabel("");
+	private Timer timer;
 	
 	/**
 	 * Adds all the GUI components on the panel
@@ -85,7 +88,8 @@ public class CustomerOrderPanel extends JPanel{
 		btnSelectCustomer.addActionListener(new ButtonHandlerForSelectingCustomer());
 		
 		lblActiveCustomerText = new JLabel("Active Customer: ");
-		lblActiveCustomer = new JLabel("");
+		lblActiveCustomer = new JLabel("none");
+		lblActiveCustomer.setForeground(Color.red);
 		add(lblActiveCustomerText, "gapx 20px");
 		add(lblActiveCustomer, "wrap");
 		
@@ -164,11 +168,15 @@ public class CustomerOrderPanel extends JPanel{
 		
 		//add the gui elements to view previous orders of a customer
 		lblPreviousCustomerOrder = new JLabel("Previous Orders:");
-		add(lblPreviousCustomerOrder, "cell 0 3, wrap");
+		add(lblError,"cell 0 3, wrap, pushx, alignx center");
+		add(lblPreviousCustomerOrder, "wrap");
+		lblError.setVisible(false);
+		lblError.setForeground(Color.red);
+		lblError.setFont(new Font("Serif",Font.BOLD,15));
 		
 		scrollPaneForOrdersTable = new JScrollPane();
 		add(scrollPaneForOrdersTable, "span 5 3, grow, push");
-		displayPreviousCustomerOrderTable(false);
+		displayOrderTable(false);
 		
 		JPanel oneCellPanel = new JPanel();
 		oneCellPanel.setLayout(new MigLayout());
@@ -182,6 +190,9 @@ public class CustomerOrderPanel extends JPanel{
 		
 	}//end constructor
 	
+	/**
+	 *This handler is called when selecting customer. Selects the customer object and modifies appropriate label.
+	 */
 	public class ButtonHandlerForSelectingCustomer implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -189,18 +200,27 @@ public class CustomerOrderPanel extends JPanel{
 			if(getCustomerFromConcatenatedName(concatenatedName) != null){
 				selectedCustomer = getCustomerFromConcatenatedName(concatenatedName);
 				lblActiveCustomer.setText(selectedCustomer.getCustomerFName()+" "+selectedCustomer.getCustomerLName());
+				lblActiveCustomer.setForeground(Color.blue);
 			}else{
-				JOptionPane.showMessageDialog(CustomerOrderPanel.this, "No such customer in the list");
+				lblActiveCustomer.setText("none");
+				lblActiveCustomer.setForeground(Color.red);
+				displayErrorMessage("No such customer in the list", Color.red);
 			}
 		}
-	}
+	}//end ButtonHandlerForSelectingCustomer
 	
+	/**
+	 *This handler is called when user clicks on New Order button.
+	 *If selected customer is not null, then user is prompted to submit the order. If user confirms, the table changes are 
+	 *compared with availableProductArray to find if all product amounts can be purchased. Only then is the order created
+	 *and the table redrawn to reflect changes in product quantity. Product quantity is also adjusted
+	 */
 	public class ButtonOrderHandler implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if(selectedCustomer == null){
-				JOptionPane.showMessageDialog(CustomerOrderPanel.this, "Please select a customer!");
+				displayErrorMessage("Please select a customer!", Color.red);
 				return;
 			}
 			int option = JOptionPane.showConfirmDialog(CustomerOrderPanel.this, 
@@ -216,7 +236,7 @@ public class CustomerOrderPanel extends JPanel{
 						
 						//check whether the available quantity is less than the amount entered
 						if((Integer) x[6] < (Integer) x[7]){
-							JOptionPane.showMessageDialog(CustomerOrderPanel.this, "You cannot order higher amount than currently available");
+							displayErrorMessage("You cannot order higher amount than currently available", Color.red);
 							return;
 						}
 						int id = (Integer) x[0];
@@ -245,7 +265,7 @@ public class CustomerOrderPanel extends JPanel{
 				
 				//create the actual order
 				if(productsToOrder.size() == 0){
-					JOptionPane.showMessageDialog(CustomerOrderPanel.this, "Nothing to order!");
+					displayErrorMessage("Nothing to order!", Color.red);
 					return;
 				}else{
 					CustomerOrder order = new CustomerOrder(selectedCustomer, GUIBackBone.getLoggedStaffMember(), productsToOrder);
@@ -259,19 +279,23 @@ public class CustomerOrderPanel extends JPanel{
 					model.fireTableDataChanged();
 					
 					//update previousCustomerOrderTable with the new order.
-					displayPreviousCustomerOrderTable(false);
+					displayOrderTable(false);
 				}//end else
 			}//end if
 		}//end actionPerformed()
 	}//end inner class ButtonOrderHandler
 	
+	/**
+	 *This button handler verifies if there are orders for selected customer. If so, a method is called to redraw the table with 
+	 *a new table model data. Otherwise a blank table model is created to imitate empty table
+	 */
 	public class ButtonDisplayOrdersForSelectedCustomersHandler implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if(selectedCustomer != null && getSelectedCustomerOrders() != null){
 				isActiveCustomerOrderTablePopulated = true;
-				displayPreviousCustomerOrderTable(true);
+				displayOrderTable(true);
 			}else{
 				System.out.println("clearTable");
 				String columnNames1[] = {"Id","Customer","Staff","Date","Total Net","Total Gross","Completed?"};
@@ -287,28 +311,32 @@ public class CustomerOrderPanel extends JPanel{
 				tableModelForOrdersTable = new ProductTableModel(emptyObjectArray, columnNames1);
 				tableOrders = new JTable(tableModelForOrdersTable);
 				scrollPaneForOrdersTable.getViewport().add(tableOrders);
+				displayErrorMessage("No previous orders found for selected customer", Color.red);
 			}
 		}//end actionPerformed
 		
 	}//end inner class ButtonDisplayOrdersForSelectedCustomersHandler
 	
+	/**
+	 *This Button handler calls the method to display all orders in the table.
+	 */
 	public class ButtonDisplayOrdersForAllCustomersHandler implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			isActiveCustomerOrderTablePopulated = false;
-			displayPreviousCustomerOrderTable(false);
+			displayOrderTable(false);
 		}//end actionPerformed
 		
 	}//end inner class ButtonDisplayOrdersForAllCustomersHandler
 	
+	/**
+	 *This Button handler updates the table data and CustomerOrder object of all orders that have been assigned to "Completed"
+	 */
 	public class UpdateOrdersHandler implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if(ordersArray == null || ordersArrayOfSelectedCustomer == null){
-				return;
-			}
 			//find all orders that have "completed" value changed to true
 			Object[][] orders = null;
 			if (isActiveCustomerOrderTablePopulated == true){
@@ -327,7 +355,8 @@ public class CustomerOrderPanel extends JPanel{
 			model.fireTableDataChanged();
 			
 			//update previousCustomerOrderTable with the new order.
-			displayPreviousCustomerOrderTable(false);
+			displayOrderTable(false);
+			displayErrorMessage("Order(s) has(have) been updated successfully.", Color.green);
 			
 		}//end actionPerformed
 		
@@ -341,7 +370,10 @@ public class CustomerOrderPanel extends JPanel{
 		
 	}//end inner class UpdateOrdersHandler
 	 
-	
+	/**
+	 * Returns ArrayList of CustomerOrder for the currently selected customer. If none found a message is displayed and null returned.
+	 * @return
+	 */
 	public ArrayList<CustomerOrder> getSelectedCustomerOrders(){
 		ArrayList<CustomerOrder> customerOrd = new ArrayList<CustomerOrder>();
 		boolean foundAtLeastOne = false;
@@ -354,11 +386,16 @@ public class CustomerOrderPanel extends JPanel{
 		if(foundAtLeastOne){
 			return customerOrd;
 		}else{
+			displayErrorMessage("No Customer orders were found",Color.red);
 			return null;
 		}
 	}
 	
-	//customers are displayed as firstName + Surname
+	/**
+	 * Returns the Customer object of the passed in concatenation.
+	 * @param name
+	 * @return
+	 */
 	public Customer getCustomerFromConcatenatedName(String name){
 		for(Customer customer:Shop.getCustomers()){
 			String thisFullName = customer.getCustomerFName()+" "+customer.getCustomerLName();
@@ -392,20 +429,59 @@ public class CustomerOrderPanel extends JPanel{
 	public void setOrdersArrayOfSelectedCustomer(Object[][] ordersArrayOfSelectedCustomer) {
 		this.ordersArrayOfSelectedCustomer = ordersArrayOfSelectedCustomer;
 	}
+	
+	/**
+	 * Shows the lblError text for 4 seconds. 
+	 * @param error Text for the error message
+	 * @param color Color of the message
+	 */
+	public void displayErrorMessage(String error, Color color){
+		if(lblError.isVisible() == false){
+			lblError.setForeground(color);
+			lblError.setText(error);
+			lblError.setVisible(true);
+			timer = new Timer(4000, new ActionListener(){
+	
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					lblError.setVisible(false);
+					timer.stop();
+				}
+				
+			});
+			timer.start();
+		}
+	}
 
+	/**
+	 * Decrements the amount from product quantity. Products as well as the Object[][] array (availableProductsArray) are modified
+	 * @param productId
+	 * @param deductableAmount
+	 * @return
+	 */
 	public boolean decrementProductAvalableQuantity(int productId, int deductableAmount){
 		Object[][] productList = CustomerOrderPanel.this.getAvailableProductsArray();
 		for(Object[] x:productList){
 			if((int) x[0] == productId){
 				x[6] = (int) x[6] - deductableAmount;
 				x[7] = 0;
+				break;
+			}
+		}
+		for(Product y:Shop.getProducts()){
+			if(y.getId() == productId){
+				y.setQuantity(y.getQuantity()-deductableAmount);
+/*				if(y.getQuantity() == 0){
+					y.setAvailable(false);
+				}*/
 				return true;
 			}
 		}
 		return false;
 	}//end decrementProductAvalableQuantity
 	
-	public void displayPreviousCustomerOrderTable(boolean forCustomerOnly){
+	
+	public void displayOrderTable(boolean forCustomerOnly){
 		//display the order in the previousOrderTable
 		String columnNames1[] = {"Id","Customer","Staff","Date","Total Net","Total Gross","Completed?"};
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
