@@ -1,0 +1,13 @@
+12 
+123 Pear Food 70 0.23 true 80 false false 0.0 false 1 
+234 Coat Clothing 50 29.99 true 10 false false 0.0 false 2 
+234 Trousers Clothing 80 40.0 true 15 false false 0.0 false 3 
+123 Ham Food 120 4.5 true 60 false false 0.0 false 4 
+456 Broom Hygene 20 12.0 true 3 false false 0.0 false 5 
+345 Tea Drink 70 1.0 true 80 false false 0.0 false 1 
+234 Coat Clothing 50 29.99 true 10 false false 0.0 false 2 
+234 Pants Clothing 80 40.0 true 15 false false 0.0 false 3 
+123 Ham Food 120 4.5 true 60 false false 0.0 false 4 
+456 Broom Hygene 20 12.0 true 3 false false 0.0 false 5 
+234 Handbag Accessories 20 24.0 true 8 false false 0.0 false 6 
+123 Beans Food 20 12.0 true 15 false false 0.0 false 7 
