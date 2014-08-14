@@ -1,8 +1,11 @@
 package gui;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import javax.swing.JFrame;
 
@@ -91,6 +94,32 @@ public class Shop {
 		}
 	}
 	
+	public static void deleteStaff(String Username){
+		for(Staff staff :staffMembers){
+			if(staff.getUsername()==Username){
+				staff.setDeleted(true);
+			}
+			
+		}
+	}
+	
+	public static void EditDetails(String name, String surname, double salary, String username, String password){
+		for(Staff staff :staffMembers){
+			if(staff.getUsername().equals(username)){
+						
+				System.out.println("Edit Details loop");
+				
+				staff.setName(name);
+				staff.setSurname(surname);
+				staff.setSalary(salary);
+				staff.setUsername(username);
+				staff.setPassword(password);
+				System.out.println("Edit Details loop");
+			}
+		}
+		
+	}
+	
 	public void createCustomer(){
 		
 	}
@@ -116,7 +145,6 @@ public class Shop {
 		admin.setAdmin(true);
 		Staff john = new Staff("John","Doe",15.23,"JohnDoe","Firefly");
 		Staff mick = new Staff("Mick","Green",8.65,"MickGreen","Avalanche");
-		mick.setDeleted(true);
 		Staff angela = new Staff("Angela","Blue",23.5,"AngelaBlue","Onyx");
 		staffMembers.add(admin);
 		staffMembers.add(john);
@@ -127,8 +155,9 @@ public class Shop {
 	}
 	
 	public void populateProducts(){
+		//old way of populating if errors occur decomment this section and comment out second section
 		
-		Product p1 = new Product("Pear", "Food", 70, 0.23, suppliers.get(0), true, 80);
+		/*Product p1 = new Product("Pear", "Food", 70, 0.23, suppliers.get(0), true, 80);
 		Product p2 = new Product("Coat", "Clothing", 50, 29.99, suppliers.get(1), true, 10);
 		Product p3 = new Product("Trousers", "Clothing", 80, 40.0, suppliers.get(1), true, 15);
 		Product p4 = new Product("Ham", "Food", 120, 4.50, suppliers.get(0), true, 60);
@@ -146,6 +175,32 @@ public class Shop {
 					" Supplier: "+product.getSupplier().getSupplierName()+
 					" Availability: "+product.isAvailable() +
 					"Low Stock Order: "+product.getLowStockOrder());
+		}*/
+		
+		
+		
+		//TODO test save
+		try {
+			Scanner in = new Scanner(new FileReader("Products.txt"));
+			int repititions = in.nextInt();
+			Product loadedProduct;
+			for(int i=0; i<repititions; i++){
+				int supplierId = in.nextInt();
+				for(Supplier supplier : suppliers){
+					if(supplierId == supplier.getSupplierId()){
+						loadedProduct = new Product(in.next(), in.next(), in.nextInt(), in.nextDouble(), supplier, in.nextBoolean(), in.nextInt());
+						loadedProduct.setDeleted(in.nextBoolean());
+						loadedProduct.setDiscounted(in.nextBoolean());
+						loadedProduct.setDiscountedPercentage(in.nextDouble());
+						loadedProduct.setFlaggedForOrder(in.nextBoolean());
+						loadedProduct.setId(in.nextInt());
+						products.add(loadedProduct);
+						break;
+					}
+				}
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
 		
 	}
@@ -186,6 +241,10 @@ public class Shop {
 		productsToOrder = new ArrayList<Product>();
 		productsToOrder.add(products.get(3));
 		productsToOrder.add(products.get(4));
+		productsToOrder.add(products.get(1));
+		productsToOrder.add(products.get(2));
+		amountToOrder.add("5");
+		amountToOrder.add("24");
 		try {
 			StockOrder stockOrder = new StockOrder(sd.parse("06/08/2014 13:00"), productsToOrder, amountToOrder, staffMembers.get(3));
 			stockOrders.add(stockOrder);

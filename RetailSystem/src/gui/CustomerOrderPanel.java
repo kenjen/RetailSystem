@@ -99,13 +99,14 @@ public class CustomerOrderPanel extends JPanel{
 		availableProductsArray = new Object[Shop.getProducts().size()][8];
 		int counter = 0;
 		//make products array to feed into the table model
+		DecimalFormat df = new DecimalFormat("#.00");
 		for(Product product:Shop.getProducts()){
 			if(product.isAvailable() && product.isDeleted()==false){
 				availableProductsArray[counter][0] = product.getId();
 				availableProductsArray[counter][1] = product.getName();
 				availableProductsArray[counter][2] = product.getSupplier().getSupplierName();
 				availableProductsArray[counter][3] = product.getCategory();
-				availableProductsArray[counter][4] = product.getPrice();
+				availableProductsArray[counter][4] = Double.parseDouble(df.format(product.getMarkupPrice()));
 				availableProductsArray[counter][5] = product.isDiscounted();
 				availableProductsArray[counter][6] = product.getQuantity();
 				//this column will be editable
