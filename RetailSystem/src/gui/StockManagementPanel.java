@@ -24,6 +24,9 @@ import data.Supplier;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -70,8 +73,8 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//Add scroll pane to left size with list of products
 		JScrollPane scrollPane = new JScrollPane(list);
-		//TODO
-		//this.setDividerLocation(300);
+		//TODO marker to locate set divider
+		this.setDividerLocation(300);
 		setLeftComponent(scrollPane);
 		
 		
@@ -375,25 +378,32 @@ public class StockManagementPanel extends JSplitPane{
 					try{
 						Integer.parseInt(textQuantity.getText());
 						try{
-							Integer.parseInt(textPrice.getText());
-							if(comboSelectSupplier.getSelectedIndex()>0){
-								for(Supplier supplier : Shop.getSuppliers()){
-									if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
-										Product product = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Integer.parseInt(textPrice.getText()), supplier, true, 20);
-										Shop.getProducts().add(product);
-										txtId.setText(""+product.getId());
-										textName.setText("");
-										textCategory.setText("");
-										textQuantity.setText("");
-										textPrice.setText("");
-										textDiscountedPrice.setText("");
-										comboSelectSupplier.setSelectedIndex(0);
-										System.out.println("Product Created Succesfully");
-										break;
+							Double.parseDouble(textPrice.getText());
+							try{
+								Integer.parseInt(textThreshold.getText());
+								if(comboSelectSupplier.getSelectedIndex()>0){
+									for(Supplier supplier : Shop.getSuppliers()){
+										if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
+											Product product = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Double.parseDouble(textPrice.getText()), supplier, true, 20);
+											product.setLowStockOrder(Integer.parseInt(textThreshold.getText()));
+											Shop.getProducts().add(product);
+											txtId.setText(""+product.getId());
+											textName.setText("");
+											textCategory.setText("");
+											textQuantity.setText("");
+											textThreshold.setText("");
+											textPrice.setText("");
+											textDiscountedPrice.setText("");
+											comboSelectSupplier.setSelectedIndex(0);
+											System.out.println("Product Created Succesfully");
+											break;
+										}
 									}
+								}else{
+									System.out.println("No supplier selected");
 								}
-							}else{
-								System.out.println("No supplier selected");
+							}catch(NumberFormatException nfe){
+								System.out.println("number format exception");
 							}
 						}catch(NumberFormatException nfe){
 							System.out.println("number format exception");
@@ -407,6 +417,7 @@ public class StockManagementPanel extends JSplitPane{
 			}else{
 				System.out.println("Blank Name");
 			}
+			saveDetails();
 			setupList();
 		}
 	}
@@ -437,6 +448,7 @@ public class StockManagementPanel extends JSplitPane{
 				System.out.println("number entered not an integer");
 			}
 		}
+		saveDetails();
 	}
 	
 	
@@ -532,22 +544,6 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
-	public void focusGained(FocusEvent fe) {
-		setupList();
-		
-		ArrayList<String> supplierNames = new ArrayList<String>();
-		supplierNames.add("");
-		for (Supplier supplier : Shop.getSuppliers()){
-			String name = supplier.getSupplierName();
-			supplierNames.add(name);
-		}
-		comboSelectSupplier = new JComboBox(supplierNames.toArray());
-		add(comboSelectSupplier, "cell 1 6");
-		comboSelectSupplier.setEditable(true);
-		AutoCompleteDecorator.decorate(comboSelectSupplier);
-	}
-	
-	
 	public void loadProductDetails(){
 		boolean successful = true;
 		int id = 0;
@@ -611,6 +607,38 @@ public class StockManagementPanel extends JSplitPane{
 				System.out.println("number entered not an integer");
 			}
 		}
+	}
+	
+	
+	//TODO test save
+	public void saveDetails(){
+		System.out.println("Saving Products");
+		BufferedWriter writer = null;
+		String textToSave = "";
+		int numberOfProducts = 0;
+		for(Product product : Shop.getProducts()){
+			numberOfProducts++;
+			
+			textToSave = textToSave + "\n" + product.getSupplier().getSupplierId() + " " + product.getName() + " " + product.getCategory() + " " + product.getQuantity() + " " + product.getPrice() + " " + product.isAvailable() + " " + product.getLowStockOrder() + " " + product.isDeleted() + " " + product.isDiscounted() + " " + product.getDiscountedPercentage() + " " + product.isFlaggedForOrder() + " " + product.getId() + " ";
+			 
+		}
+		textToSave = numberOfProducts + " " + textToSave;
+		System.out.println(textToSave);
+		try{
+			writer = new BufferedWriter( new FileWriter( "Products.txt"));
+			writer.write(textToSave);
+		}catch ( IOException e){
+			e.printStackTrace();
+		}
+		finally{
+			try{
+				if ( writer != null)
+				writer.close( );
+			} catch ( IOException e){
+				e.printStackTrace();
+		    }
+		}
+		System.out.println("Finished save");
 	}
 	
 	

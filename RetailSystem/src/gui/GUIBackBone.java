@@ -9,6 +9,8 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import data.Staff;
 
@@ -24,6 +26,7 @@ public class GUIBackBone  extends JFrame{
 	private SupplierPanel panelSupplier = new SupplierPanel();
 	private static boolean userTypeAdmin = false;
 	private static Staff loggedStaffMember;
+	private int previousTabIndex = 0;
 	
 	
 	public GUIBackBone(boolean isAdmin, Staff loggedStaffMember){
@@ -42,6 +45,15 @@ public class GUIBackBone  extends JFrame{
 				tabbedPane.setIconAt(3, new ImageIcon(getClass().getResource("/Staff.png")));
 				tabbedPane.setIconAt(4, new ImageIcon(getClass().getResource("/Customer.png")));
 				tabbedPane.setIconAt(5, new ImageIcon(getClass().getResource("/Supplier.png")));
+				
+				//TODO testing save
+				tabbedPane.addChangeListener(new ChangeListener() {
+			        @Override
+					public void stateChanged(ChangeEvent e) {
+			           saveTabDetails(previousTabIndex);
+			           previousTabIndex = tabbedPane.getSelectedIndex();
+			        }
+			    });
 			}else{
 				this.loggedStaffMember = loggedStaffMember;
 				tabbedPane.addTab("StockManagement", panelStockManagement);
@@ -72,6 +84,13 @@ public class GUIBackBone  extends JFrame{
 
 	public static Staff getLoggedStaffMember() {
 		return loggedStaffMember;
+	}
+	
+	//TODO testing save
+	public void saveTabDetails(int index){
+		if(index==0){
+			panelStockManagement.saveDetails();
+		}
 	}
 
 

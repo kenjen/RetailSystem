@@ -31,6 +31,7 @@ public class StockOrder {
 	}	
 	
 	public String getInvoice(){
+		//TODO individual price, total price
 		String invoice = "\n \n" + "****** INVOICE ******" + "\n";
 		invoice = invoice + "Ordered by " + staff.getName() + "\n" + "Date - " + date.toString() + "\n";
 		int i=0;
