@@ -1,8 +1,11 @@
 package gui;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import javax.swing.JFrame;
 
@@ -139,6 +142,7 @@ public class Shop {
 		products.add(p3);
 		products.add(p4);
 		products.add(p5);
+		products.add(p4);
 		
 		for(Product product : products){
 			System.out.println("Product: "+product.getName()+" Category: "+product.getCategory()+
@@ -147,6 +151,31 @@ public class Shop {
 					" Availability: "+product.isAvailable() +
 					"Low Stock Order: "+product.getLowStockOrder());
 		}
+		
+		//TODO test save
+		/*try {
+			Scanner in = new Scanner(new FileReader("Test.txt"));
+			
+			int repititions = in.nextInt();
+			Product loadedProduct;
+			for(int i=0; i<repititions; i++){
+				int supplierId = in.nextInt();
+				for(Supplier supplier : suppliers){
+					if(supplierId == supplier.getSupplierId()){
+						loadedProduct = new Product(in.next(), in.next(), in.nextInt(), in.nextDouble(), supplier, in.nextBoolean(), in.nextInt());
+						loadedProduct.setDeleted(in.nextBoolean());
+						loadedProduct.setDiscounted(in.nextBoolean());
+						loadedProduct.setDiscountedPercentage(in.nextDouble());
+						loadedProduct.setFlaggedForOrder(in.nextBoolean());
+						loadedProduct.setId(in.nextInt());
+						products.add(loadedProduct);
+						break;
+					}
+				}
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}*/
 		
 	}
 	
@@ -186,6 +215,10 @@ public class Shop {
 		productsToOrder = new ArrayList<Product>();
 		productsToOrder.add(products.get(3));
 		productsToOrder.add(products.get(4));
+		productsToOrder.add(products.get(1));
+		productsToOrder.add(products.get(2));
+		amountToOrder.add("5");
+		amountToOrder.add("24");
 		try {
 			StockOrder stockOrder = new StockOrder(sd.parse("06/08/2014 13:00"), productsToOrder, amountToOrder, staffMembers.get(3));
 			stockOrders.add(stockOrder);
