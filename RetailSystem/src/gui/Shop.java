@@ -156,31 +156,7 @@ public class Shop {
 	}
 	
 	public void populateProducts(){
-		//old way of populating if errors occur decomment this section and comment out second section
-		/*
-		Product p1 = new Product("Pear", "Food", 70, 0.23, suppliers.get(0), true, 80);
-		Product p2 = new Product("Coat", "Clothing", 50, 29.99, suppliers.get(1), true, 10);
-		Product p3 = new Product("Trousers", "Clothing", 80, 40.0, suppliers.get(1), true, 15);
-		Product p4 = new Product("Ham", "Food", 120, 4.50, suppliers.get(0), true, 60);
-		Product p5 = new Product("Broom", "Hygene", 20, 12.0, suppliers.get(3), true, 3);
-		
-		products.add(p1);
-		products.add(p2);
-		products.add(p3);
-		products.add(p4);
-		products.add(p5);
-		
-		for(Product product : products){
-			System.out.println("Product: "+product.getName()+" Category: "+product.getCategory()+
-					" quantity: "+product.getQuantity()+" Price: "+product.getPrice()+
-					" Supplier: "+product.getSupplier().getSupplierName()+
-					" Availability: "+product.isAvailable() +
-					"Low Stock Order: "+product.getLowStockOrder());
-		}*/
-		
-		
-		
-		//TODO test save
+		//load products from file
 		try {
 			Scanner in = new Scanner(new FileReader("Products.txt"));
 			int repititions = in.nextInt();
@@ -201,8 +177,28 @@ public class Shop {
 					}
 				}
 			}
-			products.get(0).setNextId(nextInt);
+			Product.setNextId(nextInt);
 		} catch (FileNotFoundException e) {
+			//if error occurred load default values
+			Product p1 = new Product("Pear", "Food", 70, 0.23, suppliers.get(0), true, 80);
+			Product p2 = new Product("Coat", "Clothing", 50, 29.99, suppliers.get(1), true, 10);
+			Product p3 = new Product("Trousers", "Clothing", 80, 40.0, suppliers.get(1), true, 15);
+			Product p4 = new Product("Ham", "Food", 120, 4.50, suppliers.get(0), true, 60);
+			Product p5 = new Product("Broom", "Hygene", 20, 12.0, suppliers.get(3), true, 3);
+			
+			products.add(p1);
+			products.add(p2);
+			products.add(p3);
+			products.add(p4);
+			products.add(p5);
+			
+			for(Product product : products){
+				System.out.println("Product: "+product.getName()+" Category: "+product.getCategory()+
+						" quantity: "+product.getQuantity()+" Price: "+product.getPrice()+
+						" Supplier: "+product.getSupplier().getSupplierName()+
+						" Availability: "+product.isAvailable() +
+						"Low Stock Order: "+product.getLowStockOrder());
+			}
 			e.printStackTrace();
 		}
 		

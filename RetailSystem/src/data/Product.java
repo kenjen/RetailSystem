@@ -122,8 +122,8 @@ public class Product {
 		this.discounted = discounted;
 	}
 	
-	public void setNextId(int nextId){
-		this.nextId = nextId;
+	public static void setNextId(int tempNextId){
+		nextId = tempNextId;
 	}
 
 	public double getDiscountedPercentage() {

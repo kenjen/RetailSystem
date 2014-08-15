@@ -59,6 +59,7 @@ public class StockManagementPanel extends JSplitPane{
 	private JButton btnDisplayLowStock;
 	private JButton btnDisplayDeletedStock;
 	private JButton btnDisplayAllProducts;
+	private JButton btnRestoreDefaultProducts;
 	private JButton btnFlagForOrder;
 	private JButton btnDiscountProduct;
 	private JButton btnDeleteProduct;
@@ -145,6 +146,17 @@ public class StockManagementPanel extends JSplitPane{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				displayAllProducts();
+			}
+		});
+		
+		
+		//Button to reset products to defaults
+		btnRestoreDefaultProducts = new JButton("Restore Defaults");
+		panel.add(btnRestoreDefaultProducts, "cell 1 5");
+		btnRestoreDefaultProducts.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				resetToDefaultValues();
 			}
 		});
 		
@@ -620,6 +632,28 @@ public class StockManagementPanel extends JSplitPane{
 			comboSelectSupplier.setSelectedIndex(index);
 		}
 	}
+	
+	
+	//resets the product list to original hard coded values
+	public void resetToDefaultValues(){
+		Shop.getProducts().clear();
+		Product.setNextId(1);
+		Product p1 = new Product("Pear", "Food", 70, 0.23, Shop.getSuppliers().get(0), true, 80);
+		Product p2 = new Product("Coat", "Clothing", 50, 29.99, Shop.getSuppliers().get(1), true, 10);
+		Product p3 = new Product("Trousers", "Clothing", 80, 40.0, Shop.getSuppliers().get(1), true, 15);
+		Product p4 = new Product("Ham", "Food", 120, 4.50, Shop.getSuppliers().get(0), true, 60);
+		Product p5 = new Product("Broom", "Hygene", 20, 12.0, Shop.getSuppliers().get(2), true, 3);
+		
+		Shop.getProducts().add(p1);
+		Shop.getProducts().add(p2);
+		Shop.getProducts().add(p3);
+		Shop.getProducts().add(p4);
+		Shop.getProducts().add(p5);
+		
+		saveDetails();
+		setupList();
+	}
+	
 	
 	public void restoreProduct(){
 		int id = 0;
