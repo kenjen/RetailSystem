@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -88,9 +90,10 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//text field to enter id of product
 		txtId = new JTextField();
-		panel.add(txtId, "cell 5 2,alignx center");
+		panel.add(txtId, "cell 5 2, center");
 		txtId.setHorizontalAlignment(SwingConstants.CENTER);
 		txtId.setColumns(20);
+		txtId.setFocusTraversalKeysEnabled(false);
 		txtId.setText("Enter Id");
 		//set text field to blank when focus gained
 		txtId.addFocusListener(new FocusListener(){
@@ -103,6 +106,21 @@ public class StockManagementPanel extends JSplitPane{
 				//Do Nothing
 			}
 			
+		});
+		txtId.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			@Override
+			public void keyReleased(KeyEvent k) {
+				if(k.getKeyCode() == KeyEvent.VK_ENTER){
+					loadProductDetails();
+				}else if(k.getKeyCode() == KeyEvent.VK_TAB){
+					loadProductDetails();
+					textName.requestFocusInWindow();
+				}
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
 		});
 		
 		
@@ -193,6 +211,19 @@ public class StockManagementPanel extends JSplitPane{
 		textName = new JTextField();
 		panel.add(textName, "cell 5 6,growx");
 		textName.setColumns(10);
+		textName.setFocusTraversalKeysEnabled(false);
+		textName.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			@Override
+			public void keyReleased(KeyEvent k) {
+				if(k.getKeyCode() == KeyEvent.VK_TAB){
+					textCategory.requestFocusInWindow();
+				}
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
+		});
 		JButton btnSaveName = new JButton("Save");
 		panel.add(btnSaveName, "cell 7 6");
 		btnSaveName.addActionListener(new ActionListener(){
@@ -213,6 +244,19 @@ public class StockManagementPanel extends JSplitPane{
 		textCategory = new JTextField();
 		panel.add(textCategory, "cell 5 8,growx");
 		textCategory.setColumns(10);
+		textCategory.setFocusTraversalKeysEnabled(false);
+		textCategory.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			@Override
+			public void keyReleased(KeyEvent k) {
+				if(k.getKeyCode() == KeyEvent.VK_TAB){
+					textQuantity.requestFocusInWindow();
+				}
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
+		});
 		JButton btnSaveCategory = new JButton("Save");
 		panel.add(btnSaveCategory, "cell 7 8");
 		btnSaveCategory.addActionListener(new ActionListener(){
@@ -233,6 +277,19 @@ public class StockManagementPanel extends JSplitPane{
 		textQuantity = new JTextField();
 		panel.add(textQuantity, "cell 5 10,growx");
 		textQuantity.setColumns(10);
+		textQuantity.setFocusTraversalKeysEnabled(false);
+		textQuantity.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			@Override
+			public void keyReleased(KeyEvent k) {
+				if(k.getKeyCode() == KeyEvent.VK_TAB){
+					textThreshold.requestFocusInWindow();
+				}
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
+		});
 		JButton btnSaveQuantity = new JButton("Save");
 		panel.add(btnSaveQuantity, "cell 7 10");
 		btnSaveQuantity.addActionListener(new ActionListener(){
@@ -253,6 +310,19 @@ public class StockManagementPanel extends JSplitPane{
 		textThreshold = new JTextField();
 		panel.add(textThreshold, "cell 5 12,growx");
 		textThreshold.setColumns(10);
+		textThreshold.setFocusTraversalKeysEnabled(false);
+		textThreshold.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			@Override
+			public void keyReleased(KeyEvent k) {
+				if(k.getKeyCode() == KeyEvent.VK_TAB){
+					textPrice.requestFocusInWindow();
+				}
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
+		});
 		JButton btnSaveThreshold = new JButton("Save");
 		panel.add(btnSaveThreshold, "cell 7 12");
 		btnSaveThreshold.addActionListener(new ActionListener(){
@@ -273,6 +343,19 @@ public class StockManagementPanel extends JSplitPane{
 		textPrice = new JTextField();
 		panel.add(textPrice, "cell 5 14,growx");
 		textPrice.setColumns(10);
+		textPrice.setFocusTraversalKeysEnabled(false);
+		textPrice.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			@Override
+			public void keyReleased(KeyEvent k) {
+				if(k.getKeyCode() == KeyEvent.VK_TAB){
+					comboSelectSupplier.requestFocusInWindow();
+				}
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
+		});
 		JButton btnSavePrice = new JButton("Save");
 		panel.add(btnSavePrice, "cell 7 14");
 		btnSavePrice.addActionListener(new ActionListener(){
@@ -324,6 +407,15 @@ public class StockManagementPanel extends JSplitPane{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				saveSupplier();
+			}
+		});
+		
+		JButton btnSaveAll = new JButton("Save All");
+		panel.add(btnSaveAll, "cell 7 19");
+		btnSaveAll.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				saveAll();
 			}
 		});
 		
@@ -637,7 +729,7 @@ public class StockManagementPanel extends JSplitPane{
 	//resets the product list to original hard coded values
 	public void resetToDefaultValues(){
 		Shop.getProducts().clear();
-		Product.setNextId(1);
+		Product.setNextId(0);
 		Product p1 = new Product("Pear", "Food", 70, 0.23, Shop.getSuppliers().get(0), true, 80);
 		Product p2 = new Product("Coat", "Clothing", 50, 29.99, Shop.getSuppliers().get(1), true, 10);
 		Product p3 = new Product("Trousers", "Clothing", 80, 40.0, Shop.getSuppliers().get(1), true, 15);
@@ -671,6 +763,19 @@ public class StockManagementPanel extends JSplitPane{
 			System.out.println("number entered not an integer");
 		}
 		saveDetails();
+	}
+	
+	
+	public void saveAll(){
+		saveCategory();
+		saveName();
+		savePrice();
+		saveSupplier();
+		saveThreshold();
+		saveQuantity();
+		
+		saveDetails();
+		setupList();
 	}
 	
 	
