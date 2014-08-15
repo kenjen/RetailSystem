@@ -157,7 +157,7 @@ public class Shop {
 	
 	public void populateProducts(){
 		//old way of populating if errors occur decomment this section and comment out second section
-		
+		/*
 		Product p1 = new Product("Pear", "Food", 70, 0.23, suppliers.get(0), true, 80);
 		Product p2 = new Product("Coat", "Clothing", 50, 29.99, suppliers.get(1), true, 10);
 		Product p3 = new Product("Trousers", "Clothing", 80, 40.0, suppliers.get(1), true, 15);
@@ -176,7 +176,7 @@ public class Shop {
 					" Supplier: "+product.getSupplier().getSupplierName()+
 					" Availability: "+product.isAvailable() +
 					"Low Stock Order: "+product.getLowStockOrder());
-		}
+		}*/
 		
 		
 		
@@ -184,6 +184,7 @@ public class Shop {
 		try {
 			Scanner in = new Scanner(new FileReader("Products.txt"));
 			int repititions = in.nextInt();
+			int nextInt = in.nextInt();
 			Product loadedProduct;
 			for(int i=0; i<repititions; i++){
 				int supplierId = in.nextInt();
@@ -200,9 +201,11 @@ public class Shop {
 					}
 				}
 			}
+			products.get(0).setNextId(nextInt);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		
 		
 	}
 	
