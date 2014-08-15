@@ -157,8 +157,9 @@ public class Shop {
 	
 	public void populateProducts(){
 		//load products from file
+		Scanner in = null;
 		try {
-			Scanner in = new Scanner(new FileReader("Products.txt"));
+			in = new Scanner(new FileReader("Products.txt"));
 			int repititions = in.nextInt();
 			int nextInt = in.nextInt();
 			Product loadedProduct;
@@ -178,7 +179,7 @@ public class Shop {
 				}
 			}
 			Product.setNextId(nextInt);
-		} catch (FileNotFoundException e) {
+		}catch (FileNotFoundException e) {
 			//if error occurred load default values
 			Product p1 = new Product("Pear", "Food", 70, 0.23, suppliers.get(0), true, 80);
 			Product p2 = new Product("Coat", "Clothing", 50, 29.99, suppliers.get(1), true, 10);
@@ -200,9 +201,11 @@ public class Shop {
 						"Low Stock Order: "+product.getLowStockOrder());
 			}
 			e.printStackTrace();
+		}finally{
+			if(in!=null){
+				in.close();
+			}
 		}
-		
-		
 	}
 	
 	public void populateStockOrders(){

@@ -30,6 +30,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 public class StockManagementPanel extends JSplitPane{
@@ -67,13 +68,14 @@ public class StockManagementPanel extends JSplitPane{
 	private JButton btnDeleteProduct;
 	private JButton btnRestoreProduct;
 	
+	private NumberFormat formatter;
 	
 	
 
 	public StockManagementPanel() {
 		
 		setupList();
-		
+		formatter = NumberFormat.getCurrencyInstance();
 		
 		//Add scroll pane to left size with list of products
 		JScrollPane scrollPane = new JScrollPane(list);
@@ -501,7 +503,7 @@ public class StockManagementPanel extends JSplitPane{
 								if(comboSelectSupplier.getSelectedIndex()>0){
 									for(Supplier supplier : Shop.getSuppliers()){
 										if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
-											Product product = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Double.parseDouble(textPrice.getText()), supplier, true, 20);
+											Product product = new Product(textName.getText().replaceAll("\\s", "_"), textCategory.getText().replaceAll("\\s", "_"), Integer.parseInt(textQuantity.getText()), Double.parseDouble(textPrice.getText()), supplier, true, 20);
 											product.setLowStockOrder(Integer.parseInt(textThreshold.getText()));
 											Shop.getProducts().add(product);
 											txtId.setText(""+product.getId());
@@ -610,7 +612,8 @@ public class StockManagementPanel extends JSplitPane{
 						String input = JOptionPane.showInputDialog("Enter percentage to discount \n"+"Pevious discount "+product.getDiscountedPercentage()+"%");
 						if(input!=null){
 							try{
-								Double percent = Double.parseDouble(input);
+								String test = String.format("%.2f", input);
+								Double percent = Double.parseDouble(test);
 								product.setDiscountedPercentage(percent);
 								if(percent==0){
 									product.setDiscounted(false);
@@ -728,22 +731,29 @@ public class StockManagementPanel extends JSplitPane{
 	
 	//resets the product list to original hard coded values
 	public void resetToDefaultValues(){
-		Shop.getProducts().clear();
-		Product.setNextId(0);
-		Product p1 = new Product("Pear", "Food", 70, 0.23, Shop.getSuppliers().get(0), true, 80);
-		Product p2 = new Product("Coat", "Clothing", 50, 29.99, Shop.getSuppliers().get(1), true, 10);
-		Product p3 = new Product("Trousers", "Clothing", 80, 40.0, Shop.getSuppliers().get(1), true, 15);
-		Product p4 = new Product("Ham", "Food", 120, 4.50, Shop.getSuppliers().get(0), true, 60);
-		Product p5 = new Product("Broom", "Hygene", 20, 12.0, Shop.getSuppliers().get(2), true, 3);
-		
-		Shop.getProducts().add(p1);
-		Shop.getProducts().add(p2);
-		Shop.getProducts().add(p3);
-		Shop.getProducts().add(p4);
-		Shop.getProducts().add(p5);
-		
-		saveDetails();
-		setupList();
+		int selectedOption = JOptionPane.showConfirmDialog(null, 
+                "Are you sure you wish to restore product defaults?", 
+                "Warning", 
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE); 
+		if (selectedOption == JOptionPane.YES_OPTION) {
+			Shop.getProducts().clear();
+			Product.setNextId(0);
+			Product p1 = new Product("Pear", "Food", 70, 0.23, Shop.getSuppliers().get(0), true, 80);
+			Product p2 = new Product("Coat", "Clothing", 50, 29.99, Shop.getSuppliers().get(1), true, 10);
+			Product p3 = new Product("Trousers", "Clothing", 80, 40.0, Shop.getSuppliers().get(1), true, 15);
+			Product p4 = new Product("Ham", "Food", 120, 4.50, Shop.getSuppliers().get(0), true, 60);
+			Product p5 = new Product("Broom", "Hygene", 20, 12.0, Shop.getSuppliers().get(2), true, 3);
+			
+			Shop.getProducts().add(p1);
+			Shop.getProducts().add(p2);
+			Shop.getProducts().add(p3);
+			Shop.getProducts().add(p4);
+			Shop.getProducts().add(p5);
+			
+			saveDetails();
+			setupList();
+		}
 	}
 	
 	
@@ -787,7 +797,7 @@ public class StockManagementPanel extends JSplitPane{
 				id = Integer.parseInt(tempId);
 				for(Product product : Shop.getProducts()){
 					if(product.getId() == id && !(product.isDeleted())){
-						product.setCategory(textCategory.getText());
+						product.setCategory(textCategory.getText().replaceAll("\\s", "_"));
 						System.out.println("Category saved succesfully");
 					}
 				}
@@ -842,7 +852,7 @@ public class StockManagementPanel extends JSplitPane{
 				id = Integer.parseInt(tempId);
 				for(Product product : Shop.getProducts()){
 					if(product.getId() == id && !(product.isDeleted())){
-						product.setName(textName.getText());
+						product.setName(textName.getText().replaceAll("\\s", "_"));
 						System.out.println("Name saved succesfully");
 					}
 				}
@@ -855,15 +865,17 @@ public class StockManagementPanel extends JSplitPane{
 	
 	public void savePrice(){
 		int id = 0;
-		int price = 0;
+		double price = 0;
 		if(productLoaded){
 			String tempId = txtId.getText();
 			String tempPrice = textPrice.getText();
 			try{
 				id = Integer.parseInt(tempId);
-				price = Integer.parseInt(tempPrice);
+				price = Double.parseDouble(tempPrice);
 				for(Product product : Shop.getProducts()){
 					if(product.getId() == id && !(product.isDeleted())){
+						String test = String.format("%.2f", price);
+						price = Double.parseDouble(test);
 						product.setPrice(price);
 						System.out.println("Price saved succesfully");
 						loadProductDetails();
