@@ -19,15 +19,15 @@ public class PopupDialog extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 1L;
 
 	public PopupDialog(String text) {	
-		System.out.println("test");
 		JPanel contentPanePanel = new JPanel();
 		JScrollPane scrollPane = new JScrollPane(contentPanePanel);
 		scrollPane.setMaximumSize(new Dimension(1024,768));
 		contentPanePanel.setLayout(new MigLayout());
 		setLayout(new GridBagLayout());
-		JLabel lblText = new JLabel(text);
 		JButton btnOk = new JButton("Ok");
 		btnOk.addActionListener(this);
+		
+		JLabel lblText = new JLabel(text);
 		contentPanePanel.add(lblText, "wrap, push");
 		contentPanePanel.add(btnOk,"pushx, alignx center");
 		setContentPane(scrollPane);
@@ -35,7 +35,6 @@ public class PopupDialog extends JDialog implements ActionListener {
 		pack();
 		setVisible(true);
 		
-
 	}
 
 	@Override
