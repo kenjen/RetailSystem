@@ -29,20 +29,22 @@ public class StockOrder {
 		}
 		this.total=tempTotal;
 		this.completed=false;
+		this.expectedDeliveryDate = new Date(this.date.getTime() +1000*60*60*48);
 	}	
 	
-	public StockOrder(ArrayList<ProductToOrder> products, Staff staff){
-		productsToOrder = products;
+	public StockOrder(ArrayList<ProductToOrder> productsToOrder, Staff staff){
+		this.productsToOrder = productsToOrder;
 		this.staff=staff;
 		this.date = new Date();
 		nextId++;
 		this.id=nextId;
 		double tempTotal = 0;
-		for(ProductToOrder product:products){
+		for(ProductToOrder product:productsToOrder){
 			tempTotal +=product.getPrice()*product.getAmount();
 		}
 		this.total=tempTotal;
 		this.completed=false;
+		this.expectedDeliveryDate = new Date(this.date.getTime() +1000*60*60*48);
 	}
 	
 	/*public String getInvoice(){

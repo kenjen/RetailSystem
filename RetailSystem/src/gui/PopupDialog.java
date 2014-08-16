@@ -33,6 +33,7 @@ public class PopupDialog extends JDialog implements ActionListener {
 		setContentPane(scrollPane);
 		
 		pack();
+		setLocationRelativeTo(null);
 		setVisible(true);
 		
 	}

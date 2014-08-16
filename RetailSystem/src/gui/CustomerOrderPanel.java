@@ -245,7 +245,7 @@ public class CustomerOrderPanel extends JPanel{
 						Supplier tempSupplier = null;
 						boolean supplierFound = false;
 						for(Supplier supplier:Shop.getSuppliers()){
-							if(supplier.getSupplierName() == (String) x[2]){
+							if(supplier.getSupplierName().equalsIgnoreCase(x[2].toString())){
 								tempSupplier = supplier;
 								supplierFound = true;
 								break;
@@ -357,7 +357,7 @@ public class CustomerOrderPanel extends JPanel{
 			
 			//update previousCustomerOrderTable with the new order.
 			displayOrderTable(false);
-			displayErrorMessage("Order(s) has(have) been updated successfully.", Color.green);
+			displayErrorMessage("Order(s) has(have) been updated successfully.", Color.BLUE);
 			
 		}//end actionPerformed
 		

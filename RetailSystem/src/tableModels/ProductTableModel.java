@@ -1,5 +1,9 @@
 package tableModels;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
 
 public class ProductTableModel extends AbstractTableModel{
@@ -66,6 +70,15 @@ public class ProductTableModel extends AbstractTableModel{
         data[row][col] = value;
         fireTableCellUpdated(row, col);
     	//}
+    }
+    
+    //remove row
+    public void removeRow(int row){
+    	List<Object[]> list = new ArrayList<Object[]>(Arrays.asList(data));
+    	list.remove(row);
+    	Object[][] array2 = list.toArray(new Object[][]{});
+    	data = array2;
+    	fireTableDataChanged();
     }
 	
 }//end class ProductTableModel

@@ -8,9 +8,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.InputMismatchException;
 
 import javax.swing.JButton;
@@ -50,7 +52,7 @@ public class StockOrderPanel extends JPanel {
 	private JButton btnDisplayAllProducts = new JButton("Display all products");
 	private JButton btnAddToOrder = new JButton("Add to order");
 	private JButton btnOrder = new JButton("Submit order");
-	private ArrayList<Object[]> arrayTemporaryOrder = new ArrayList<Object[]>();
+	private static ArrayList<Object[]> arrayTemporaryOrder = new ArrayList<Object[]>();
 	private ArrayList<Object[]> arrayOrder = new ArrayList<Object[]>();
 	private Object[][] arrayTableProducts;
 	private Object[][] arrayTableOrders;
@@ -161,8 +163,8 @@ public class StockOrderPanel extends JPanel {
 		btnAddToOrder.addActionListener(new ButtonTemporaryOrderHandler());
 		btnOrder.addActionListener(new ButtonOrderHandler());
 		JLabel lblOrders = new JLabel("Orders:");
-		add(lblOrders);
-		add(lblError, "pushx, alignx center, wrap");
+		add(lblError, "pushx ,alignx center, wrap");
+		add(lblOrders,"wrap");
 		lblError.setVisible(false);
 		lblError.setFont(new Font("Serif",Font.BOLD,15));
 //-----------------//
@@ -184,13 +186,22 @@ public class StockOrderPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				boolean found = false;
+				int counter = 0;
 				for(Object[] object:arrayTableOrders){
-					if((boolean)object[4] == true){
+					if((boolean)object[4] == true && Shop.getStockOrders().get(counter).isCompleted() == false){
 						changeStockOrderToComplete((int)object[0]);
+						found = true;
 					}
+					counter ++;
 				}
 				AbstractTableModel model = (AbstractTableModel) tableOrders.getModel();
 				model.fireTableDataChanged();
+				if(found){
+					displayErrorMessage("Order has been updated successfully", Color.blue);
+				}else{
+					displayErrorMessage("Nothing to update", Color.red);
+				}
 			}
 			
 		});
@@ -376,7 +387,6 @@ public class StockOrderPanel extends JPanel {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		int x = 0;
 		for (StockOrder stockOrder : stockOrders) {
-			System.out.println(stockOrders.get(x).isCompleted());
 			arrayTableOrders[x][0] = stockOrders.get(x).getId();
 			arrayTableOrders[x][1] = stockOrders.get(x).getStaff().getName()
 					+ " " + stockOrders.get(x).getStaff().getSurname();
@@ -410,10 +420,32 @@ public class StockOrderPanel extends JPanel {
 			         int row = target.getSelectedRow();
 			         int cell = 0;
 			         
-			         for(StockOrder order:Shop.getStockOrders()){
-			        	 
+			         StockOrder thisOrder = null;
+			         for(StockOrder order : Shop.getStockOrders()){
+			        	 if(order.getId()==(int) target.getValueAt(row, cell)){
+			        		 thisOrder = order;	
+			        		 break;
+			        	 }
 			         }
-			         //new PopupDialog(text);
+			         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+			         DecimalFormat df = new DecimalFormat("#.00");
+			         String htmlText = "<html><head><style>th {color:#305EE3;font-variant:small-caps;}</style></head>";
+			         if(thisOrder.isCompleted()){
+				         htmlText += "<h2>Order details:</h2><table border='1'><tr><th>ID</th><th>Date of creation</th><th>Expected delivery date</th><th>Staff member</th><th>Total</th></tr>";
+				         htmlText += "<tr><td>"+thisOrder.getId()+"</td></td>"+sdf.format(thisOrder.getDate())+"</td><td>Delivered at "+sdf.format(thisOrder.getExpectedDeliveryDate())+"</td><td>"+GUIBackBone.getLoggedStaffMember().getName()+" "+GUIBackBone.getLoggedStaffMember().getSurname()+"</td><td>"+df.format(thisOrder.getTotal())+"</td></tr>";
+			         }else if(thisOrder.getExpectedDeliveryDate().before(new Date())){
+			        	 htmlText += "<h2>Order details:</h2><table border='1'><tr><th>ID</th><th>Date of creation</th><th>Expected delivery date</th><th>Staff member</th><th>Total</th></tr>";
+			        	 htmlText += "<tr><td>"+thisOrder.getId()+"</td></td>"+sdf.format(thisOrder.getDate())+"</td><td>Delivered at "+sdf.format(thisOrder.getExpectedDeliveryDate())+"</td><td>"+GUIBackBone.getLoggedStaffMember().getName()+" "+GUIBackBone.getLoggedStaffMember().getSurname()+"</td><td>"+df.format(thisOrder.getTotal())+"</td></tr>";
+			         }else{
+			        	 htmlText += "<h2>Order details:</h2><table border='1'><tr><th>ID</th><th>Date of creation</th><th>Expected delivery date</th><th>Staff member</th><th>Total</th></tr>";
+			        	 htmlText += "<tr><td>"+thisOrder.getId()+"</td></td>"+sdf.format(thisOrder.getDate())+"</td><td>"+sdf.format(thisOrder.getExpectedDeliveryDate())+"</td><td>"+GUIBackBone.getLoggedStaffMember().getName()+" "+GUIBackBone.getLoggedStaffMember().getSurname()+"</td><td>"+df.format(thisOrder.getTotal())+"</td></tr>";
+			         }
+			         htmlText += "</table><br><h2>Products:</h2><table border='1'><tr><th>ID</th><th>Name</th><th>Supplier</th><th>Category</th><th>Price</th><th>Amount</th><th>Total</th></tr>";
+			         for(ProductToOrder product:thisOrder.getProductsToOrder()){
+			        	 htmlText += product.toHtmlString();
+			         }
+			         htmlText += "</table></html>";
+			         new PopupDialog(htmlText);
 			      }
 			}
 			
@@ -491,15 +523,12 @@ public class StockOrderPanel extends JPanel {
 			         try{
 			        	 if(choice != null){
 			        		 int parsedChoice = Integer.parseInt(choice);
-			        		 System.out.println("Parsed choice: "+parsedChoice);
 			        		 target.setValueAt(parsedChoice, row, cell);
 			        	 }
 			         }catch (InputMismatchException ex){
 			        	 ex.printStackTrace();
 			         }catch (NumberFormatException nfe){
-			        	 System.out.println("Invalid Input");
-			        	 //do nothing, swallow the exception
-			        	 //not ideal but will do for now
+			        	 displayErrorMessage("Invalid input", Color.RED);
 			         }
 			      }
 			}
@@ -516,7 +545,6 @@ public class StockOrderPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub arrayTemporaryOrder
 			AbstractTableModel tableModel = (AbstractTableModel) tableProducts
 					.getModel();
 			tableModel.fireTableDataChanged();
@@ -540,15 +568,16 @@ public class StockOrderPanel extends JPanel {
 			}
 			if (found == false) {
 				displayErrorMessage("Nothing to order!", Color.red);
-			}
-			for (int i = 0; i < arrayTableProducts.length; i++) {
-				if ((int) arrayTableProducts[i][8] > 0) {
-					arrayTableProducts[i][8] = 0;
+			}else{
+				for (int i = 0; i < arrayTableProducts.length; i++) {
+					if ((int) arrayTableProducts[i][8] > 0) {
+						arrayTableProducts[i][8] = 0;
+					}
 				}
+				tableModel.fireTableDataChanged();
+				displayOrderTable();
+				displayErrorMessage("Added", Color.blue);
 			}
-			tableModel.fireTableDataChanged();
-			displayOrderTable();
-			// StockOrderPanel.this.repaint();
 		}
 
 	}// end inner class handler
@@ -562,76 +591,50 @@ public class StockOrderPanel extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			//check whether there is an actual order to submit
 			if (arrayTemporaryOrder.size() > 0) {
-				//create individual objects for all products selected and add them to a roductsToOrder list.
-				//Use this list to create a new StockOrder object and add it to the list of existing stockOrders
-				ArrayList<ProductToOrder> productsToOrder = new ArrayList<ProductToOrder>();
-				for (int i = 0; i < arrayTemporaryOrder.size(); i++) {
-					Object object[] = arrayTemporaryOrder.get(i);
-					int id = (int) object[0];
-					String name = (String) object[1];
-					Supplier supplier = null;
-
-					for (Supplier sup : Shop.getSuppliers()) {
-						if (sup.getSupplierName().equalsIgnoreCase(
-								(String) object[4])) {
-							supplier = sup;
-							break;
-						}
-					}
-					String category = (String) object[2];
-					double price = (double) object[3];
-					int amount = (int) object[8];
-
-					productsToOrder.add(new ProductToOrder(id, name, supplier,
-							category, price, false, amount));
-				}
-				StockOrder sO = new StockOrder(productsToOrder,
-						GUIBackBone.getLoggedStaffMember());
-				Shop.getStockOrders().add(sO);
-
-				//Now recreate the whole table from StockOrders
-				ArrayList<StockOrder> stockOrders = Shop.getStockOrders();
-				arrayTableOrders = new Object[stockOrders.size()][5];
-				SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-				int x = 0;
-				for (StockOrder stockOrder : stockOrders) {
-					arrayTableOrders[x][0] = stockOrders.get(x).getId();
-					arrayTableOrders[x][1] = stockOrders.get(x).getStaff()
-							.getName()
-							+ " " + stockOrders.get(x).getStaff().getSurname();
-					arrayTableOrders[x][2] = sdf.format(stockOrders.get(x)
-							.getDate());
-					arrayTableOrders[x][3] = stockOrders.get(x).getTotal();
-					arrayTableOrders[x][4] = stockOrders.get(x).isCompleted();
-					x++;
-				}
-
-				String columnNamesForOrders[] = { "Id", "Staff member",
-						"Date of order", "Total", "Completed" };
-				ProductTableModel ordersTableModel = new ProductTableModel(
-						arrayTableOrders, columnNamesForOrders);
-				tableOrders = new JTable(ordersTableModel);
-				tableOrders.getColumnModel().getSelectionModel()
-						.addListSelectionListener(new ListSelectionListener() {
-
-							public void valueChanged(ListSelectionEvent e) {
-								int row = tableOrders.getSelectedRow();
-								tableOrders.requestFocus();
-								// tableProducts.editCellAt(row, 7);
-								tableOrders.changeSelection(row, 4, false,
-										false);
+				int answer = JOptionPane.showConfirmDialog(StockOrderPanel.this, "Are you sure your order is complete?\nThis will submit the current order", "Decision time", JOptionPane.YES_NO_OPTION);
+				if (answer == JOptionPane.YES_OPTION){
+					//create individual objects for all products selected and add them to a roductsToOrder list.
+					//Use this list to create a new StockOrder object and add it to the list of existing stockOrders
+					ArrayList<ProductToOrder> productsToOrder = new ArrayList<ProductToOrder>();
+					for (int i = 0; i < arrayTemporaryOrder.size(); i++) {
+						Object object[] = arrayTemporaryOrder.get(i);
+						int id = (int) object[0];
+						String name = (String) object[1];
+						Supplier supplier = null;
+	
+						for (Supplier sup : Shop.getSuppliers()) {
+							if (sup.getSupplierName().equalsIgnoreCase(object[4].toString())) {
+								supplier = sup;
+								break;
 							}
-
-						});
-				scrollPaneOrders.getViewport().add((tableOrders));
-				StockOrderPanel.this.repaint();
-
-				// clear the temporaryArrayOforders
-				arrayTemporaryOrder = new ArrayList<Object[]>();
+						}
+						String category = (String) object[2];
+						double price = (double) object[3];
+						int amount = (int) object[8];
+	
+						productsToOrder.add(new ProductToOrder(id, name, supplier,
+								category, price, false, amount));
+					}
+					StockOrder sO = new StockOrder(productsToOrder, GUIBackBone.getLoggedStaffMember());
+					Shop.getStockOrders().add(sO);
+	
+					displayOrderTable();
+					// clear the temporaryArrayOforders
+					arrayTemporaryOrder = new ArrayList<Object[]>();
+					displayErrorMessage("Order has been submitted", Color.blue);
+				}
 			} else {
 				displayErrorMessage("No order to submit", Color.red);
 			}
 		}// end actionPerformed
 
 	}// end inner class
+
+	public static ArrayList<Object[]> getArrayTemporaryOrder() {
+		return arrayTemporaryOrder;
+	}
+
+	public static void setArrayTemporaryOrder(ArrayList<Object[]> x) {
+		arrayTemporaryOrder = x;
+	}
 }// end class

@@ -1,16 +1,9 @@
 package gui;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Scanner;
-
-import javax.swing.JFrame;
-
-import org.codehaus.jackson.map.ObjectMapper;
+import java.util.Date;
 
 import data.Customer;
 import data.CustomerOrder;
@@ -18,9 +11,9 @@ import data.JsonExample;
 import data.Product;
 import data.ProductToOrder;
 import data.Staff;
-import data.Supplier;
 //import data.Product;
 import data.StockOrder;
+import data.Supplier;
 
 
 
@@ -52,6 +45,7 @@ public class Shop {
 		populateStockOrders();
 		populateCustomerOrders();
 		printCustomerOrderInvoice();
+		updateStockOrderDevilveryDates();
 		
 		//run login
 		Login login = new Login(staffMembers);
@@ -142,7 +136,6 @@ public class Shop {
 		suppliers.add(supplier2);
 		suppliers.add(supplier3);
 		suppliers.add(supplier4);
-		
 	}
 	
 	public void populateStaffMembers(){
@@ -176,8 +169,6 @@ public class Shop {
 	}
 	
 	public void populateStockOrders(){
-		//not completed as waiting for staff to be passed from login to shop
-		
 		SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		ArrayList<ProductToOrder> toOrder = new ArrayList<ProductToOrder>();
 		toOrder.add(new ProductToOrder(Shop.getProducts().get(0), 20));
@@ -191,7 +182,7 @@ public class Shop {
 			System.out.println("Order not placed as error with date");
 		}
 		
-		
+		toOrder = new ArrayList<ProductToOrder>();
 		toOrder.add(new ProductToOrder(Shop.getProducts().get(1), 5));
 		toOrder.add(new ProductToOrder(Shop.getProducts().get(2), 5));
 		
@@ -204,6 +195,7 @@ public class Shop {
 			System.out.println("Order not placed as error with date");
 		}
 
+		toOrder = new ArrayList<ProductToOrder>();
 		toOrder.add(new ProductToOrder(Shop.getProducts().get(3), 5));
 		toOrder.add(new ProductToOrder(Shop.getProducts().get(4), 5));
 		
@@ -217,6 +209,7 @@ public class Shop {
 		}
 	}
 	
+	
 	public void populateCustomerOrders(){
 		
 		/*CustomerOrder customerOrder1 = new CustomerOrder(1111, "11/08/14", 5.00, 5.65);
@@ -229,6 +222,14 @@ public class Shop {
 		customerOrders.add(customerOrder3);
 		customerOrders.add(customerOrder4);*/
 		
+	}
+	
+	public void updateStockOrderDevilveryDates(){
+		for(int i = 0; i<stockOrders.size(); i++){
+			if(stockOrders.get(i).getExpectedDeliveryDate().before(new Date())){
+				stockOrders.get(i).setCompleted(true);
+			}
+		}
 	}
 	
 	public void printCustomerOrderInvoice() {
