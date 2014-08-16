@@ -21,7 +21,7 @@ import javax.swing.table.AbstractTableModel;
 import net.miginfocom.swing.MigLayout;
 import tableModels.ProductTableModel;
 
-public class CurrentStockOrderPanel extends JDialog implements ActionListener  {
+public class CurrentStockOrderDialog extends JDialog implements ActionListener  {
 	private static final long serialVersionUID = 1L;
 	private JTable table;
 	private JButton btnOk = new JButton("Ok");
@@ -33,11 +33,11 @@ public class CurrentStockOrderPanel extends JDialog implements ActionListener  {
 	private JButton btnRemoveSelected = new JButton ("Remove selected");
 	
 	
-	public CurrentStockOrderPanel() {
+	public CurrentStockOrderDialog() {
 		
 	}
 	
-	public CurrentStockOrderPanel(ArrayList<Object[]> list) {
+	public CurrentStockOrderDialog(ArrayList<Object[]> list) {
 		
 		
 		scrollPane = new JScrollPane();
@@ -135,7 +135,7 @@ public class CurrentStockOrderPanel extends JDialog implements ActionListener  {
 		         int row = target.getSelectedRow();
 		         int cell = 0;
 		         
-		         int choice = JOptionPane.showConfirmDialog(CurrentStockOrderPanel.this, "Are you sure you want to remove this row?","Remove?",JOptionPane.YES_NO_OPTION);
+		         int choice = JOptionPane.showConfirmDialog(CurrentStockOrderDialog.this, "Are you sure you want to remove this row?","Remove?",JOptionPane.YES_NO_OPTION);
 		         if (choice==JOptionPane.YES_OPTION){
 			        ProductTableModel model = (ProductTableModel) target.getModel();
 			        model.removeRow(row);
