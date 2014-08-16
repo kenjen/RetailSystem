@@ -2,6 +2,7 @@ package gui;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,8 +10,11 @@ import java.util.Scanner;
 
 import javax.swing.JFrame;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
 import data.Customer;
 import data.CustomerOrder;
+import data.JsonExample;
 import data.Product;
 import data.ProductToOrder;
 import data.Staff;
@@ -156,56 +160,19 @@ public class Shop {
 	}
 	
 	public void populateProducts(){
-		//load products from file
-		Scanner in = null;
-		try {
-			in = new Scanner(new FileReader("Products.txt"));
-			int repititions = in.nextInt();
-			int nextInt = in.nextInt();
-			Product loadedProduct;
-			for(int i=0; i<repititions; i++){
-				int supplierId = in.nextInt();
-				for(Supplier supplier : suppliers){
-					if(supplierId == supplier.getSupplierId()){
-						loadedProduct = new Product(in.next(), in.next(), in.nextInt(), in.nextDouble(), supplier, in.nextBoolean(), in.nextInt());
-						loadedProduct.setDeleted(in.nextBoolean());
-						loadedProduct.setDiscounted(in.nextBoolean());
-						loadedProduct.setDiscountedPercentage(in.nextDouble());
-						loadedProduct.setFlaggedForOrder(in.nextBoolean());
-						loadedProduct.setId(in.nextInt());
-						products.add(loadedProduct);
-						break;
-					}
-				}
-			}
-			Product.setNextId(nextInt);
-		}catch (FileNotFoundException e) {
-			//if error occurred load default values
-			Product p1 = new Product("Pear", "Food", 70, 0.23, suppliers.get(0), true, 80);
+			/*Product p1 = new Product("Pear", "Food", 70, 0.23, suppliers.get(0), true, 80);
 			Product p2 = new Product("Coat", "Clothing", 50, 29.99, suppliers.get(1), true, 10);
 			Product p3 = new Product("Trousers", "Clothing", 80, 40.0, suppliers.get(1), true, 15);
 			Product p4 = new Product("Ham", "Food", 120, 4.50, suppliers.get(0), true, 60);
 			Product p5 = new Product("Broom", "Hygene", 20, 12.0, suppliers.get(3), true, 3);
 			
-			products.add(p1);
-			products.add(p2);
-			products.add(p3);
-			products.add(p4);
-			products.add(p5);
+			JsonExample.saveProductToFile(p1);
+			JsonExample.saveProductToFile(p2);
+			JsonExample.saveProductToFile(p3);
+			JsonExample.saveProductToFile(p4);
+			JsonExample.saveProductToFile(p5);*/
 			
-			for(Product product : products){
-				System.out.println("Product: "+product.getName()+" Category: "+product.getCategory()+
-						" quantity: "+product.getQuantity()+" Price: "+product.getPrice()+
-						" Supplier: "+product.getSupplier().getSupplierName()+
-						" Availability: "+product.isAvailable() +
-						"Low Stock Order: "+product.getLowStockOrder());
-			}
-			e.printStackTrace();
-		}finally{
-			if(in!=null){
-				in.close();
-			}
-		}
+			products = JsonExample.readProductsFromFile();
 	}
 	
 	public void populateStockOrders(){
