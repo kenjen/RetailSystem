@@ -10,12 +10,17 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import data.Product;
+import data.ProductToOrder;
 import data.Supplier;
 
 
 public class SupplierPanel extends JPanel{
 	private Supplier supplier;
 	private static ArrayList<Supplier> suppliers = new ArrayList<Supplier>();
+	private static ArrayList<Product> products = new ArrayList<Product>();
+	
 	private JLabel title;
 	private DefaultListModel listModel ;
 	private JList suppliersList;
@@ -75,7 +80,9 @@ public class SupplierPanel extends JPanel{
 		JPanel addPanel= new JPanel();
 		addPanel.setBackground(Color.lightGray);
 		addPanel.setBorder(BorderFactory.createLineBorder(Color.red));
-		JButton add = new JButton("ADD New Supplier ");
+		JLabel newSupplier = new JLabel("CREATE NEW SUPPLIER");
+		addPanel.add(newSupplier);
+		JButton add = new JButton("SUBMIT");
 		add.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				createSupplier();
@@ -99,6 +106,8 @@ public class SupplierPanel extends JPanel{
 		JPanel editPanel= new JPanel();
 		editPanel.setBackground(Color.lightGray);
 		editPanel.setBorder(BorderFactory.createLineBorder(Color.red));
+		JLabel editS = new JLabel("EDIT SUPPLIER DETAILS");
+		editPanel.add(editS);
 		JButton edit = new JButton(editSupplier);
 		edit.setActionCommand(editSupplier);
 		edit.addActionListener(new Edit());
@@ -115,7 +124,7 @@ public class SupplierPanel extends JPanel{
 		editPanel.add(editNameField);
 		editPanel.add(addressLabel);
 		editPanel.add(editAddressField);
-		JButton edited = new JButton("ADD Edited Supplier");
+		JButton edited = new JButton("SUBMIT");
 		edited.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				addEditedSupplier();
@@ -140,6 +149,23 @@ public class SupplierPanel extends JPanel{
 			}
 		});
 		deletePanel.add(showDeleted);
+		
+		JLabel search = new JLabel(" SEARCH FOR A SUPPLIER BY NAME");
+		final JTextField searchField = new JTextField (20); 
+		JButton searchSupplier = new JButton ("SEARCH");
+		searchSupplier.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				for(Supplier supplier:suppliers){
+					if(searchField.getText().equalsIgnoreCase(supplier.getSupplierName())){
+						JOptionPane.showMessageDialog(null, "Found it! Supplier id is: "+ supplier.getSupplierId());
+					break;
+					}
+				}
+			}
+		});
+		deletePanel.add(search);
+		deletePanel.add(searchField);
+		deletePanel.add(searchSupplier);
 		add(deletePanel, BorderLayout.PAGE_END);
 
 
@@ -204,20 +230,23 @@ public class SupplierPanel extends JPanel{
 		public void actionPerformed(ActionEvent e) {
 
 			Supplier tempSupplier = null;
-			for(Supplier supplier:suppliers){	
-				int index = suppliersList.getSelectedIndex();
-				tempSupplier = suppliers.get(index);
-				int id = tempSupplier.getSupplierId( );
-				String idS = Integer.toString(id);
+			int index = suppliersList.getSelectedIndex();
+			if (index != -1) {
+				for(Supplier supplier:suppliers){
+					tempSupplier = suppliers.get(index);
+					int id = tempSupplier.getSupplierId( );
+					String idS = Integer.toString(id);
 
-				if(supplier.getSupplierId()==id){
-					editIdField.setText(idS);
-					editNameField.setText(supplier.getSupplierName());
-					editAddressField.setText(supplier.getSupplierAddress());
+					if(supplier.getSupplierId()==id){
+						editIdField.setText(idS);
+						editNameField.setText(supplier.getSupplierName());
+						editAddressField.setText(supplier.getSupplierAddress());
+					}
 				}
-				
+			}
+			else{
+				JOptionPane.showMessageDialog(null, "Please select from the list a supplier to edit ");
 			}	
-
 		}
 	}
 
@@ -255,5 +284,6 @@ public class SupplierPanel extends JPanel{
 			}
 		}
 	}
+	
+	
 }
-

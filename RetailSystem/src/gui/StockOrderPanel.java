@@ -413,7 +413,7 @@ public class StockOrderPanel extends JPanel {
 			         for(StockOrder order:Shop.getStockOrders()){
 			        	 
 			         }
-			         new PopupDialog(text);
+			         //new PopupDialog(text);
 			      }
 			}
 			

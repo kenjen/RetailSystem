@@ -121,6 +121,10 @@ public class Product {
 	public void setDiscounted(boolean discounted) {
 		this.discounted = discounted;
 	}
+	
+	public static void setNextId(int tempNextId){
+		nextId = tempNextId;
+	}
 
 	public double getDiscountedPercentage() {
 		return discountedPercentage;

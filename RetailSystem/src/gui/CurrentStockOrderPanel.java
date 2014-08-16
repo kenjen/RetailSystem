@@ -28,11 +28,11 @@ public class CurrentStockOrderPanel extends JDialog implements ActionListener  {
 		JButton btnOk = new JButton("Ok");
 		btnOk.addActionListener(this);
 		
-		JLabel lblText = new JLabel(text);
+		/*JLabel lblText = new JLabel(text);
 		contentPanePanel.add(lblText, "wrap, push");
 		contentPanePanel.add(btnOk,"pushx, alignx center");
 		setContentPane(scrollPane);
-		
+		*/
 		pack();
 		setVisible(true);
 	}

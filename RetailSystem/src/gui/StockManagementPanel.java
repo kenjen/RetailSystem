@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -28,6 +30,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 public class StockManagementPanel extends JSplitPane{
@@ -59,17 +62,20 @@ public class StockManagementPanel extends JSplitPane{
 	private JButton btnDisplayLowStock;
 	private JButton btnDisplayDeletedStock;
 	private JButton btnDisplayAllProducts;
+	private JButton btnRestoreDefaultProducts;
 	private JButton btnFlagForOrder;
 	private JButton btnDiscountProduct;
 	private JButton btnDeleteProduct;
+	private JButton btnRestoreProduct;
 	
+	private NumberFormat formatter;
 	
 	
 
 	public StockManagementPanel() {
 		
 		setupList();
-		
+		formatter = NumberFormat.getCurrencyInstance();
 		
 		//Add scroll pane to left size with list of products
 		JScrollPane scrollPane = new JScrollPane(list);
@@ -86,9 +92,10 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//text field to enter id of product
 		txtId = new JTextField();
-		panel.add(txtId, "cell 5 2,alignx center");
+		panel.add(txtId, "cell 5 2, center");
 		txtId.setHorizontalAlignment(SwingConstants.CENTER);
 		txtId.setColumns(20);
+		txtId.setFocusTraversalKeysEnabled(false);
 		txtId.setText("Enter Id");
 		//set text field to blank when focus gained
 		txtId.addFocusListener(new FocusListener(){
@@ -101,6 +108,21 @@ public class StockManagementPanel extends JSplitPane{
 				//Do Nothing
 			}
 			
+		});
+		txtId.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			@Override
+			public void keyReleased(KeyEvent k) {
+				if(k.getKeyCode() == KeyEvent.VK_ENTER){
+					loadProductDetails();
+				}else if(k.getKeyCode() == KeyEvent.VK_TAB){
+					loadProductDetails();
+					textName.requestFocusInWindow();
+				}
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
 		});
 		
 		
@@ -147,6 +169,17 @@ public class StockManagementPanel extends JSplitPane{
 			}
 		});
 		
+		
+		//Button to reset products to defaults
+		btnRestoreDefaultProducts = new JButton("Restore Defaults");
+		panel.add(btnRestoreDefaultProducts, "cell 1 5");
+		btnRestoreDefaultProducts.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				resetToDefaultValues();
+			}
+		});
+		
 				
 		//Setup button to load a products details
 		JButton btnIdConfirm = new JButton("Confirm");
@@ -180,6 +213,19 @@ public class StockManagementPanel extends JSplitPane{
 		textName = new JTextField();
 		panel.add(textName, "cell 5 6,growx");
 		textName.setColumns(10);
+		textName.setFocusTraversalKeysEnabled(false);
+		textName.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			@Override
+			public void keyReleased(KeyEvent k) {
+				if(k.getKeyCode() == KeyEvent.VK_TAB){
+					textCategory.requestFocusInWindow();
+				}
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
+		});
 		JButton btnSaveName = new JButton("Save");
 		panel.add(btnSaveName, "cell 7 6");
 		btnSaveName.addActionListener(new ActionListener(){
@@ -200,6 +246,19 @@ public class StockManagementPanel extends JSplitPane{
 		textCategory = new JTextField();
 		panel.add(textCategory, "cell 5 8,growx");
 		textCategory.setColumns(10);
+		textCategory.setFocusTraversalKeysEnabled(false);
+		textCategory.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			@Override
+			public void keyReleased(KeyEvent k) {
+				if(k.getKeyCode() == KeyEvent.VK_TAB){
+					textQuantity.requestFocusInWindow();
+				}
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
+		});
 		JButton btnSaveCategory = new JButton("Save");
 		panel.add(btnSaveCategory, "cell 7 8");
 		btnSaveCategory.addActionListener(new ActionListener(){
@@ -220,6 +279,19 @@ public class StockManagementPanel extends JSplitPane{
 		textQuantity = new JTextField();
 		panel.add(textQuantity, "cell 5 10,growx");
 		textQuantity.setColumns(10);
+		textQuantity.setFocusTraversalKeysEnabled(false);
+		textQuantity.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			@Override
+			public void keyReleased(KeyEvent k) {
+				if(k.getKeyCode() == KeyEvent.VK_TAB){
+					textThreshold.requestFocusInWindow();
+				}
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
+		});
 		JButton btnSaveQuantity = new JButton("Save");
 		panel.add(btnSaveQuantity, "cell 7 10");
 		btnSaveQuantity.addActionListener(new ActionListener(){
@@ -240,6 +312,19 @@ public class StockManagementPanel extends JSplitPane{
 		textThreshold = new JTextField();
 		panel.add(textThreshold, "cell 5 12,growx");
 		textThreshold.setColumns(10);
+		textThreshold.setFocusTraversalKeysEnabled(false);
+		textThreshold.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			@Override
+			public void keyReleased(KeyEvent k) {
+				if(k.getKeyCode() == KeyEvent.VK_TAB){
+					textPrice.requestFocusInWindow();
+				}
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
+		});
 		JButton btnSaveThreshold = new JButton("Save");
 		panel.add(btnSaveThreshold, "cell 7 12");
 		btnSaveThreshold.addActionListener(new ActionListener(){
@@ -260,6 +345,19 @@ public class StockManagementPanel extends JSplitPane{
 		textPrice = new JTextField();
 		panel.add(textPrice, "cell 5 14,growx");
 		textPrice.setColumns(10);
+		textPrice.setFocusTraversalKeysEnabled(false);
+		textPrice.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			@Override
+			public void keyReleased(KeyEvent k) {
+				if(k.getKeyCode() == KeyEvent.VK_TAB){
+					comboSelectSupplier.requestFocusInWindow();
+				}
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {}
+		});
 		JButton btnSavePrice = new JButton("Save");
 		panel.add(btnSavePrice, "cell 7 14");
 		btnSavePrice.addActionListener(new ActionListener(){
@@ -314,10 +412,19 @@ public class StockManagementPanel extends JSplitPane{
 			}
 		});
 		
+		JButton btnSaveAll = new JButton("Save All");
+		panel.add(btnSaveAll, "cell 7 19");
+		btnSaveAll.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				saveAll();
+			}
+		});
+		
 		
 		//mark product as low stock and needing orders
 		btnFlagForOrder = new JButton("Flag For Order");
-		panel.add(btnFlagForOrder, "cell 4 20");
+		panel.add(btnFlagForOrder, "cell 4 20, center");
 		btnFlagForOrder.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -328,7 +435,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//discount product by percentage
 		btnDiscountProduct = new JButton("Discount");
-		panel.add(btnDiscountProduct, "cell 5 20,grow");
+		panel.add(btnDiscountProduct, "cell 4 19, center");
 		btnDiscountProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -339,11 +446,22 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//Delete product button
 		btnDeleteProduct = new JButton("Delete");
-		panel.add(btnDeleteProduct, "cell 6 20,grow");
+		panel.add(btnDeleteProduct, "cell 6 19, center");
 		btnDeleteProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				deleteProduct();
+			}
+		});
+		
+		
+		//Restore product button
+		btnRestoreProduct = new JButton("Restore...");
+		panel.add(btnRestoreProduct, "cell 6 20, center");
+		btnRestoreProduct.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				restoreProduct();
 			}
 		});
 		
@@ -367,6 +485,7 @@ public class StockManagementPanel extends JSplitPane{
 			textName.setText("");
 			textCategory.setText("");
 			textQuantity.setText("");
+			textThreshold.setText("");
 			textPrice.setText("");
 			textDiscountedPrice.setText("");
 			txtFlaggedForOrder.setVisible(false);
@@ -384,7 +503,7 @@ public class StockManagementPanel extends JSplitPane{
 								if(comboSelectSupplier.getSelectedIndex()>0){
 									for(Supplier supplier : Shop.getSuppliers()){
 										if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
-											Product product = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Double.parseDouble(textPrice.getText()), supplier, true, 20);
+											Product product = new Product(textName.getText().replaceAll("\\s", "_"), textCategory.getText().replaceAll("\\s", "_"), Integer.parseInt(textQuantity.getText()), Double.parseDouble(textPrice.getText()), supplier, true, 20);
 											product.setLowStockOrder(Integer.parseInt(textThreshold.getText()));
 											Shop.getProducts().add(product);
 											txtId.setText(""+product.getId());
@@ -438,9 +557,27 @@ public class StockManagementPanel extends JSplitPane{
                                   JOptionPane.YES_NO_OPTION,
                                   JOptionPane.WARNING_MESSAGE); 
 						if (selectedOption == JOptionPane.YES_OPTION) {
-							product.setDeleted(true);
-							System.out.println("Product deleted succesfully");
-							setupList();
+							//check if user wants to mark as deleted or completly remove record
+							Object[] options = {"Mark", "Remove"};
+							int permanentlyDelete = JOptionPane.showOptionDialog(null,
+									"Mark as deleted or permanently remove?",
+									"Warning",
+									JOptionPane.YES_NO_OPTION,
+									JOptionPane.WARNING_MESSAGE,
+									null,     //do not use a custom Icon
+									options,  //the titles of buttons
+									options[0]); //default button title
+							if(permanentlyDelete == JOptionPane.YES_OPTION){
+								product.setDeleted(true);
+								System.out.println("Product marked as deleted succesfully");
+								saveDetails();
+								setupList();
+							}else{
+								Shop.getProducts().remove(product);
+								System.out.println("Product deleted from system succesfully");
+								saveDetails();
+								setupList();
+							}
 						}
 					}
 				}
@@ -475,7 +612,8 @@ public class StockManagementPanel extends JSplitPane{
 						String input = JOptionPane.showInputDialog("Enter percentage to discount \n"+"Pevious discount "+product.getDiscountedPercentage()+"%");
 						if(input!=null){
 							try{
-								Double percent = Double.parseDouble(input);
+								String test = String.format("%.2f", input);
+								Double percent = Double.parseDouble(test);
 								product.setDiscountedPercentage(percent);
 								if(percent==0){
 									product.setDiscounted(false);
@@ -591,6 +729,66 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
+	//resets the product list to original hard coded values
+	public void resetToDefaultValues(){
+		int selectedOption = JOptionPane.showConfirmDialog(null, 
+                "Are you sure you wish to restore product defaults?", 
+                "Warning", 
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE); 
+		if (selectedOption == JOptionPane.YES_OPTION) {
+			Shop.getProducts().clear();
+			Product.setNextId(0);
+			Product p1 = new Product("Pear", "Food", 70, 0.23, Shop.getSuppliers().get(0), true, 80);
+			Product p2 = new Product("Coat", "Clothing", 50, 29.99, Shop.getSuppliers().get(1), true, 10);
+			Product p3 = new Product("Trousers", "Clothing", 80, 40.0, Shop.getSuppliers().get(1), true, 15);
+			Product p4 = new Product("Ham", "Food", 120, 4.50, Shop.getSuppliers().get(0), true, 60);
+			Product p5 = new Product("Broom", "Hygene", 20, 12.0, Shop.getSuppliers().get(2), true, 3);
+			
+			Shop.getProducts().add(p1);
+			Shop.getProducts().add(p2);
+			Shop.getProducts().add(p3);
+			Shop.getProducts().add(p4);
+			Shop.getProducts().add(p5);
+			
+			saveDetails();
+			setupList();
+		}
+	}
+	
+	
+	public void restoreProduct(){
+		int id = 0;
+		String tempId = JOptionPane.showInputDialog("Enter id of product to restore");
+		try{
+			id = Integer.parseInt(tempId);
+			for(Product product : Shop.getProducts()){
+				if(product.getId() == id && product.isDeleted()){
+					product.setDeleted(false);
+					System.out.println("Product unmarked as deleted succesfully");
+					setupList();
+				}
+			}
+		}catch(NumberFormatException nfe){
+			System.out.println("number entered not an integer");
+		}
+		saveDetails();
+	}
+	
+	
+	public void saveAll(){
+		saveCategory();
+		saveName();
+		savePrice();
+		saveSupplier();
+		saveThreshold();
+		saveQuantity();
+		
+		saveDetails();
+		setupList();
+	}
+	
+	
 	public void saveCategory(){
 		int id = 0;
 		if(productLoaded){
@@ -599,7 +797,7 @@ public class StockManagementPanel extends JSplitPane{
 				id = Integer.parseInt(tempId);
 				for(Product product : Shop.getProducts()){
 					if(product.getId() == id && !(product.isDeleted())){
-						product.setCategory(textCategory.getText());
+						product.setCategory(textCategory.getText().replaceAll("\\s", "_"));
 						System.out.println("Category saved succesfully");
 					}
 				}
@@ -616,14 +814,18 @@ public class StockManagementPanel extends JSplitPane{
 		BufferedWriter writer = null;
 		String textToSave = "";
 		int numberOfProducts = 0;
+		int nextId = 0;
 		for(Product product : Shop.getProducts()){
 			numberOfProducts++;
-			
+			if(product.getId()>nextId){
+				nextId = product.getId();
+			}
 			textToSave = textToSave + "\n" + product.getSupplier().getSupplierId() + " " + product.getName() + " " + product.getCategory() + " " + product.getQuantity() + " " + product.getPrice() + " " + product.isAvailable() + " " + product.getLowStockOrder() + " " + product.isDeleted() + " " + product.isDiscounted() + " " + product.getDiscountedPercentage() + " " + product.isFlaggedForOrder() + " " + product.getId() + " ";
 			 
 		}
-		textToSave = numberOfProducts + " " + textToSave;
+		textToSave = numberOfProducts + " " + nextId + " " + textToSave;
 		System.out.println(textToSave);
+		
 		try{
 			writer = new BufferedWriter( new FileWriter( "Products.txt"));
 			writer.write(textToSave);
@@ -650,7 +852,7 @@ public class StockManagementPanel extends JSplitPane{
 				id = Integer.parseInt(tempId);
 				for(Product product : Shop.getProducts()){
 					if(product.getId() == id && !(product.isDeleted())){
-						product.setName(textName.getText());
+						product.setName(textName.getText().replaceAll("\\s", "_"));
 						System.out.println("Name saved succesfully");
 					}
 				}
@@ -663,15 +865,17 @@ public class StockManagementPanel extends JSplitPane{
 	
 	public void savePrice(){
 		int id = 0;
-		int price = 0;
+		double price = 0;
 		if(productLoaded){
 			String tempId = txtId.getText();
 			String tempPrice = textPrice.getText();
 			try{
 				id = Integer.parseInt(tempId);
-				price = Integer.parseInt(tempPrice);
+				price = Double.parseDouble(tempPrice);
 				for(Product product : Shop.getProducts()){
 					if(product.getId() == id && !(product.isDeleted())){
+						String test = String.format("%.2f", price);
+						price = Double.parseDouble(test);
 						product.setPrice(price);
 						System.out.println("Price saved succesfully");
 						loadProductDetails();
