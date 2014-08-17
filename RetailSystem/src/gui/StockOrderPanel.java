@@ -444,9 +444,27 @@ public class StockOrderPanel extends JPanel {
 			         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 			         DecimalFormat df = new DecimalFormat("#.00");
 			         String htmlText = "<html><head><style>th {color:#305EE3;font-variant:small-caps;}</style></head>";
+			         
+			         //when is completed is checked do this
+			         if(thisOrder.isCompleted() ){
+			        	 
+			        	    Date now = new Date();
+			        	    String strDate = sdf.format(now);
+			        	    
+			        	    
+			        	    
 			         htmlText += "<h2>Order details:</h2><table border='1'><tr><th>ID</th><th>Date of creation</th><th>Expected delivery date</th><th>Staff member</th><th>Total</th></tr>";
-			         htmlText += "<tr><td>"+thisOrder.getId()+"</td></td>"+sdf.format(thisOrder.getDate())+"</td><td>"+sdf.format(thisOrder.getExpectedDeliveryDate())+"</td><td>"+GUIBackBone.getLoggedStaffMember().getName()+" "+GUIBackBone.getLoggedStaffMember().getSurname()+"</td><td>"+df.format(thisOrder.getTotal())+"</td></tr>";
+			         htmlText += "<tr><td>"+thisOrder.getId()+"</td></td>"+sdf.format(thisOrder.getDate())+"</td><td>"+"Delivered on " +strDate+"</td><td>"+GUIBackBone.getLoggedStaffMember().getName()+" "+GUIBackBone.getLoggedStaffMember().getSurname()+"</td><td>"+df.format(thisOrder.getTotal())+"</td></tr>";
 			         htmlText += "</table><br><h2>Products:</h2><table border='1'><tr><th>ID</th><th>Name</th><th>Supplier</th><th>Category</th><th>Price</th><th>Amount</th><th>Total</th></tr>";
+			         }
+			         
+			         //displays expected delivery time / not yet delivered
+			         else{ 			        	 
+			        	 htmlText += "<h2>Order details:</h2><table border='1'><tr><th>ID</th><th>Date of creation</th><th>Expected delivery date</th><th>Staff member</th><th>Total</th></tr>";
+				         htmlText += "<tr><td>"+thisOrder.getId()+"</td></td>"+sdf.format(thisOrder.getDate())+"</td><td>"+sdf.format(thisOrder.getExpectedDeliveryDate())+"</td><td>"+GUIBackBone.getLoggedStaffMember().getName()+" "+GUIBackBone.getLoggedStaffMember().getSurname()+"</td><td>"+df.format(thisOrder.getTotal())+"</td></tr>";
+				         htmlText += "</table><br><h2>Products:</h2><table border='1'><tr><th>ID</th><th>Name</th><th>Supplier</th><th>Category</th><th>Price</th><th>Amount</th><th>Total</th></tr>";
+				        
+			         }
 			         for(ProductToOrder product:thisOrder.getProductsToOrder()){
 			        	 htmlText += product.toHtmlString();
 			         }
