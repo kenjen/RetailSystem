@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
@@ -49,8 +51,7 @@ public class CustomerOrderPanel extends JPanel{
 	private JTable tableAvailableProducts;
 	private JTable tableOrders;
 	private JLabel lblPreviousCustomerOrder;
-	private Object[][] ordersArray;
-	private Object[][] ordersArrayOfSelectedCustomer;
+	private Object[][] arrayOrders;
 	private JScrollPane scrollPaneForOrdersTable;
 	private ProductTableModel tableModelForOrdersTable;
 	private JButton btnDisplayOrdersForSelectedCustomer = new JButton("Customer Orders");
@@ -59,6 +60,7 @@ public class CustomerOrderPanel extends JPanel{
 	private boolean isActiveCustomerOrderTablePopulated;
 	private JLabel lblError = new JLabel("");
 	private Timer timer;
+	private String typeOfOrder = "All";
 	
 	/**
 	 * Adds all the GUI components on the panel
@@ -82,6 +84,7 @@ public class CustomerOrderPanel extends JPanel{
 		//allow for auto-completion
 		comboSelectCustomer.setEditable(true);
 		AutoCompleteDecorator.decorate(comboSelectCustomer);
+		comboSelectCustomer.getEditor().getEditorComponent().addKeyListener(new ComboBoxKeyListener() );
 		
 		btnSelectCustomer = new JButton("Select");
 		add(btnSelectCustomer);
@@ -178,6 +181,7 @@ public class CustomerOrderPanel extends JPanel{
 		scrollPaneForOrdersTable = new JScrollPane();
 		add(scrollPaneForOrdersTable, "span 5 3, grow, push");
 		displayOrderTable(false);
+		typeOfOrder = "All";
 		
 		JPanel oneCellPanel = new JPanel();
 		oneCellPanel.setLayout(new MigLayout());
@@ -190,6 +194,41 @@ public class CustomerOrderPanel extends JPanel{
 		add(oneCellPanel, "aligny top");
 		
 	}//end constructor
+	
+	/**
+	 * Handles enter pressed on the combo box. Selects the Customer and populates table if any products have been ordered
+	 */
+	public class ComboBoxKeyListener implements KeyListener{
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if(e.getKeyCode() == KeyEvent.VK_ENTER){
+				String concatenatedName = comboSelectCustomer.getSelectedItem().toString();
+				if(getCustomerFromConcatenatedName(concatenatedName) != null){
+					selectedCustomer = getCustomerFromConcatenatedName(concatenatedName);
+					lblActiveCustomer.setText(selectedCustomer.getCustomerFName()+" "+selectedCustomer.getCustomerLName());
+					lblActiveCustomer.setForeground(Color.blue);
+				}else{
+					lblActiveCustomer.setText("none");
+					lblActiveCustomer.setForeground(Color.red);
+					displayErrorMessage("No such customer in the list", Color.red);
+				}
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
 	
 	/**
 	 *This handler is called when selecting customer. Selects the customer object and modifies appropriate label.
@@ -281,6 +320,7 @@ public class CustomerOrderPanel extends JPanel{
 					
 					//update previousCustomerOrderTable with the new order.
 					displayOrderTable(false);
+					typeOfOrder = "All";
 				}//end else
 			}//end if
 		}//end actionPerformed()
@@ -297,19 +337,12 @@ public class CustomerOrderPanel extends JPanel{
 			if(selectedCustomer != null && getSelectedCustomerOrders() != null){
 				isActiveCustomerOrderTablePopulated = true;
 				displayOrderTable(true);
+				typeOfOrder = "Customer";
 			}else{
 				System.out.println("clearTable");
 				String columnNames1[] = {"Id","Customer","Staff","Date","Total Net","Total Gross","Completed?"};
-				Object[][] emptyObjectArray = new Object[1][7];
-				emptyObjectArray[0][0] = "";
-				emptyObjectArray[0][1] = "";
-				emptyObjectArray[0][2] = "";
-				emptyObjectArray[0][3] = "";
-				emptyObjectArray[0][4] = "";
-				emptyObjectArray[0][5] = "";
-				emptyObjectArray[0][6] = "";
 				
-				tableModelForOrdersTable = new ProductTableModel(emptyObjectArray, columnNames1);
+				tableModelForOrdersTable = new ProductTableModel(arrayOrders, columnNames1);
 				tableOrders = new JTable(tableModelForOrdersTable);
 				scrollPaneForOrdersTable.getViewport().add(tableOrders);
 				displayErrorMessage("No previous orders found for selected customer", Color.red);
@@ -327,6 +360,7 @@ public class CustomerOrderPanel extends JPanel{
 		public void actionPerformed(ActionEvent e) {
 			isActiveCustomerOrderTablePopulated = false;
 			displayOrderTable(false);
+			typeOfOrder = "All";
 		}//end actionPerformed
 		
 	}//end inner class ButtonDisplayOrdersForAllCustomersHandler
@@ -340,24 +374,48 @@ public class CustomerOrderPanel extends JPanel{
 		public void actionPerformed(ActionEvent e) {
 			//find all orders that have "completed" value changed to true
 			Object[][] orders = null;
-			if (isActiveCustomerOrderTablePopulated == true){
-				orders = CustomerOrderPanel.this.getOrdersArrayOfSelectedCustomer();
-			}else{
+			if(CustomerOrderPanel.this.getOrdersArray() != null){
 				orders = CustomerOrderPanel.this.getOrdersArray();
-			}
-			for(Object[] x:orders){
-				if((boolean) x[6] == true){
-					changeOrderCompletion((int)x[0], true);
-				}else{
-					changeOrderCompletion((int)x[0], false);
+				int counter = 0;
+				boolean found = false;
+				boolean foundInvalidOperation = false;
+				for(Object[] x:orders){
+					if((boolean) x[6] == true && Shop.getCustomerOrders().get(counter).isComplete() == false){
+						changeOrderCompletion((int)x[0], true);
+						found = true;
+					}else if((boolean) x[6] == false && Shop.getCustomerOrders().get(counter).isComplete() == true){
+						foundInvalidOperation = true;
+					}
+					counter ++;
 				}
+				if(found){
+					AbstractTableModel model = (AbstractTableModel) tableOrders.getModel();
+					model.fireTableDataChanged();
+					
+					//update previousCustomerOrderTable with the new order.
+					if(typeOfOrder.equals("All")){
+						displayOrderTable(false);
+						typeOfOrder = "All";
+					}else{
+						displayOrderTable(true);
+						typeOfOrder = "Customer";
+					}
+					displayErrorMessage("Order(s) has(have) been updated successfully.", Color.BLUE);
+				}else if(foundInvalidOperation){
+					if(typeOfOrder.equals("All")){
+						displayOrderTable(false);
+						typeOfOrder = "All";
+					}else{
+						displayOrderTable(true);
+						typeOfOrder = "Customer";
+					}
+					displayErrorMessage("You cannot change the status of already completed orders!", Color.red);
+				}else{
+					displayErrorMessage("Nothing to update", Color.red);
+				}
+			}else{
+				displayErrorMessage("Nothing to update", Color.red);
 			}
-			AbstractTableModel model = (AbstractTableModel) tableOrders.getModel();
-			model.fireTableDataChanged();
-			
-			//update previousCustomerOrderTable with the new order.
-			displayOrderTable(false);
-			displayErrorMessage("Order(s) has(have) been updated successfully.", Color.BLUE);
 			
 		}//end actionPerformed
 		
@@ -416,19 +474,11 @@ public class CustomerOrderPanel extends JPanel{
 	}
 	
 	public Object[][] getOrdersArray() {
-		return ordersArray;
+		return arrayOrders;
 	}
 
-	public void setOrdersArray(Object[][] ordersArray) {
-		this.ordersArray = ordersArray;
-	}
-
-	public Object[][] getOrdersArrayOfSelectedCustomer() {
-		return ordersArrayOfSelectedCustomer;
-	}
-
-	public void setOrdersArrayOfSelectedCustomer(Object[][] ordersArrayOfSelectedCustomer) {
-		this.ordersArrayOfSelectedCustomer = ordersArrayOfSelectedCustomer;
+	public void setOrdersArray(Object[][] arrayOrders) {
+		this.arrayOrders = arrayOrders;
 	}
 	
 	/**
@@ -488,20 +538,20 @@ public class CustomerOrderPanel extends JPanel{
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		DecimalFormat df = new DecimalFormat("#.00");
 		ArrayList<CustomerOrder> currentCustomerOrders = Shop.getCustomerOrders();
-		ordersArray = new Object[currentCustomerOrders.size()][7];
+		arrayOrders = new Object[currentCustomerOrders.size()][7];
 		
 		//if forCustomerOnly = false then display all orders in the CustomeOrder array, otherwise only for the selected customer
 		if(forCustomerOnly == false){
 			for(int i=0; i< currentCustomerOrders.size(); i++){
-				ordersArray[i][0] = currentCustomerOrders.get(i).getId();
-				ordersArray[i][1] = currentCustomerOrders.get(i).getCustomer().getCustomerFName()+" "+currentCustomerOrders.get(i).getCustomer().getCustomerLName();
-				ordersArray[i][2] = currentCustomerOrders.get(i).getStaff().getName()+" "+currentCustomerOrders.get(i).getStaff().getSurname();
-				ordersArray[i][3] = sdf.format(currentCustomerOrders.get(i).getCreationDate());
-				ordersArray[i][4] = df.format(currentCustomerOrders.get(i).getTotalNet());
-				ordersArray[i][5] = df.format(currentCustomerOrders.get(i).getTotalGross());
-				ordersArray[i][6] = currentCustomerOrders.get(i).isComplete();
+				arrayOrders[i][0] = currentCustomerOrders.get(i).getId();
+				arrayOrders[i][1] = currentCustomerOrders.get(i).getCustomer().getCustomerFName()+" "+currentCustomerOrders.get(i).getCustomer().getCustomerLName();
+				arrayOrders[i][2] = currentCustomerOrders.get(i).getStaff().getName()+" "+currentCustomerOrders.get(i).getStaff().getSurname();
+				arrayOrders[i][3] = sdf.format(currentCustomerOrders.get(i).getCreationDate());
+				arrayOrders[i][4] = df.format(currentCustomerOrders.get(i).getTotalNet());
+				arrayOrders[i][5] = df.format(currentCustomerOrders.get(i).getTotalGross());
+				arrayOrders[i][6] = currentCustomerOrders.get(i).isComplete();
 			}
-			tableModelForOrdersTable = new ProductTableModel(ordersArray, columnNames1);
+			tableModelForOrdersTable = new ProductTableModel(arrayOrders, columnNames1);
 			tableOrders = new JTable(tableModelForOrdersTable);
 			tableOrders.setAutoCreateRowSorter(true);
 			
@@ -512,12 +562,12 @@ public class CustomerOrderPanel extends JPanel{
 				         JTable target = (JTable)e.getSource();
 				         int row = target.getSelectedRow();
 				         
-				         int id = (int) ordersArray[row][0];
-				         String customer = (String) ordersArray[row][1];
-				         String staff = (String) ordersArray[row][2];
-				         String date = (String) ordersArray[row][3];
-				         String totalNet = (String) ordersArray[row][4];
-				         String totalGross = (String) ordersArray[row][5];
+				         int id = (int) arrayOrders[row][0];
+				         String customer = (String) arrayOrders[row][1];
+				         String staff = (String) arrayOrders[row][2];
+				         String date = (String) arrayOrders[row][3];
+				         String totalNet = (String) arrayOrders[row][4];
+				         String totalGross = (String) arrayOrders[row][5];
 				         String htmlString = "<html><span style='color:rgb(92, 150, 238); font-size:1.2em'>Order ID:</span> "+id+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> For Customer:</span> "+
 				         customer+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> Made by staff member:</span> "+staff+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> On date:</span> "+date+"<br>";
 				         CustomerOrder doubleClickedOrder = null;
@@ -540,20 +590,20 @@ public class CustomerOrderPanel extends JPanel{
 		}else{
 			int counter = 0;
 			ArrayList<CustomerOrder> thisCustomerOrders = getSelectedCustomerOrders();
-			ordersArrayOfSelectedCustomer = new Object[thisCustomerOrders.size()][7];
+			arrayOrders = new Object[thisCustomerOrders.size()][7];
 			for(int j=0; j < thisCustomerOrders.size(); j++){
 				if(thisCustomerOrders.get(j).getCustomer().equals(selectedCustomer)){
-					ordersArrayOfSelectedCustomer[counter][0] = thisCustomerOrders.get(j).getId();
-					ordersArrayOfSelectedCustomer[counter][1] = thisCustomerOrders.get(j).getCustomer().getCustomerFName()+" "+thisCustomerOrders.get(j).getCustomer().getCustomerLName();
-					ordersArrayOfSelectedCustomer[counter][2] = thisCustomerOrders.get(j).getStaff().getName()+" "+thisCustomerOrders.get(j).getStaff().getSurname();
-					ordersArrayOfSelectedCustomer[counter][3] = sdf.format(thisCustomerOrders.get(j).getCreationDate());
-					ordersArrayOfSelectedCustomer[counter][4] = df.format(thisCustomerOrders.get(j).getTotalNet());
-					ordersArrayOfSelectedCustomer[counter][5] = df.format(thisCustomerOrders.get(j).getTotalGross());
-					ordersArrayOfSelectedCustomer[counter][6] = thisCustomerOrders.get(j).isComplete();
+					arrayOrders[counter][0] = thisCustomerOrders.get(j).getId();
+					arrayOrders[counter][1] = thisCustomerOrders.get(j).getCustomer().getCustomerFName()+" "+thisCustomerOrders.get(j).getCustomer().getCustomerLName();
+					arrayOrders[counter][2] = thisCustomerOrders.get(j).getStaff().getName()+" "+thisCustomerOrders.get(j).getStaff().getSurname();
+					arrayOrders[counter][3] = sdf.format(thisCustomerOrders.get(j).getCreationDate());
+					arrayOrders[counter][4] = df.format(thisCustomerOrders.get(j).getTotalNet());
+					arrayOrders[counter][5] = df.format(thisCustomerOrders.get(j).getTotalGross());
+					arrayOrders[counter][6] = thisCustomerOrders.get(j).isComplete();
 					counter++;
 				}
 			}
-			tableModelForOrdersTable = new ProductTableModel(ordersArrayOfSelectedCustomer, columnNames1);
+			tableModelForOrdersTable = new ProductTableModel(arrayOrders, columnNames1);
 			tableOrders = new JTable(tableModelForOrdersTable);
 			tableOrders.setAutoCreateRowSorter(true);
 			//Handle double clicking on table to display details of the double-clicked row's order
@@ -563,12 +613,12 @@ public class CustomerOrderPanel extends JPanel{
 						         JTable target = (JTable)e.getSource();
 						         int row = target.getSelectedRow();
 						         
-						         int id = (int) ordersArrayOfSelectedCustomer[row][0];
-						         String customer = (String) ordersArrayOfSelectedCustomer[row][1];
-						         String staff = (String) ordersArrayOfSelectedCustomer[row][2];
-						         String date = (String) ordersArrayOfSelectedCustomer[row][3];
-						         String totalNet = (String) ordersArrayOfSelectedCustomer[row][4];
-						         String totalGross = (String) ordersArrayOfSelectedCustomer[row][5];
+						         int id = (int) arrayOrders[row][0];
+						         String customer = (String) arrayOrders[row][1];
+						         String staff = (String) arrayOrders[row][2];
+						         String date = (String) arrayOrders[row][3];
+						         String totalNet = (String) arrayOrders[row][4];
+						         String totalGross = (String) arrayOrders[row][5];
 						         String htmlString = "<html><span style='color:rgb(92, 150, 238); font-size:1.2em'>Order ID:</span> "+id+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> For Customer:</span> "+
 						         customer+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> Made by staff member:</span> "+staff+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> On date:</span> "+date+"<br>";
 						         CustomerOrder doubleClickedOrder = null;

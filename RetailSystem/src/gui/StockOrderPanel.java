@@ -75,14 +75,14 @@ public class StockOrderPanel extends JPanel {
 		JPanel jpanel = new JPanel();
 		jpanel.setBackground(Color.BLUE);
 		jpanel.setOpaque(true);
-
-		JLabel supplier = new JLabel("Supplier:");
-		add(supplier, "split 5");
-		// jpanel.add(supplier);
 		setVisible(true);
 
 		comboSuppliers = new JComboBox(supplierNames.toArray());
+		JLabel supplier = new JLabel("Search for Supplier:");
+		add(btnDisplayAllProducts, "split 5");
+		add(supplier,"gapx 50");
 		add(comboSuppliers);
+
 		comboSuppliers.setEditable(true);
 		AutoCompleteDecorator.decorate(comboSuppliers);
 		comboSuppliers.getEditor().getEditorComponent()
@@ -106,7 +106,6 @@ public class StockOrderPanel extends JPanel {
 
 				});
 
-		add(btnDisplayAllProducts);
 		btnDisplayAllProducts.addActionListener(new ActionListener() {
 
 			@Override

@@ -78,7 +78,7 @@ public class GUIBackBone  extends JFrame{
 		setVisible(true);
 		setSize(1024,768);
 		setTitle("RetailSystem");
-		System.out.println(getClass());
+		setLocationRelativeTo(null);
 	}
 
 

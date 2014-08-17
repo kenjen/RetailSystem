@@ -5,8 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -46,6 +46,7 @@ public class Login extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		setTitle("Login");
+		setLocationRelativeTo(null);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -68,16 +69,40 @@ public class Login extends JFrame {
 			}
 			@Override
 			public void focusGained(FocusEvent arg0) {
-				passwordField.setText("");
+				//passwordField.setText("");
+				passwordField.selectAll();
 			}
 		});
-		passwordField.addKeyListener(new KeyListener() {
+		textField.addFocusListener(new FocusListener() {	
+			@Override
+			public void focusLost(FocusEvent arg0) {
+			}
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				//passwordField.setText("");
+				textField.selectAll();
+			}
+		});
+		passwordField.addKeyListener(new KeyAdapter() {
 
 			@Override
-			public void keyTyped(KeyEvent e) {}
-
-			@Override
-			public void keyReleased(KeyEvent e) {}
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER
+						&& textField.getText().length() > 0
+						&& passwordField.getPassword().length > 0) {
+					if (findLoginDetailsFromList()) {
+						//redirect to main app, set user type = admin
+						new GUIBackBone(admin, loggedStaffMember);
+						Login.this.setVisible(false);
+						dispose();
+					} else {
+						displayErrorMessage("");
+					}
+				}
+			}
+		});
+		
+		textField.addKeyListener(new KeyAdapter() {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
