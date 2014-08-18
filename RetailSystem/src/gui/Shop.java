@@ -153,19 +153,27 @@ public class Shop {
 	}
 	
 	public void populateProducts(){
-			/*Product p1 = new Product("Pear", "Food", 70, 0.23, suppliers.get(0), true, 80);
-			Product p2 = new Product("Coat", "Clothing", 50, 29.99, suppliers.get(1), true, 10);
-			Product p3 = new Product("Trousers", "Clothing", 80, 40.0, suppliers.get(1), true, 15);
-			Product p4 = new Product("Ham", "Food", 120, 4.50, suppliers.get(0), true, 60);
-			Product p5 = new Product("Broom", "Hygene", 20, 12.0, suppliers.get(3), true, 3);
-			
-			JsonExample.saveProductToFile(p1);
-			JsonExample.saveProductToFile(p2);
-			JsonExample.saveProductToFile(p3);
-			JsonExample.saveProductToFile(p4);
-			JsonExample.saveProductToFile(p5);*/
-			
 			products = JsonExample.readProductsFromFile();
+			
+			//if error occured during load, load default products
+			if(products==null){
+				System.out.println("REACHED NULL LOOP");
+				Product p1 = new Product("Pear", "Food", 70, 0.23, suppliers.get(0), true, 80);
+				Product p2 = new Product("Coat", "Clothing", 50, 29.99, suppliers.get(1), true, 10);
+				Product p3 = new Product("Trousers", "Clothing", 80, 40.0, suppliers.get(1), true, 15);
+				Product p4 = new Product("Ham", "Food", 120, 4.50, suppliers.get(0), true, 60);
+				Product p5 = new Product("Broom", "Hygene", 20, 12.0, suppliers.get(3), true, 3);
+				
+				products = new ArrayList<Product>();
+				products.add(p1);
+				products.add(p2);
+				products.add(p3);
+				products.add(p4);
+				products.add(p5);
+			}
+			for(Product product : products){
+				Product.setNextId(product.getId());
+			}
 	}
 	
 	public void populateStockOrders(){

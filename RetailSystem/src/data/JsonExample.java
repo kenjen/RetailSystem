@@ -2,6 +2,7 @@ package data;
 
 import gui.Shop;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -30,10 +31,15 @@ public class JsonExample {
 				Shop.getProducts().add(product);
 			}
 			return Shop.getProducts();
-		} catch (IOException e) {
+		} catch (EOFException eof){
+			eof.printStackTrace();
+			return null;
+		}
+		catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally{
+		}
+		finally{
 			in.close();
 		}
 		return null;
@@ -46,8 +52,25 @@ public class JsonExample {
 	public static void saveProductToFile(Product product) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			String result = "\n" + mapper.writeValueAsString(product);
+			String result = mapper.writeValueAsString(product) + "\n";
 			FileWriter writer = new FileWriter("resources/products.json", true);
+			writer.write(result);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Saves the product in file location (e.g. "resources/products.json") as a Json object
+	 * @param product
+	 */
+	public static void clearList(String file){
+		try{
+			String result = "";
+			FileWriter writer = new FileWriter(file);
 			writer.write(result);
 			writer.flush();
 			writer.close();
