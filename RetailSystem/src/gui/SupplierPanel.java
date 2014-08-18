@@ -59,6 +59,14 @@ public class SupplierPanel extends JPanel{
 		suppliersList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		suppliersList.setVisibleRowCount(-1);
 		suppliersList.setSelectedIndex(0);
+		JButton showS = new JButton("Show Suppliers");
+		// add action listener to button
+		showS.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				showSuppliers();
+			}
+		});
+		listPanel.add(showS);
 		// create labels
 		title= new JLabel("SUPPLIERS");	
 		listPanel.add(title,BorderLayout.PAGE_START);
@@ -69,14 +77,7 @@ public class SupplierPanel extends JPanel{
 		listPanel.add(idLabel);
 		listPanel.add(nameLabel);
 		listPanel.add(addressLabel);
-		JButton showS = new JButton("Show Suppliers");
-		// add action listener to button
-		showS.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				showSuppliers();
-			}
-		});
-		listPanel.add(showS);
+	
 		
 		// add scroll to list
 		JScrollPane listScroller = new JScrollPane(suppliersList);
@@ -112,7 +113,13 @@ public class SupplierPanel extends JPanel{
 		addPanel.add(addressLabel);
 		addPanel.add(addressField);
 		addPanel.add(add);
+		// add button to delete supplier
+		remove = new JButton(removeSupplier);
+		remove.setActionCommand(removeSupplier);
+		remove.addActionListener(new Remove());
+		addPanel.add(remove);	
 		add(addPanel, BorderLayout.CENTER);
+		
 		
 		// create GUI panel to edit supplier details
 		JPanel editPanel= new JPanel();
@@ -154,19 +161,7 @@ public class SupplierPanel extends JPanel{
 		JPanel deletePanel = new JPanel();
 		deletePanel.setBackground(Color.lightGray);
 		deletePanel.setBorder(BorderFactory.createLineBorder(Color.red));
-		// add button to delete supplier
-		remove = new JButton(removeSupplier);
-		remove.setActionCommand(removeSupplier);
-		remove.addActionListener(new Remove());
-		deletePanel.add(remove);		
-		// display deleted suppliers
-		JButton showDeleted = new JButton("Show deleted suppliers");
-		showDeleted.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				showDeletedSuppliers();
-			}
-		});
-		deletePanel.add(showDeleted);
+					
 		// add look for a supplier by name feature
 		JLabel search = new JLabel(" SEARCH FOR A SUPPLIER BY NAME");
 		final JTextField searchField = new JTextField (20); 
@@ -197,43 +192,29 @@ public class SupplierPanel extends JPanel{
 		add(deletePanel, BorderLayout.PAGE_END);
 
 	
-	
+		// display products for a selected supplier
 		JPanel productPanel= new JPanel();
 		productPanel.setBackground(Color.lightGray);
 		productPanel.setBorder(BorderFactory.createLineBorder(Color.red));
-		JLabel productLabel = new JLabel(" Show products");
+		JLabel productLabel = new JLabel("DISPLAY ");
 		productPanel.add(productLabel);
-		JLabel show = new JLabel("Type in supplier id ");
-		productPanel.add(show);
-		
-		JTextField supplierIdField = new JTextField(10);
-		productPanel.add(supplierIdField);
-		DefaultListModel productList = new DefaultListModel(); 
-		JList products = new JList(productList);
-		productPanel.add(products);
-		
-		JButton showProducts = new JButton("SUBMIT");
-		add.addActionListener(new ActionListener(){
+		JButton showProducts = new JButton("Show products list");
+		showProducts.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				int index = suppliersList.getSelectedIndex();
-				if (index != -1) {
-					for(Supplier supplier:suppliers){
-							Supplier s= suppliers.get(index);
-							
-						}
-				}
-				else{
-					JOptionPane.showMessageDialog(null, " You didn't select a supplier to remove!");
-						}
-				
-				for(Product product:Shop.getProducts()){
-			//		Object product = Shop.getProducts().suppliers.get(index);
-			//		productList.addElement();
-				}
-		}
+				showProducts();
+			}
 				});
 		productPanel.add(showProducts);
 		add(productPanel);
+		
+		// display deleted suppliers
+		JButton showDeleted = new JButton("Show deleted suppliers");
+		showDeleted.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				showDeletedSuppliers();
+			}
+		});
+		productPanel.add(showDeleted);
 	}
 	
 	// Methods
@@ -335,7 +316,7 @@ public class SupplierPanel extends JPanel{
 			}
 			// if no supplier is selected show message
 			else{
-				JOptionPane.showMessageDialog(null, "Please select from the list a supplier to edit ");
+				JOptionPane.showMessageDialog(null, "Please select a supplier from the list.");
 			}	
 		}
 	}
@@ -375,6 +356,28 @@ public class SupplierPanel extends JPanel{
 					", address: "+ deletedSupplier.getSupplierAddress());
 		}
 	}
-	
+	// display products for each supplier
+		public void showProducts(){
+			int index = suppliersList.getSelectedIndex();
+			if (index != -1) {
+				// get the supplier at the selected index
+				for(Supplier supplier:suppliers){
+					Supplier tempSupplier = suppliers.get(index);
+					int id = tempSupplier.getSupplierId( );
+					listModel.clear();
+					listModel.addElement("The products for Supplier id "+ tempSupplier.getSupplierId()+" are: ");
+						// call Shop class to display products for the selected supplier
+						for(Product product:Shop.getProducts()){	
+							if(product.getSupplier().getSupplierId() == id){
+								listModel.addElement("\n"+ product.getName());
+							}
+					}
+				}
+			}
+			// if no supplier is selected show warning message
+			else{
+				JOptionPane.showMessageDialog(null, "Please select a supplier from the list  ");
+				}	
+		}	
 	
 }
