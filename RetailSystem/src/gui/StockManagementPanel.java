@@ -129,6 +129,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//drop down menu  to enter id of product
 		ArrayList<Integer> idValues = new ArrayList<Integer>();
+		idValues.add(0);
 		for (Product product : Shop.getProducts()){
 			int id = product.getId();
 			idValues.add(id);
@@ -447,7 +448,7 @@ public class StockManagementPanel extends JSplitPane{
 		if(productLoaded){
 			//clear fields to add new details
 			productLoaded = false;
-			txtId.setText("");
+			comboSelectId.setSelectedIndex(0);
 			textName.setText("");
 			textCategory.setText("");
 			textQuantity.setText("");
@@ -469,10 +470,10 @@ public class StockManagementPanel extends JSplitPane{
 								if(comboSelectSupplier.getSelectedIndex()>0){
 									for(Supplier supplier : Shop.getSuppliers()){
 										if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
-											Product product = new Product(textName.getText().replaceAll("\\s", "_"), textCategory.getText().replaceAll("\\s", "_"), Integer.parseInt(textQuantity.getText()), Double.parseDouble(textPrice.getText()), supplier, true, 20);
+											Product product = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Double.parseDouble(textPrice.getText()), supplier, true, 20);
 											product.setLowStockOrder(Integer.parseInt(textThreshold.getText()));
 											Shop.getProducts().add(product);
-											txtId.setText(""+product.getId());
+											comboSelectId.setSelectedItem(product.getId());
 											textName.setText("");
 											textCategory.setText("");
 											textQuantity.setText("");
@@ -509,46 +510,39 @@ public class StockManagementPanel extends JSplitPane{
 	
 	
 	public void deleteProduct(){
-		int id = 0;
 		if(productLoaded){
-			String tempId = txtId.getText();
-			try{
-				id = Integer.parseInt(tempId);
+			int id = (int) comboSelectId.getSelectedItem();
 				for(Product product : Shop.getProducts()){
 					if(product.getId() == id && !(product.isDeleted())){
-						
 						int selectedOption = JOptionPane.showConfirmDialog(null, 
-                                  "Are you sure you wish to delete product?", 
-                                  "Warning", 
-                                  JOptionPane.YES_NO_OPTION,
-                                  JOptionPane.WARNING_MESSAGE); 
-						if (selectedOption == JOptionPane.YES_OPTION) {
-							//check if user wants to mark as deleted or completly remove record
-							Object[] options = {"Mark", "Remove"};
-							int permanentlyDelete = JOptionPane.showOptionDialog(null,
-									"Mark as deleted or permanently remove?",
-									"Warning",
-									JOptionPane.YES_NO_OPTION,
-									JOptionPane.WARNING_MESSAGE,
-									null,     //do not use a custom Icon
-									options,  //the titles of buttons
-									options[0]); //default button title
-							if(permanentlyDelete == JOptionPane.YES_OPTION){
-								product.setDeleted(true);
-								System.out.println("Product marked as deleted succesfully");
-								saveDetails();
-								setupList();
-							}else{
-								Shop.getProducts().remove(product);
-								System.out.println("Product deleted from system succesfully");
-								saveDetails();
-								setupList();
-							}
+								"Are you sure you wish to delete product?",
+								"Warning",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.WARNING_MESSAGE); 
+					if (selectedOption == JOptionPane.YES_OPTION) {
+						//check if user wants to mark as deleted or completly remove record
+						Object[] options = {"Mark", "Remove"};
+						int permanentlyDelete = JOptionPane.showOptionDialog(null,
+								"Mark as deleted or permanently remove?",
+								"Warning",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.WARNING_MESSAGE,
+								null,     //do not use a custom Icon
+								options,  //the titles of buttons
+								options[0]); //default button title
+						if(permanentlyDelete == JOptionPane.YES_OPTION){
+							product.setDeleted(true);
+							System.out.println("Product marked as deleted succesfully");
+							saveDetails();
+							setupList();
+						}else{
+							Shop.getProducts().remove(product);
+							System.out.println("Product deleted from system succesfully");
+							saveDetails();
+							setupList();
 						}
 					}
 				}
-			}catch(NumberFormatException nfe){
-				System.out.println("number entered not an integer");
 			}
 		}
 		saveDetails();
@@ -568,33 +562,28 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	public void discountProduct(){
-		int id = 0;
 		if(productLoaded){
-			String tempId = txtId.getText();
-			try{
-				id = Integer.parseInt(tempId);
-				for(Product product : Shop.getProducts()){
-					if(product.getId() == id && !(product.isDeleted())){
-						String input = JOptionPane.showInputDialog("Enter percentage to discount \n"+"Pevious discount "+product.getDiscountedPercentage()+"%");
-						if(input!=null){
-							try{
-								String test = String.format("%.2f", input);
-								Double percent = Double.parseDouble(test);
-								product.setDiscountedPercentage(percent);
-								if(percent==0){
-									product.setDiscounted(false);
-								}else{
-									product.setDiscounted(true);
-								}
-								loadProductDetails();
-							}catch(NumberFormatException nfe){
-								System.out.println("Entered value not a valid integer");
+			int id = (int) comboSelectId.getSelectedItem();
+			for(Product product : Shop.getProducts()){
+				if(product.getId() == id && !(product.isDeleted())){
+					String input = JOptionPane.showInputDialog("Enter percentage to discount \n"+"Pevious discount "+product.getDiscountedPercentage()+"%");
+					if(input!=null){
+						try{
+							double inputD = Double.parseDouble(input);
+							String test = String.format("%.2f", inputD);
+							Double percent = Double.parseDouble(test);
+							product.setDiscountedPercentage(percent);
+							if(percent==0){
+								product.setDiscounted(false);
+							}else{
+								product.setDiscounted(true);
 							}
+							loadProductDetails();
+						}catch(NumberFormatException nfe){
+							System.out.println("Entered value not a valid integer");
 						}
 					}
 				}
-			}catch(NumberFormatException nfe){
-				System.out.println("number entered not an integer");
 			}
 		}
 	}
@@ -623,26 +612,20 @@ public class StockManagementPanel extends JSplitPane{
 	
 	
 	public void flagForOrder(){
-		int id = 0;
 		if(productLoaded){
-			String tempId = txtId.getText();
-			try{
-				id = Integer.parseInt(tempId);
-				for(Product product : Shop.getProducts()){
-					if(product.getId() == id && !(product.isDeleted())){
-						if(product.isFlaggedForOrder()){
-							product.setFlaggedForOrder(false);
-							txtFlaggedForOrder.setVisible(false);
-							System.out.println("Product Item Unflagged Successfully");
-						}else{
-							product.setFlaggedForOrder(true);
-							txtFlaggedForOrder.setVisible(true);
-							System.out.println("Product Item Flagged Successfully");
-						}
+			int id = (int) comboSelectId.getSelectedItem();
+			for(Product product : Shop.getProducts()){
+				if(product.getId() == id && !(product.isDeleted())){
+					if(product.isFlaggedForOrder()){
+						product.setFlaggedForOrder(false);
+						txtFlaggedForOrder.setVisible(false);
+						System.out.println("Product Item Unflagged Successfully");
+					}else{
+						product.setFlaggedForOrder(true);
+						txtFlaggedForOrder.setVisible(true);
+						System.out.println("Product Item Flagged Successfully");
 					}
 				}
-			}catch(NumberFormatException nfe){
-				System.out.println("number entered not an integer");
 			}
 		}
 	}
@@ -673,7 +656,7 @@ public class StockManagementPanel extends JSplitPane{
 			textThreshold.setText(""+tempProduct.getLowStockOrder());
 			textPrice.setText(""+tempProduct.getPrice());
 			Double discountPrice = tempProduct.getPrice() - (tempProduct.getPrice()*(tempProduct.getDiscountedPercentage()/100));
-			DecimalFormat df = new DecimalFormat("#.###");
+			DecimalFormat df = new DecimalFormat("#.##");
 			textDiscountedPrice.setText(""+(df.format(discountPrice)));
 			txtFlaggedForOrder.setVisible(tempProduct.isFlaggedForOrder());
 			txtDiscountedAmount.setText(tempProduct.getDiscountedPercentage() + "%");
@@ -750,19 +733,13 @@ public class StockManagementPanel extends JSplitPane{
 	
 	
 	public void saveCategory(){
-		int id = 0;
 		if(productLoaded){
-			String tempId = txtId.getText();
-			try{
-				id = Integer.parseInt(tempId);
-				for(Product product : Shop.getProducts()){
-					if(product.getId() == id && !(product.isDeleted())){
-						product.setCategory(textCategory.getText().replaceAll("\\s", "_"));
-						System.out.println("Category saved succesfully");
-					}
+			int id = (int) comboSelectId.getSelectedItem();
+			for(Product product : Shop.getProducts()){
+				if(product.getId() == id && !(product.isDeleted())){
+					product.setCategory(textCategory.getText());
+					System.out.println("Category saved succesfully");
 				}
-			}catch(NumberFormatException nfe){
-				System.out.println("number entered not an integer");
 			}
 		}
 	}
@@ -780,32 +757,24 @@ public class StockManagementPanel extends JSplitPane{
 	
 	
 	public void saveName(){
-		int id = 0;
 		if(productLoaded){
-			String tempId = txtId.getText();
-			try{
-				id = Integer.parseInt(tempId);
-				for(Product product : Shop.getProducts()){
-					if(product.getId() == id && !(product.isDeleted())){
-						product.setName(textName.getText().replaceAll("\\s", "_"));
-						System.out.println("Name saved succesfully");
-					}
+			int id = (int) comboSelectId.getSelectedItem();
+			for(Product product : Shop.getProducts()){
+				if(product.getId() == id && !(product.isDeleted())){
+					product.setName(textName.getText());
+					System.out.println("Name saved succesfully");
 				}
-			}catch(NumberFormatException nfe){
-				System.out.println("number entered not an integer");
 			}
 		}
 	}
 	
 	
 	public void savePrice(){
-		int id = 0;
 		double price = 0;
 		if(productLoaded){
-			String tempId = txtId.getText();
+			int id = (int) comboSelectId.getSelectedItem();
 			String tempPrice = textPrice.getText();
 			try{
-				id = Integer.parseInt(tempId);
 				price = Double.parseDouble(tempPrice);
 				for(Product product : Shop.getProducts()){
 					if(product.getId() == id && !(product.isDeleted())){
@@ -824,36 +793,28 @@ public class StockManagementPanel extends JSplitPane{
 	
 	
 	public void saveSupplier(){
-		int id = 0;
 		if(productLoaded){
-			String tempId = txtId.getText();
-			try{
-				id = Integer.parseInt(tempId);
-				for(Supplier supplier : Shop.getSuppliers()){
-					if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
-						for(Product product : Shop.getProducts()){
-							if(product.getId() == id && !(product.isDeleted())){
-								product.setSupplier(supplier);
-								System.out.println("Supplier saved successfully");
-							}
+			int id = (int) comboSelectId.getSelectedItem();
+			for(Supplier supplier : Shop.getSuppliers()){
+				if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
+					for(Product product : Shop.getProducts()){
+						if(product.getId() == id && !(product.isDeleted())){
+							product.setSupplier(supplier);
+							System.out.println("Supplier saved successfully");
 						}
 					}
 				}
-			}catch(NumberFormatException nfe){
-				System.out.println("number entered not an integer");
 			}
 		}
 	}
 	
 	
 	public void saveThreshold(){
-		int id = 0;
 		int threshold = 0;
 		if(productLoaded){
-			String tempId = txtId.getText();
+			int id = (int) comboSelectId.getSelectedItem();
 			String tempThreshold = textThreshold.getText();
 			try{
-				id = Integer.parseInt(tempId);
 				threshold = Integer.parseInt(tempThreshold);
 				for(Product product : Shop.getProducts()){
 					if(product.getId() == id && !(product.isDeleted())){
@@ -869,13 +830,11 @@ public class StockManagementPanel extends JSplitPane{
 	
 	
 	public void saveQuantity(){
-		int id = 0;
 		int quantity = 0;
 		if(productLoaded){
-			String tempId = txtId.getText();
+			int id = (int) comboSelectId.getSelectedItem();
 			String tempQuantity = textQuantity.getText();
 			try{
-				id = Integer.parseInt(tempId);
 				quantity = Integer.parseInt(tempQuantity);
 				for(Product product : Shop.getProducts()){
 					if(product.getId() == id && !(product.isDeleted())){
