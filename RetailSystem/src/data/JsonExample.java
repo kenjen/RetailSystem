@@ -63,10 +63,14 @@ public class JsonExample {
 		}
 	}
 	
-	public static void clearList(){
+	/**
+	 * Saves the product in file location (e.g. "resources/products.json") as a Json object
+	 * @param product
+	 */
+	public static void clearList(String file){
 		try{
 			String result = "";
-			FileWriter writer = new FileWriter("resources/products.json");
+			FileWriter writer = new FileWriter(file);
 			writer.write(result);
 			writer.flush();
 			writer.close();

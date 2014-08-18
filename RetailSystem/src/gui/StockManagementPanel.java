@@ -55,6 +55,7 @@ public class StockManagementPanel extends JSplitPane{
 	private JTextField textPrice;
 	private JTextField textDiscountedPrice;
 	private JComboBox<String> comboSelectSupplier;
+	private JComboBox<String> comboSelectId;
 
 	private boolean productLoaded = false;
 	private JTextField txtFlaggedForOrder;
@@ -81,18 +82,18 @@ public class StockManagementPanel extends JSplitPane{
 		//Add scroll pane to left size with list of products
 		JScrollPane scrollPane = new JScrollPane(list);
 		//TODO marker to locate set divider
-		this.setDividerLocation(300);
+		//this.setDividerLocation(300);
 		setLeftComponent(scrollPane);
 		
 		
 		//add panel to right hand side
 		JPanel panel = new JPanel();
 		setRightComponent(panel);
-		panel.setLayout(new MigLayout("", "[][100px:n][10px,grow][100px:n:100px,grow][100px:n:100px,grow][100px:100px:100px,grow,center][100px:n:100px][grow]", "[][20px:n][][][][][][][][][][][][][][][][][][50px:n][][20px:n][][20px:n][]"));
+		panel.setLayout(new MigLayout("", "[][100px:n][grow][70px:n,grow][grow][100px:n,grow][100px:n,grow][40px:n,grow]", "[][20px:n][][][][][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow]"));
 		
 		
 		//text field to enter id of product
-		txtId = new JTextField();
+		/*txtId = new JTextField();
 		panel.add(txtId, "cell 5 2, center");
 		txtId.setHorizontalAlignment(SwingConstants.CENTER);
 		txtId.setColumns(20);
@@ -124,7 +125,18 @@ public class StockManagementPanel extends JSplitPane{
 			}
 			@Override
 			public void keyPressed(KeyEvent arg0) {}
-		});
+		});*/
+		
+		//drop down menu  to enter id of product
+		ArrayList<Integer> idValues = new ArrayList<Integer>();
+		for (Product product : Shop.getProducts()){
+			int id = product.getId();
+			idValues.add(id);
+		}
+		comboSelectId = new JComboBox(idValues.toArray());
+		panel.add(comboSelectId, "cell 5 2, center");
+		comboSelectId.setEditable(true);
+		AutoCompleteDecorator.decorate(comboSelectId);
 		
 		
 		//display all products button
@@ -184,7 +196,7 @@ public class StockManagementPanel extends JSplitPane{
 				
 		//Setup button to load a products details
 		JButton btnIdConfirm = new JButton("Confirm");
-		panel.add(btnIdConfirm, "cell 5 3");
+		panel.add(btnIdConfirm, "cell 5 3, center");
 		btnIdConfirm.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				loadProductDetails();
@@ -367,7 +379,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		
 		JButton btnSaveAll = new JButton("Save All");
-		panel.add(btnSaveAll, "cell 4 19");
+		panel.add(btnSaveAll, "cell 4 20, center");
 		btnSaveAll.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -376,20 +388,20 @@ public class StockManagementPanel extends JSplitPane{
 		});
 		
 		
-		//mark product as low stock and needing orders
-		btnFlagForOrder = new JButton("Flag For Order");
-		panel.add(btnFlagForOrder, "cell 4 21, center");
-		btnFlagForOrder.addActionListener(new ActionListener(){
+		//create new product button
+		btnCreateNewProduct = new JButton("New Product");
+		panel.add(btnCreateNewProduct, "cell 6 20, center");
+		btnCreateNewProduct.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				flagForOrder();
+			public void actionPerformed(ActionEvent e) {
+				createNewProduct();
 			}
 		});
 		
 		
 		//discount product by percentage
 		btnDiscountProduct = new JButton("Discount");
-		panel.add(btnDiscountProduct, "cell 4 20, center");
+		panel.add(btnDiscountProduct, "cell 4 22, center");
 		btnDiscountProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -400,7 +412,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//Delete product button
 		btnDeleteProduct = new JButton("Delete");
-		panel.add(btnDeleteProduct, "cell 6 20, center");
+		panel.add(btnDeleteProduct, "cell 6 22, center");
 		btnDeleteProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -409,24 +421,24 @@ public class StockManagementPanel extends JSplitPane{
 		});
 		
 		
-		//Restore product button
-		btnRestoreProduct = new JButton("Restore...");
-		panel.add(btnRestoreProduct, "cell 6 21, center");
-		btnRestoreProduct.addActionListener(new ActionListener(){
+		//mark product as low stock and needing orders
+		btnFlagForOrder = new JButton("Flag For Order");
+		panel.add(btnFlagForOrder, "cell 4 24, center");
+		btnFlagForOrder.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				restoreProduct();
+				flagForOrder();
 			}
 		});
 		
 		
-		//create new product button
-		btnCreateNewProduct = new JButton("New Product");
-		panel.add(btnCreateNewProduct, "cell 6 19");
-		btnCreateNewProduct.addActionListener(new ActionListener() {
+		//Restore product button
+		btnRestoreProduct = new JButton("Restore...");
+		panel.add(btnRestoreProduct, "cell 6 24, center");
+		btnRestoreProduct.addActionListener(new ActionListener(){
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				createNewProduct();
+			public void actionPerformed(ActionEvent arg0) {
+				restoreProduct();
 			}
 		});
 	}
@@ -640,17 +652,11 @@ public class StockManagementPanel extends JSplitPane{
 		boolean successful = true;
 		int id = 0;
 		Product tempProduct = null;
-		String tempId = txtId.getText();
-		try{
-			id = Integer.parseInt(tempId);
-		}catch(NumberFormatException nfe){
-			successful = false;
-			System.out.println("*****Entered a non integer value*****");
-		}
+		int tempId = (int) comboSelectId.getSelectedItem();
 		boolean productExists = false;
 		if(successful){
 			for(Product product : Shop.getProducts()){
-				if(product.getId() == id && !(product.isDeleted())){
+				if(product.getId() == tempId && !(product.isDeleted())){
 					productExists = true;
 					tempProduct = product;
 					productLoaded = true;
@@ -762,40 +768,10 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
-	//TODO test save
 	public void saveDetails(){
 		System.out.println("Saving Products");
-		/*BufferedWriter writer = null;
-		String textToSave = "";
-		int numberOfProducts = 0;
-		int nextId = 0;
-		for(Product product : Shop.getProducts()){
-			numberOfProducts++;
-			if(product.getId()>nextId){
-				nextId = product.getId();
-			}
-			textToSave = textToSave + "\n" + product.getSupplier().getSupplierId() + " " + product.getName() + " " + product.getCategory() + " " + product.getQuantity() + " " + product.getPrice() + " " + product.isAvailable() + " " + product.getLowStockOrder() + " " + product.isDeleted() + " " + product.isDiscounted() + " " + product.getDiscountedPercentage() + " " + product.isFlaggedForOrder() + " " + product.getId() + " ";
-			 
-		}
-		textToSave = numberOfProducts + " " + nextId + " " + textToSave;
-		System.out.println(textToSave);
 		
-		try{
-			writer = new BufferedWriter( new FileWriter( "Products.txt"));
-			writer.write(textToSave);
-		}catch ( IOException e){
-			e.printStackTrace();
-		}
-		finally{
-			try{
-				if ( writer != null)
-				writer.close( );
-			} catch ( IOException e){
-				e.printStackTrace();
-		    }
-		}*/
-		
-		JsonExample.clearList();
+		JsonExample.clearList("resources/products.json");
 		for(Product product : Shop.getProducts()){
 			JsonExample.saveProductToFile(product);
 		}
