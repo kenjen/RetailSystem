@@ -41,7 +41,7 @@ import data.Supplier;
 
 public class StockOrderPanel extends JPanel {
 
-	private JComboBox comboSuppliers;
+	private JComboBox<String> comboSuppliers;
 	// private JButton btnSeclectSupplier;
 	private Supplier selectedSupplier;
 	// private JLabel lblActiveSupplierText = null;
@@ -60,7 +60,7 @@ public class StockOrderPanel extends JPanel {
 	private Object[][] arrayTableOrders;
 	private JLabel lblError = new JLabel("");
 	private Timer timer;
-	private JComboBox comboSearchForProducts;
+	private JComboBox<String> comboSearchForProducts;
 	private JButton btnDisplayCurrentOrder = new JButton("Show Current Order");
 	private JButton btnUpdateOrderCompletion = new JButton("Update Orders");
 	private JLabel lblProductsSearch = new JLabel("Product search: ");
@@ -79,7 +79,11 @@ public class StockOrderPanel extends JPanel {
 		jpanel.setOpaque(true);
 		setVisible(true);
 
-		comboSuppliers = new JComboBox(supplierNames.toArray());
+		comboSuppliers = new JComboBox<String>();
+		comboSuppliers.addItem("");
+		for(String name:supplierNames){
+			comboSuppliers.addItem(name);
+		}
 		JLabel supplier = new JLabel("Search for Supplier:");
 		add(btnDisplayAllProducts, "split 5");
 		add(supplier,"gapx 50");
@@ -98,6 +102,7 @@ public class StockOrderPanel extends JPanel {
 					public void keyPressed(KeyEvent e) {
 						if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 							displayProductsTable("",comboSuppliers.getSelectedItem().toString());
+							comboSearchForProducts.setSelectedItem(comboSearchForProducts.getItemAt(0));
 						}
 
 					}
@@ -113,13 +118,20 @@ public class StockOrderPanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				displayProductsTable("","");
+				comboSuppliers.setSelectedItem(comboSuppliers.getItemAt(0));
+				comboSearchForProducts.setSelectedItem(comboSearchForProducts.getItemAt(0));
 			}
 
 		});
 		
 		add(lblProductsSearch,"gapx 50");
 		String[] comboArray = getProductNamesForComboBox();
-		comboSearchForProducts = new JComboBox(comboArray);
+		
+		comboSearchForProducts = new JComboBox<String>();
+		comboSearchForProducts.addItem("");
+		for(String name:comboArray){
+			comboSearchForProducts.addItem(name);
+		}
 		add(comboSearchForProducts, "wrap");
 		comboSearchForProducts.setEditable(true);
 		AutoCompleteDecorator.decorate(comboSearchForProducts);
@@ -129,6 +141,7 @@ public class StockOrderPanel extends JPanel {
 			public void keyPressed(KeyEvent event) {
 				if(event.getKeyCode() == KeyEvent.VK_ENTER){
 					displayProductsTable("",comboSearchForProducts.getSelectedItem().toString());
+					comboSuppliers.setSelectedItem(comboSuppliers.getItemAt(0));
 				}
 			}
 
@@ -149,6 +162,7 @@ public class StockOrderPanel extends JPanel {
 					for(Product prod:Shop.getProducts()){
 						if(prod.getName().equalsIgnoreCase(product) && prod.isDeleted() == false){
 							displayProductsTable(product,"");
+							comboSuppliers.setSelectedItem(comboSuppliers.getItemAt(0));
 							break;
 						}
 					}
@@ -166,6 +180,7 @@ public class StockOrderPanel extends JPanel {
 					for(Supplier sup:Shop.getSuppliers()){
 						if(sup.getSupplierName().equalsIgnoreCase(supplier) && sup.isSupplierDeleted() == false){
 							displayProductsTable("",comboSuppliers.getSelectedItem().toString());
+							comboSearchForProducts.setSelectedItem(comboSearchForProducts.getItemAt(0));
 							break;
 						}
 					}
