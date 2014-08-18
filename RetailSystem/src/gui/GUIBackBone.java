@@ -1,14 +1,14 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Image;
-import java.io.IOException;
-import java.net.URL;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -68,11 +68,19 @@ public class GUIBackBone  extends JFrame{
 				tabbedPane.setIconAt(4, new ImageIcon(getClass().getResource("/Supplier.png")));
 			}
 			
-			
+			panelStockOrder.addFocusListener(new FocusAdapter(){
 
-			JPanel contentPane = new JPanel();
-			contentPane.setLayout(new BorderLayout());
-			contentPane.add(tabbedPane, BorderLayout.CENTER);
+				@Override
+				public void focusGained(FocusEvent e) {
+					if(e.getSource() == JPanel.class){
+						System.out.println("Jpanel");
+					}
+				}
+			});
+			
+		JPanel contentPane = new JPanel();
+		contentPane.setLayout(new BorderLayout());
+		contentPane.add(tabbedPane, BorderLayout.CENTER);
 		setContentPane(contentPane);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
@@ -86,13 +94,15 @@ public class GUIBackBone  extends JFrame{
 		return loggedStaffMember;
 	}
 	
-	//TODO testing save
 	public void saveTabDetails(int index){
-		if(index==0){
-			panelStockManagement.saveDetails();
-		}
+		panelStockManagement.saveDetails();
+		panelStockManagement.setupList();
+		panelStockOrder.displayOrderTable();
+		panelStockOrder.displayProductsTable("", "");
+		panelStockOrder.repaint();
+		panelCustomerOrders.displayOrderTable(false);
+		panelCustomerOrders.displayProductsTable();
 	}
-
 
 	public static void setLoggedStaffMember(Staff loggedStaffMember) {
 		GUIBackBone.loggedStaffMember = loggedStaffMember;

@@ -63,6 +63,7 @@ public class CustomerOrderPanel extends JPanel{
 	private JLabel lblError = new JLabel("");
 	private Timer timer;
 	private String typeOfOrder = "All";
+	private JScrollPane scrollPane;
 	
 	/**
 	 * Adds all the GUI components on the panel
@@ -117,66 +118,10 @@ public class CustomerOrderPanel extends JPanel{
 		lblProductList = new JLabel("Product list:");
 		add(lblProductList, "wrap");
 		
-		availableProductsArray = new Object[Shop.getProducts().size()][8];
-		int counter = 0;
-		//make products array to feed into the table model
-		DecimalFormat df = new DecimalFormat("#.00");
-		for(Product product:Shop.getProducts()){
-			if(product.isAvailable() && product.isDeleted()==false){
-				availableProductsArray[counter][0] = product.getId();
-				availableProductsArray[counter][1] = product.getName();
-				availableProductsArray[counter][2] = product.getSupplier().getSupplierName();
-				availableProductsArray[counter][3] = product.getCategory();
-				availableProductsArray[counter][4] = Double.parseDouble(df.format(product.getMarkupPrice()));
-				availableProductsArray[counter][5] = product.isDiscounted();
-				availableProductsArray[counter][6] = product.getQuantity();
-				//this column will be editable
-				availableProductsArray[counter][7] = 0;
-				counter ++;
-			}
-		}
 		
-		String columnNames[] = {"Id","Name","Supplier","Category","Price","Discounted?","Quantity","Amount to Order"};
-		ProductTableModel productsTableModel = new ProductTableModel(availableProductsArray, columnNames);
-		tableAvailableProducts = new JTable(productsTableModel);
-		tableAvailableProducts.setAutoCreateRowSorter(true);
-		tableAvailableProducts.setRowSelectionAllowed(true);
-		tableAvailableProducts.addMouseListener(new MouseAdapter(){
-			public void mouseClicked(MouseEvent e) {
-			      if (e.getClickCount() == 2) {
-			         JTable target = (JTable)e.getSource();
-			         int row = target.getSelectedRow();
-			         int cell = 7;
-			         String choice = JOptionPane.showInputDialog(CustomerOrderPanel.this, "Enter the amount");
-			         try{
-			        	 if(choice != null){
-			        		 int parsedChoice = Integer.parseInt(choice);
-			        		 System.out.println("Parsed choice: "+parsedChoice);
-			        		 target.setValueAt(parsedChoice, row, cell);
-			        	 }
-			         }catch (InputMismatchException ex){
-			        	 ex.printStackTrace();
-			         }catch (NumberFormatException nfe){
-			        	 System.out.println("Invalid Input");
-			        	 //do nothing, swallow the exception
-			        	 //not ideal but will do for now
-			         }
-			      }
-			}
-			
-		});
-		tableAvailableProducts.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener(){
-			
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				int row = tableAvailableProducts.getSelectedRow();
-				//tableAvailableProducts.editCellAt(row, 7);
-				tableAvailableProducts.changeSelection(row, 7, false, false);
-			}
-		});
-		
-		JScrollPane scrollPane = new JScrollPane(tableAvailableProducts);
+		scrollPane = new JScrollPane();
 		add(scrollPane, "span 5, grow, push");
+		displayProductsTable();
 		
 		//add the order button
 		btnOrder = new JButton("New Order");
@@ -245,6 +190,69 @@ public class CustomerOrderPanel extends JPanel{
 			// TODO Auto-generated method stub
 			
 		}
+		
+	}
+	
+	public void displayProductsTable(){
+		availableProductsArray = new Object[Shop.getProducts().size()][8];
+		int counter = 0;
+		//make products array to feed into the table model
+		DecimalFormat df = new DecimalFormat("#.00");
+		for(Product product:Shop.getProducts()){
+			if(product.isAvailable() && product.isDeleted()==false){
+				availableProductsArray[counter][0] = product.getId();
+				availableProductsArray[counter][1] = product.getName();
+				availableProductsArray[counter][2] = product.getSupplier().getSupplierName();
+				availableProductsArray[counter][3] = product.getCategory();
+				availableProductsArray[counter][4] = Double.parseDouble(df.format(product.getMarkupPrice()));
+				availableProductsArray[counter][5] = product.isDiscounted();
+				availableProductsArray[counter][6] = product.getQuantity();
+				//this column will be editable
+				availableProductsArray[counter][7] = 0;
+				counter ++;
+			}
+		}
+		String columnNames[] = {"Id","Name","Supplier","Category","Price","Discounted?","Quantity","Amount to Order"};
+		ProductTableModel productsTableModel = new ProductTableModel(availableProductsArray, columnNames);
+		tableAvailableProducts = new JTable(productsTableModel);
+		tableAvailableProducts.setAutoCreateRowSorter(true);
+		tableAvailableProducts.setRowSelectionAllowed(true);
+		tableAvailableProducts.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e) {
+			      if (e.getClickCount() == 2) {
+			         JTable target = (JTable)e.getSource();
+			         int row = target.getSelectedRow();
+			         int cell = 7;
+			         String choice = JOptionPane.showInputDialog(CustomerOrderPanel.this, "Enter the amount");
+			         try{
+			        	 if(choice != null){
+			        		 int parsedChoice = Integer.parseInt(choice);
+			        		 System.out.println("Parsed choice: "+parsedChoice);
+			        		 target.setValueAt(parsedChoice, row, cell);
+			        	 }
+			         }catch (InputMismatchException ex){
+			        	 ex.printStackTrace();
+			         }catch (NumberFormatException nfe){
+			        	 System.out.println("Invalid Input");
+			        	 //do nothing, swallow the exception
+			        	 //not ideal but will do for now
+			         }
+			      }
+			}
+			
+		});
+		tableAvailableProducts.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				int row = tableAvailableProducts.getSelectedRow();
+				//tableAvailableProducts.editCellAt(row, 7);
+				tableAvailableProducts.changeSelection(row, 7, false, false);
+			}
+		});
+		
+		scrollPane.getViewport().add(tableAvailableProducts);
+		scrollPane.repaint();
 		
 	}
 	
