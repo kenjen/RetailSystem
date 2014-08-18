@@ -269,6 +269,7 @@ public class StockOrderPanel extends JPanel {
 		for(StockOrder order:Shop.getStockOrders()){
 			if(order.getId() == id){
 				order.setCompleted(true);
+				order.setExpectedDeliveryDate(new Date());
 				//update products from this stock order
 	        	 for(ProductToOrder prodToOrder:order.getProductsToOrder()){
 	        		 for (Product product:Shop.getProducts()){
@@ -381,20 +382,36 @@ public class StockOrderPanel extends JPanel {
 			         DecimalFormat df = new DecimalFormat("#.00");
 			         String htmlText = "<html><head><style>th {color:#305EE3;font-variant:small-caps;}</style></head>";
 			         
-			         //when is completed is checked do this
-			         if(thisOrder.isCompleted() ){
+			         
+			        //displays orders with deliveries in the past
+			        if(thisOrder.getExpectedDeliveryDate().before(new Date())){
+			        	 htmlText += "<h2>Order details:</h2><table border='1'><tr><th>ID</th><th>Date of creation</th><th>Expected delivery date</th><th>Staff member</th><th>Total</th></tr>";
+				         htmlText += "<tr><td>"+thisOrder.getId()+"</td></td>"+sdf.format(thisOrder.getDate())+"</td><td>"+"Delivered on "+ sdf.format(thisOrder.getExpectedDeliveryDate())+"</td><td>"+GUIBackBone.getLoggedStaffMember().getName()+" "+GUIBackBone.getLoggedStaffMember().getSurname()+"</td><td>"+df.format(thisOrder.getTotal())+"</td></tr>";
+				         htmlText += "</table><br><h2>Products:</h2><table border='1'><tr><th>ID</th><th>Name</th><th>Supplier</th><th>Category</th><th>Price</th><th>Amount</th><th>Total</th></tr>";	        	 
+			         }
+			        //when completed(delivered) is checked do this
+			        else if(thisOrder.isCompleted()  ){
 			        	 
+			        	
 			        	    Date now = new Date();
 			        	    String strDate = sdf.format(now);
 			        	    
 			        	    
+			        	    if(thisOrder.getExpectedDeliveryDate().after(now)){
+			        	    	 	
+			        	    	String savedDate = sdf.format(now);
 			        	    
+			        	    
+			        	    
+			        	          	   
 			         htmlText += "<h2>Order details:</h2><table border='1'><tr><th>ID</th><th>Date of creation</th><th>Expected delivery date</th><th>Staff member</th><th>Total</th></tr>";
-			         htmlText += "<tr><td>"+thisOrder.getId()+"</td></td>"+sdf.format(thisOrder.getDate())+"</td><td>"+"Delivered on " +strDate+"</td><td>"+GUIBackBone.getLoggedStaffMember().getName()+" "+GUIBackBone.getLoggedStaffMember().getSurname()+"</td><td>"+df.format(thisOrder.getTotal())+"</td></tr>";
+			         htmlText += "<tr><td>"+thisOrder.getId()+"</td></td>"+sdf.format(thisOrder.getDate())+"</td><td>"+"Delivered on " +savedDate+"</td><td>"+GUIBackBone.getLoggedStaffMember().getName()+" "+GUIBackBone.getLoggedStaffMember().getSurname()+"</td><td>"+df.format(thisOrder.getTotal())+"</td></tr>";
 			         htmlText += "</table><br><h2>Products:</h2><table border='1'><tr><th>ID</th><th>Name</th><th>Supplier</th><th>Category</th><th>Price</th><th>Amount</th><th>Total</th></tr>";
 			         }
-			         
-			         //displays expected delivery time / not yet delivered
+			        }
+			        
+			        
+			         //displays expected delivery time if order is not yet delivered
 			         else{ 			        	 
 			        	 htmlText += "<h2>Order details:</h2><table border='1'><tr><th>ID</th><th>Date of creation</th><th>Expected delivery date</th><th>Staff member</th><th>Total</th></tr>";
 				         htmlText += "<tr><td>"+thisOrder.getId()+"</td></td>"+sdf.format(thisOrder.getDate())+"</td><td>"+sdf.format(thisOrder.getExpectedDeliveryDate())+"</td><td>"+GUIBackBone.getLoggedStaffMember().getName()+" "+GUIBackBone.getLoggedStaffMember().getSurname()+"</td><td>"+df.format(thisOrder.getTotal())+"</td></tr>";
