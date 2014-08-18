@@ -81,8 +81,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//Add scroll pane to left size with list of products
 		JScrollPane scrollPane = new JScrollPane(list);
-		//TODO marker to locate set divider
-		//this.setDividerLocation(300);
+		this.setDividerLocation(300);
 		setLeftComponent(scrollPane);
 		
 		
@@ -91,41 +90,6 @@ public class StockManagementPanel extends JSplitPane{
 		setRightComponent(panel);
 		panel.setLayout(new MigLayout("", "[][100px:n][grow][70px:n,grow][grow][100px:n,grow][100px:n,grow][40px:n,grow]", "[][20px:n][][][][][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow]"));
 		
-		
-		//text field to enter id of product
-		/*txtId = new JTextField();
-		panel.add(txtId, "cell 5 2, center");
-		txtId.setHorizontalAlignment(SwingConstants.CENTER);
-		txtId.setColumns(20);
-		txtId.setFocusTraversalKeysEnabled(false);
-		txtId.setText("Enter Id");
-		//set text field to blank when focus gained
-		txtId.addFocusListener(new FocusListener(){
-			@Override
-			public void focusGained(FocusEvent arg0) {
-				txtId.setText("");
-			}
-			@Override
-			public void focusLost(FocusEvent arg0) {
-				//Do Nothing
-			}
-			
-		});
-		txtId.addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent arg0) {}
-			@Override
-			public void keyReleased(KeyEvent k) {
-				if(k.getKeyCode() == KeyEvent.VK_ENTER){
-					loadProductDetails();
-				}else if(k.getKeyCode() == KeyEvent.VK_TAB){
-					loadProductDetails();
-					textName.requestFocusInWindow();
-				}
-			}
-			@Override
-			public void keyPressed(KeyEvent arg0) {}
-		});*/
 		
 		//drop down menu  to enter id of product
 		ArrayList<Integer> idValues = new ArrayList<Integer>();
@@ -447,6 +411,7 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
+	//Clears the right pane of any product details
 	public void clearProductDetails(){
 		comboSelectId.setSelectedIndex(0);
 		textName.setText("");
@@ -700,7 +665,6 @@ public class StockManagementPanel extends JSplitPane{
 			String s = current.toString();
 			comboSelectId.addItem(s);
 		}
-		
 	}
 	
 	
