@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 
 import javax.swing.JButton;
@@ -64,6 +65,10 @@ public class CustomerOrderPanel extends JPanel{
 	private Timer timer;
 	private String typeOfOrder = "All";
 	private JScrollPane scrollPane;
+	private JComboBox<String> comboSearchForProducts;
+	private JButton btnAddToOrder = new JButton ("Add to order");
+	private JButton btnViewCurrentOrder = new JButton ("Current Order");
+	private ArrayList<Object[]> arrayCurrentOrder = new ArrayList<Object[]>();
 	
 	/**
 	 * Adds all the GUI components on the panel
@@ -72,7 +77,7 @@ public class CustomerOrderPanel extends JPanel{
 		setLayout(new MigLayout());
 		
 		JLabel lblCustomer = new JLabel("Customer:");
-		add(lblCustomer, "split 5");
+		add(lblCustomer, "split 6");
 		
 		ArrayList<String> customerNames = new ArrayList<String>();
 		customerNames.add("");
@@ -113,7 +118,59 @@ public class CustomerOrderPanel extends JPanel{
 		lblActiveCustomer = new JLabel("none");
 		lblActiveCustomer.setForeground(Color.red);
 		add(lblActiveCustomerText, "gapx 20px");
-		add(lblActiveCustomer, "wrap");
+		add(lblActiveCustomer);
+		add(new JLabel("Product search:"), "gapx 50");
+		String[] comboArray = getProductNamesForComboBox();
+		comboSearchForProducts = new JComboBox<String>();
+		comboSearchForProducts.addItem("");
+		for(String name:comboArray){
+			comboSearchForProducts.addItem(name);
+		}
+		add(comboSearchForProducts, "wrap");
+		comboSearchForProducts.setEditable(true);
+		AutoCompleteDecorator.decorate(comboSearchForProducts);
+		comboSearchForProducts.getEditor().getEditorComponent().addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent event) {
+				if(event.getKeyCode() == KeyEvent.VK_ENTER){
+					String product = comboSearchForProducts.getSelectedItem().toString();
+					if(product != ""){
+						displayProductsTable(product);
+					}else{
+						displayProductsTable("");
+					}
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			
+		});
+		
+		comboSearchForProducts.addItemListener(new ItemListener(){
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED){
+					String product = e.getItem().toString();
+					if(product != ""){
+						for(Product prod:Shop.getProducts()){
+							if(prod.getName().equalsIgnoreCase(product) && prod.isDeleted() == false){
+								displayProductsTable(product);
+								break;
+							}
+						}
+					}else{
+						displayProductsTable("");
+					}
+				}
+			}
+			
+		});
 		
 		lblProductList = new JLabel("Product list:");
 		add(lblProductList, "wrap");
@@ -121,13 +178,15 @@ public class CustomerOrderPanel extends JPanel{
 		
 		scrollPane = new JScrollPane();
 		add(scrollPane, "span 5, grow, push");
-		displayProductsTable();
+		displayProductsTable("");
 		
 		//add the order button
-		btnOrder = new JButton("New Order");
+		btnOrder = new JButton("Submit Order");
 		btnOrder.setToolTipText("All the products that have \"Amount to order\" greater than 0 will be placed on the order.");
 		JPanel panelx = new JPanel();
 		panelx.setLayout(new MigLayout());
+		panelx.add(btnAddToOrder,"growx, pushx, wrap");
+		panelx.add(btnViewCurrentOrder,"growx, pushx, wrap");
 		panelx.add(btnOrder,"growx, pushx");
 		add(panelx, "aligny top, alignx left, wrap, growx");
 		btnOrder.addActionListener(new ButtonOrderHandler());
@@ -156,7 +215,79 @@ public class CustomerOrderPanel extends JPanel{
 		btnUpdateOrderCompletion.addActionListener(new UpdateOrdersHandler());
 		add(oneCellPanel, "aligny top");
 		
+		btnAddToOrder.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				boolean found = false;
+				for(int i =0; i< availableProductsArray.length; i++){
+					if((int)availableProductsArray[i][7] > 0 && (int)availableProductsArray[i][6] >= (int)availableProductsArray[i][7]){
+						System.out.println("added product with id: "+availableProductsArray[i][0]);
+						
+						int id = (int) availableProductsArray[i][0];
+						String name = (String) availableProductsArray[i][1];
+						String supplier = null;
+						for(Supplier sup:Shop.getSuppliers()){
+							if(sup.getSupplierName().equalsIgnoreCase((String) availableProductsArray[i][2])){
+								supplier = sup.getSupplierName();
+							}
+						}
+						String category = (String) availableProductsArray[i][3];
+						double markupPrice = (double) availableProductsArray[i][4];
+						boolean discounted = (boolean)availableProductsArray[i][5];
+						int quantity = (int) availableProductsArray[i][6];
+						int amount = (int) availableProductsArray[i][7];
+						Object[] p = {id, name, supplier, category, markupPrice, discounted, quantity, amount};
+						arrayCurrentOrder.add(p);
+						
+						found = true;
+						//decrementProductAvalableQuantity((int)availableProductsArray[i][0], (int)availableProductsArray[i][7]);
+						displayErrorMessage("Product(s) added to order", Color.blue);
+					}else if((int)availableProductsArray[i][7] > 0 && (int)availableProductsArray[i][6] < (int)availableProductsArray[i][7]){
+						displayErrorMessage("You cannot order more than available!", Color.red);
+					}
+				}
+				if(found == false){
+					displayErrorMessage("Nothing to add", Color.red);
+				}else{
+					AbstractTableModel model = (AbstractTableModel) tableAvailableProducts.getModel();
+					model.fireTableDataChanged();
+				}
+			}
+			
+		});
+		
+		btnViewCurrentOrder.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new CurrentStockOrderDialog().currentCustomerOrder(arrayCurrentOrder);
+			}
+			
+		});
+		
 	}//end constructor
+	
+	//returns an array of product names
+		public String[] getProductNamesForComboBox(){
+			ArrayList<String> names = new ArrayList<String>();
+			for(Product product:Shop.getProducts()){
+				boolean found = false;
+				innerFor:for(String s:names){
+					if(product.getName().equalsIgnoreCase(s)){
+						found=true;
+						break innerFor;
+					}
+				}
+				if(found==false){
+					names.add(product.getName());
+				}
+			}
+			String[] arrayToSort = new String[names.size()];
+			arrayToSort = (String[]) names.toArray(new String[names.size()]);
+			Arrays.sort(arrayToSort);
+			return arrayToSort;
+		}
 	
 	/**
 	 * Handles enter pressed on the combo box. Selects the Customer and populates table if any products have been ordered
@@ -193,25 +324,56 @@ public class CustomerOrderPanel extends JPanel{
 		
 	}
 	
-	public void displayProductsTable(){
-		availableProductsArray = new Object[Shop.getProducts().size()][8];
-		int counter = 0;
-		//make products array to feed into the table model
-		DecimalFormat df = new DecimalFormat("#.00");
-		for(Product product:Shop.getProducts()){
-			if(product.isAvailable() && product.isDeleted()==false){
-				availableProductsArray[counter][0] = product.getId();
-				availableProductsArray[counter][1] = product.getName();
-				availableProductsArray[counter][2] = product.getSupplier().getSupplierName();
-				availableProductsArray[counter][3] = product.getCategory();
-				availableProductsArray[counter][4] = Double.parseDouble(df.format(product.getMarkupPrice()));
-				availableProductsArray[counter][5] = product.isDiscounted();
-				availableProductsArray[counter][6] = product.getQuantity();
-				//this column will be editable
-				availableProductsArray[counter][7] = 0;
-				counter ++;
+	public void displayProductsTable(String productName){
+			if(productName == ""){
+				availableProductsArray = new Object[Shop.getProducts().size()][8];
+				int counter = 0;
+				//make products array to feed into the table model
+				DecimalFormat df = new DecimalFormat("#.00");
+				for(Product product:Shop.getProducts()){
+					if(product.isAvailable() && product.isDeleted()==false){
+						availableProductsArray[counter][0] = product.getId();
+						availableProductsArray[counter][1] = product.getName();
+						availableProductsArray[counter][2] = product.getSupplier().getSupplierName();
+						availableProductsArray[counter][3] = product.getCategory();
+						availableProductsArray[counter][4] = Double.parseDouble(df.format(product.getMarkupPrice()));
+						availableProductsArray[counter][5] = product.isDiscounted();
+						
+						//update the price of the array if there are orders made for this products that are yet to be sumbitted
+						//if the user adds to order but does not submit it, leaving the pane and coming back will redraw the table with current products
+						//therefore this will make sure that if you have products in the order that is not submitted, will reflect the quantities
+						availableProductsArray[counter][6] = product.getQuantity();
+						//this column will be editable
+						availableProductsArray[counter][7] = 0;
+						counter ++;
+					}
+				}
+			}else{
+				int size = 0;
+				for(Product prod:Shop.getProducts()){
+					if(prod.getName() == productName){
+						size ++;
+					}
+				}
+				availableProductsArray = new Object[size][8];
+				int counter = 0;
+				//make products array to feed into the table model
+				DecimalFormat df = new DecimalFormat("#.00");
+				for(Product product:Shop.getProducts()){
+					if(product.isAvailable() && product.isDeleted()==false && product.getName() == productName){
+						availableProductsArray[counter][0] = product.getId();
+						availableProductsArray[counter][1] = product.getName();
+						availableProductsArray[counter][2] = product.getSupplier().getSupplierName();
+						availableProductsArray[counter][3] = product.getCategory();
+						availableProductsArray[counter][4] = Double.parseDouble(df.format(product.getMarkupPrice()));
+						availableProductsArray[counter][5] = product.isDiscounted();
+						availableProductsArray[counter][6] = product.getQuantity();
+						//this column will be editable
+						availableProductsArray[counter][7] = 0;
+						counter ++;
+					}
+				}
 			}
-		}
 		String columnNames[] = {"Id","Name","Supplier","Category","Price","Discounted?","Quantity","Amount to Order"};
 		ProductTableModel productsTableModel = new ProductTableModel(availableProductsArray, columnNames);
 		tableAvailableProducts = new JTable(productsTableModel);
@@ -321,6 +483,7 @@ public class CustomerOrderPanel extends JPanel{
 					//update table model data to reflect changes
 					for(ProductToOrder x:productsToOrder){
 						decrementProductAvalableQuantity(x.getId(),x.getAmount());
+						decrementProductQuantityFromProducts(x.getId(),x.getAmount());
 					}
 					AbstractTableModel model = (AbstractTableModel) tableAvailableProducts.getModel();
 					model.fireTableDataChanged();
@@ -526,6 +689,10 @@ public class CustomerOrderPanel extends JPanel{
 				break;
 			}
 		}
+		return false;
+	}//end decrementProductAvalableQuantity
+	
+	public boolean decrementProductQuantityFromProducts(int productId, int deductableAmount){
 		for(Product y:Shop.getProducts()){
 			if(y.getId() == productId){
 				y.setQuantity(y.getQuantity()-deductableAmount);
@@ -536,7 +703,7 @@ public class CustomerOrderPanel extends JPanel{
 			}
 		}
 		return false;
-	}//end decrementProductAvalableQuantity
+	}
 	
 	
 	public void displayOrderTable(boolean forCustomerOnly){

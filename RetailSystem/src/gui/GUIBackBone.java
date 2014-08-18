@@ -101,7 +101,7 @@ public class GUIBackBone  extends JFrame{
 		panelStockOrder.displayProductsTable("", "");
 		panelStockOrder.repaint();
 		panelCustomerOrders.displayOrderTable(false);
-		panelCustomerOrders.displayProductsTable();
+		panelCustomerOrders.displayProductsTable("");
 	}
 
 	public static void setLoggedStaffMember(Staff loggedStaffMember) {

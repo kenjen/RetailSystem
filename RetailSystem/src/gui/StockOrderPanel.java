@@ -125,8 +125,8 @@ public class StockOrderPanel extends JPanel {
 		});
 		
 		add(lblProductsSearch,"gapx 50");
-		String[] comboArray = getProductNamesForComboBox();
 		
+		String[] comboArray = getProductNamesForComboBox();
 		comboSearchForProducts = new JComboBox<String>();
 		comboSearchForProducts.addItem("");
 		for(String name:comboArray){

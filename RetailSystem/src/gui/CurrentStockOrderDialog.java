@@ -18,6 +18,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
+import data.ProductToOrder;
 import net.miginfocom.swing.MigLayout;
 import tableModels.ProductTableModel;
 
@@ -35,6 +36,30 @@ public class CurrentStockOrderDialog extends JDialog implements ActionListener  
 	
 	public CurrentStockOrderDialog() {
 		
+	}
+	
+	public void currentCustomerOrder(ArrayList<Object[]> list) {
+		scrollPane = new JScrollPane();
+		scrollPane.setMaximumSize(new Dimension(1024,768));
+		scrollPane.setMinimumSize(new Dimension(800,500));
+		createTable(list);
+		
+		contentPanePanel.setLayout(new MigLayout());
+		contentPanePanel.add(scrollPane, "push, grow");
+		JPanel panel = new JPanel();
+		panel.setLayout(new MigLayout());
+		panel.add(btnRemoveSelected,"growx, wrap");
+		panel.add(btnClearOrder,"wrap, growx");
+		contentPanePanel.add(panel,"pushx,wrap,alignx left, aligny top");
+		contentPanePanel.add(btnOk,"pushx, alignx center");
+		btnOk.addActionListener(this);
+		btnClearOrder.addActionListener(this);
+		btnRemoveSelected.addActionListener(this);
+
+		setLayout(new GridBagLayout());
+		setContentPane(contentPanePanel);
+		pack();
+		setVisible(true);
 	}
 	
 	public CurrentStockOrderDialog(ArrayList<Object[]> list) {
@@ -127,6 +152,64 @@ public class CurrentStockOrderDialog extends JDialog implements ActionListener  
 				int row = table.getSelectedRow();
 				table.requestFocus();
 				table.changeSelection(row, 9, false, false);
+			}
+
+		});
+		table.addMouseListener(new MouseAdapter(){
+		public void mouseClicked(MouseEvent e) {
+		      if (e.getClickCount() == 2) {
+		         JTable target = (JTable)e.getSource();
+		         int row = target.getSelectedRow();
+		         int cell = 0;
+		         
+		         int choice = JOptionPane.showConfirmDialog(CurrentStockOrderDialog.this, "Are you sure you want to remove this row?","Remove?",JOptionPane.YES_NO_OPTION);
+		         if (choice==JOptionPane.YES_OPTION){
+			        ProductTableModel model = (ProductTableModel) target.getModel();
+			        //model.fireTableDataChanged();
+			        System.out.println(model.getRowCount());
+			        System.out.println(row);
+			        model.removeRow(row);
+			        table.repaint();
+			        passedList.remove(row);
+		         };
+		      }
+		}
+		});
+		scrollPane.getViewport().add(table);
+		scrollPane.repaint();
+	}
+	
+	public void createTable(ArrayList<Object[]> list){
+		passedList=list;
+		String columnNames[] = { "Id", "Name", "Supplier", "Category", "Price",	"Discounted?", "Quantity", "Amount to Order", "Remove?"};
+		//create from array list an array of objects
+		Object[][] objects = new Object[list.size()][8];
+		Object[][] listData = new Object[list.size()][9];
+		for(int i=0; i<list.size(); i++){
+			objects[i] = list.get(i);
+			listData[i][0] = objects[i][0];
+			listData[i][1] = objects[i][1];
+			listData[i][2] = objects[i][2];
+			listData[i][3] = objects[i][3];
+			listData[i][4] = objects[i][4];
+			listData[i][5] = objects[i][5];
+			listData[i][6] = objects[i][6];
+			listData[i][7] = objects[i][7];
+			listData[i][8] = false;
+			
+		}
+		System.out.println(listData[0][1].toString());
+		
+		ProductTableModel model = new ProductTableModel(listData, columnNames);
+		table = new JTable(model);
+		table.setAutoCreateRowSorter(true);
+		table.getColumnModel().getSelectionModel()
+		.addListSelectionListener(new ListSelectionListener() {
+
+			public void valueChanged(ListSelectionEvent e) {
+				int row = table.getSelectedRow();
+				table.requestFocus();
+				table.changeSelection(row, 8, false, false);
 			}
 
 		});
