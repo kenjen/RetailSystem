@@ -446,19 +446,25 @@ public class StockManagementPanel extends JSplitPane{
 		});
 	}
 	
+	
+	public void clearProductDetails(){
+		comboSelectId.setSelectedIndex(0);
+		textName.setText("");
+		textCategory.setText("");
+		textQuantity.setText("");
+		textThreshold.setText("");
+		textPrice.setText("");
+		textDiscountedPrice.setText("");
+		txtFlaggedForOrder.setVisible(false);
+		comboSelectSupplier.setSelectedIndex(0);
+	}
+	
+	
 	public void createNewProduct(){
 		if(productLoaded){
 			//clear fields to add new details
 			productLoaded = false;
-			comboSelectId.setSelectedIndex(0);
-			textName.setText("");
-			textCategory.setText("");
-			textQuantity.setText("");
-			textThreshold.setText("");
-			textPrice.setText("");
-			textDiscountedPrice.setText("");
-			txtFlaggedForOrder.setVisible(false);
-			comboSelectSupplier.setSelectedIndex(0);
+			clearProductDetails();
 		}else{
 			//take in new details and create new product
 			if(!textName.equals("")){
@@ -668,13 +674,13 @@ public class StockManagementPanel extends JSplitPane{
 			txtFlaggedForOrder.setVisible(tempProduct.isFlaggedForOrder());
 			txtDiscountedAmount.setText(tempProduct.getDiscountedPercentage() + "%");
 			int index = 0;
+
 			for(Supplier supplier : Shop.getSuppliers()){
 				index++;
-				if(supplier.getSupplierName() == tempProduct.getSupplier().getSupplierName()){
-					break;
+				if(supplier.getSupplierName().equals(tempProduct.getSupplier().getSupplierName())){
+					comboSelectSupplier.setSelectedIndex(index);
 				}
 			}
-			comboSelectSupplier.setSelectedIndex(index);
 		}
 	}
 	
@@ -758,6 +764,7 @@ public class StockManagementPanel extends JSplitPane{
 		saveDetails();
 		setupList();
 		refreshCombo();
+		clearProductDetails();
 	}
 	
 	
@@ -807,7 +814,6 @@ public class StockManagementPanel extends JSplitPane{
 						String test = String.format("%.2f", price);
 						price = Double.parseDouble(test);
 						product.setPrice(price);
-						loadProductDetails();
 					}
 				}
 			}catch(NumberFormatException nfe){
