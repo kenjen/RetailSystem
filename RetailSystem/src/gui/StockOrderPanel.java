@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -95,7 +97,7 @@ public class StockOrderPanel extends JPanel {
 					@Override
 					public void keyPressed(KeyEvent e) {
 						if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-							populateProductsTable(comboSuppliers.getItemAt(comboSuppliers.getSelectedIndex()).toString());
+							displayProductsTable("",comboSuppliers.getSelectedItem().toString());
 						}
 
 					}
@@ -110,7 +112,7 @@ public class StockOrderPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				populateProductsTable("");
+				displayProductsTable("","");
 			}
 
 		});
@@ -126,20 +128,48 @@ public class StockOrderPanel extends JPanel {
 			@Override
 			public void keyPressed(KeyEvent event) {
 				if(event.getKeyCode() == KeyEvent.VK_ENTER){
-					displayProductsTable(comboSearchForProducts.getSelectedItem().toString());
+					displayProductsTable("",comboSearchForProducts.getSelectedItem().toString());
 				}
 			}
 
 			@Override
-			public void keyReleased(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void keyReleased(KeyEvent arg0) {}
 
 			@Override
-			public void keyTyped(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-				
+			public void keyTyped(KeyEvent arg0) {}
+			
+		});
+		
+		comboSearchForProducts.addItemListener(new ItemListener(){
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED){
+					String product = e.getItem().toString();
+					for(Product prod:Shop.getProducts()){
+						if(prod.getName().equalsIgnoreCase(product) && prod.isDeleted() == false){
+							displayProductsTable(product,"");
+							break;
+						}
+					}
+				}
+			}
+			
+		});
+		
+		comboSuppliers.addItemListener(new ItemListener(){
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED){
+					String supplier = e.getItem().toString();
+					for(Supplier sup:Shop.getSuppliers()){
+						if(sup.getSupplierName().equalsIgnoreCase(supplier) && sup.isSupplierDeleted() == false){
+							displayProductsTable("",comboSuppliers.getSelectedItem().toString());
+							break;
+						}
+					}
+				}
 			}
 			
 		});
@@ -151,7 +181,7 @@ public class StockOrderPanel extends JPanel {
 //--------------------//
 		scrollPaneProducts = new JScrollPane();
 		add(scrollPaneProducts, "span 3, grow, push");
-		displayProductsTable("");
+		displayProductsTable("","");
 
 		JPanel tempPanel = new JPanel();
 		tempPanel.setLayout(new MigLayout());
@@ -201,7 +231,7 @@ public class StockOrderPanel extends JPanel {
 					displayErrorMessage("Order has been updated successfully", Color.blue);
 					
 					//since we have updated the quantity of some products, reload the product table
-					displayProductsTable("");
+					displayProductsTable("","");
 				}else{
 					displayErrorMessage("Nothing to update", Color.red);
 				}
@@ -241,7 +271,6 @@ public class StockOrderPanel extends JPanel {
 	//returns an array of product names
 	public String[] getProductNamesForComboBox(){
 		ArrayList<String> names = new ArrayList<String>();
-		int counter = 0;
 		for(Product product:Shop.getProducts()){
 			boolean found = false;
 			innerFor:for(String s:names){
@@ -259,112 +288,6 @@ public class StockOrderPanel extends JPanel {
 		Arrays.sort(arrayToSort);
 		return arrayToSort;
 	}
-
-//-----------------------------//
-//---POPULATE PRODUCTS TABLE---//
-//-----------------------------//
-	public void populateProductsTable(String forSupplier) {
-		boolean supplierFound = false;
-		for (Supplier supplier : Shop.getSuppliers()) {
-			if (supplier.getSupplierName().equalsIgnoreCase(forSupplier)) {
-				supplierFound = true;
-				break;
-			}
-		}
-
-		String columnNames[] = { "Id", "Name", "Category", "Price", "Supplier",
-				"Quantity", "In Shop?", "Required", "Amount to Order" };
-
-		// display all products from all suppliers
-		if (supplierFound != true) {
-
-			arrayTableProducts = new Object[Shop.getProducts().size()][9];
-			int counter = 0;
-
-			for (Product products : Shop.getProducts()) {
-
-				arrayTableProducts[counter][0] = products.getId();
-				arrayTableProducts[counter][1] = products.getName();
-				arrayTableProducts[counter][2] = products.getCategory();
-				arrayTableProducts[counter][3] = products.getPrice();
-				arrayTableProducts[counter][4] = products.getSupplier()
-						.getSupplierName();
-				arrayTableProducts[counter][5] = products.getQuantity();
-				arrayTableProducts[counter][6] = products.isAvailable();
-				arrayTableProducts[counter][7] = products.isFlaggedForOrder();
-
-				arrayTableProducts[counter][8] = 0;
-				counter++;
-			}
-
-			ProductTableModel productsTableModel = new ProductTableModel(
-					arrayTableProducts, columnNames);
-			tableProducts = new JTable(productsTableModel);
-			tableProducts.setAutoCreateRowSorter(true);
-			tableProducts.getColumnModel().getSelectionModel()
-					.addListSelectionListener(new ListSelectionListener() {
-
-						public void valueChanged(ListSelectionEvent e) {
-							int row = tableProducts.getSelectedRow();
-							tableProducts.requestFocus();
-							// tableProducts.editCellAt(row, 7);
-							tableProducts.changeSelection(row, 8, false, false);
-						}
-
-					});
-			scrollPaneProducts.getViewport().add(tableProducts);
-			StockOrderPanel.this.repaint();
-		} else {
-			// display products only for the selected supplier
-			int counterForThisSuppliersProducts = 0;
-			for (Product products : Shop.getProducts()) {
-				if (products.getSupplier().getSupplierName()
-						.equalsIgnoreCase(forSupplier)) {
-					counterForThisSuppliersProducts++;
-				}
-			}
-			arrayTableProducts = new Object[counterForThisSuppliersProducts][9];
-			int counter = 0;
-
-			for (Product products : Shop.getProducts()) {
-
-				if (products.getSupplier().getSupplierName()
-						.equalsIgnoreCase(forSupplier)) {
-					arrayTableProducts[counter][0] = products.getId();
-					arrayTableProducts[counter][1] = products.getName();
-					arrayTableProducts[counter][2] = products.getCategory();
-					arrayTableProducts[counter][3] = products.getPrice();
-					arrayTableProducts[counter][4] = products.getSupplier()
-							.getSupplierName();
-					arrayTableProducts[counter][5] = products.getQuantity();
-					arrayTableProducts[counter][6] = products.isAvailable();
-					arrayTableProducts[counter][7] = products
-							.isFlaggedForOrder();
-
-					arrayTableProducts[counter][8] = 0;
-					counter++;
-				}
-			}
-
-			ProductTableModel productsTableModel = new ProductTableModel(
-					arrayTableProducts, columnNames);
-			tableProducts = new JTable(productsTableModel);
-			tableProducts.setAutoCreateRowSorter(true);
-			tableProducts.getColumnModel().getSelectionModel()
-					.addListSelectionListener(new ListSelectionListener() {
-
-						public void valueChanged(ListSelectionEvent e) {
-							int row = tableProducts.getSelectedRow();
-							tableProducts.requestFocus();
-							// tableProducts.editCellAt(row, 7);
-							tableProducts.changeSelection(row, 8, false, false);
-						}
-
-					});
-			scrollPaneProducts.getViewport().add(tableProducts);
-			StockOrderPanel.this.repaint();
-		}
-	}// end PopulateProducts()
 
 	/**
 	 * Shows the lblError text for 4 seconds.
@@ -398,15 +321,13 @@ public class StockOrderPanel extends JPanel {
 		ArrayList<StockOrder> stockOrders = Shop.getStockOrders();
 		arrayTableOrders = new Object[stockOrders.size()][5];
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-		int x = 0;
-		for (StockOrder stockOrder : stockOrders) {
+		for (int x=0; x<stockOrders.size(); x++) {
 			arrayTableOrders[x][0] = stockOrders.get(x).getId();
 			arrayTableOrders[x][1] = stockOrders.get(x).getStaff().getName()
 					+ " " + stockOrders.get(x).getStaff().getSurname();
 			arrayTableOrders[x][2] = sdf.format(stockOrders.get(x).getDate());
 			arrayTableOrders[x][3] = stockOrders.get(x).getTotal();
 			arrayTableOrders[x][4] = stockOrders.get(x).isCompleted();
-			x++;
 		}
 
 		ProductTableModel ordersTableModel = new ProductTableModel(
@@ -480,8 +401,8 @@ public class StockOrderPanel extends JPanel {
 //-------------------------
 //---Display Products Table 
 //-------------------------
-	public void displayProductsTable(String productName){
-		if(productName != ""){
+	public void displayProductsTable(String productName, String supplierName){
+		if(productName != "" && supplierName == ""){
 		//get products that contain that name
 			ArrayList<Product> productsArrayList = new ArrayList<Product>();
 			for(Product product:Shop.getProducts()){
@@ -503,7 +424,8 @@ public class StockOrderPanel extends JPanel {
 				arrayTableProducts[counter][8] = 0;
 				counter++;
 			}
-		}else{
+		}else if(supplierName == ""){
+			//display table for all products
 			arrayTableProducts = new Object[Shop.getProducts().size()][9];
 			int counter = 0;
 			for (Product products : Shop.getProducts()) {
@@ -517,6 +439,37 @@ public class StockOrderPanel extends JPanel {
 				arrayTableProducts[counter][7] = products.isFlaggedForOrder();
 				arrayTableProducts[counter][8] = 0;
 				counter++;
+			}
+		}else{
+			// display products only for the selected supplier
+			int counterForThisSuppliersProducts = 0;
+			for (Product products : Shop.getProducts()) {
+				if (products.getSupplier().getSupplierName()
+						.equalsIgnoreCase(supplierName)) {
+					counterForThisSuppliersProducts++;
+				}
+			}
+			arrayTableProducts = new Object[counterForThisSuppliersProducts][9];
+			int counter = 0;
+
+			for (Product products : Shop.getProducts()) {
+
+				if (products.getSupplier().getSupplierName()
+						.equalsIgnoreCase(supplierName)) {
+					arrayTableProducts[counter][0] = products.getId();
+					arrayTableProducts[counter][1] = products.getName();
+					arrayTableProducts[counter][2] = products.getCategory();
+					arrayTableProducts[counter][3] = products.getPrice();
+					arrayTableProducts[counter][4] = products.getSupplier()
+							.getSupplierName();
+					arrayTableProducts[counter][5] = products.getQuantity();
+					arrayTableProducts[counter][6] = products.isAvailable();
+					arrayTableProducts[counter][7] = products
+							.isFlaggedForOrder();
+
+					arrayTableProducts[counter][8] = 0;
+					counter++;
+				}
 			}
 		}
 

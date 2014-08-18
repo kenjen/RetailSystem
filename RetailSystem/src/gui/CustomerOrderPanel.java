@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -85,10 +87,26 @@ public class CustomerOrderPanel extends JPanel{
 		comboSelectCustomer.setEditable(true);
 		AutoCompleteDecorator.decorate(comboSelectCustomer);
 		comboSelectCustomer.getEditor().getEditorComponent().addKeyListener(new ComboBoxKeyListener() );
-		
-		btnSelectCustomer = new JButton("Select");
-		add(btnSelectCustomer);
-		btnSelectCustomer.addActionListener(new ButtonHandlerForSelectingCustomer());
+		comboSelectCustomer.addItemListener(new ItemListener(){
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED){
+					Customer customer = getCustomerFromConcatenatedName(e.getItem().toString());
+					if(customer != null){
+						selectedCustomer = customer;
+						lblActiveCustomer.setText(selectedCustomer.getCustomerFName()+" "+selectedCustomer.getCustomerLName());
+						lblActiveCustomer.setForeground(Color.blue);
+					}else{
+						lblActiveCustomer.setText("none");
+						lblActiveCustomer.setForeground(Color.red);
+						//displayErrorMessage("No such customer in the list", Color.red);
+					}
+				}
+				
+			}
+			
+		});
 		
 		lblActiveCustomerText = new JLabel("Active Customer: ");
 		lblActiveCustomer = new JLabel("none");
@@ -229,25 +247,6 @@ public class CustomerOrderPanel extends JPanel{
 		}
 		
 	}
-	
-	/**
-	 *This handler is called when selecting customer. Selects the customer object and modifies appropriate label.
-	 */
-	public class ButtonHandlerForSelectingCustomer implements ActionListener{
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			String concatenatedName = comboSelectCustomer.getSelectedItem().toString();
-			if(getCustomerFromConcatenatedName(concatenatedName) != null){
-				selectedCustomer = getCustomerFromConcatenatedName(concatenatedName);
-				lblActiveCustomer.setText(selectedCustomer.getCustomerFName()+" "+selectedCustomer.getCustomerLName());
-				lblActiveCustomer.setForeground(Color.blue);
-			}else{
-				lblActiveCustomer.setText("none");
-				lblActiveCustomer.setForeground(Color.red);
-				displayErrorMessage("No such customer in the list", Color.red);
-			}
-		}
-	}//end ButtonHandlerForSelectingCustomer
 	
 	/**
 	 *This handler is called when user clicks on New Order button.
