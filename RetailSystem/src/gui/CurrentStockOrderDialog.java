@@ -77,17 +77,19 @@ public class CurrentStockOrderDialog extends JDialog implements ActionListener  
 			StockOrderPanel.setArrayTemporaryOrder(new ArrayList<Object[]>());
 		}else if(e.getSource().equals(btnRemoveSelected)){
 			AbstractTableModel adstractModel = (AbstractTableModel) table.getModel();
-			adstractModel.fireTableDataChanged();
-			
-			//loop through table data to find all element that have boolean set to true
-			ArrayList<Object[]> newList= new ArrayList<Object[]>();
-			for(Object[] object:arrayForTableWithExtraElement){
-				if((boolean)object[9] == false){
-					newList.add(object);
+			if(adstractModel.getRowCount() != 0){
+				adstractModel.fireTableDataChanged();
+				
+				//loop through table data to find all element that have boolean set to true
+				ArrayList<Object[]> newList= new ArrayList<Object[]>();
+				for(Object[] object:arrayForTableWithExtraElement){
+					if((boolean)object[9] == false){
+						newList.add(object);
+					}
 				}
+				StockOrderPanel.setArrayTemporaryOrder(newList);
+				drawTable(newList);
 			}
-			StockOrderPanel.setArrayTemporaryOrder(newList);
-			drawTable(newList);
 		}
 	}
 	
@@ -138,7 +140,11 @@ public class CurrentStockOrderDialog extends JDialog implements ActionListener  
 		         int choice = JOptionPane.showConfirmDialog(CurrentStockOrderDialog.this, "Are you sure you want to remove this row?","Remove?",JOptionPane.YES_NO_OPTION);
 		         if (choice==JOptionPane.YES_OPTION){
 			        ProductTableModel model = (ProductTableModel) target.getModel();
+			        //model.fireTableDataChanged();
+			        System.out.println(model.getRowCount());
+			        System.out.println(row);
 			        model.removeRow(row);
+			        table.repaint();
 			        passedList.remove(row);
 		         };
 		      }

@@ -78,7 +78,10 @@ public class ProductTableModel extends AbstractTableModel{
     	list.remove(row);
     	Object[][] array2 = list.toArray(new Object[][]{});
     	data = array2;
-    	fireTableDataChanged();
+    	//calling fireTableDataChanged() gives error if data is basically null
+    	if(data.length != 0){
+    		fireTableDataChanged();
+    	}
     }
 	
 }//end class ProductTableModel
