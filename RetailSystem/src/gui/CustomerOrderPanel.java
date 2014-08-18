@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -753,36 +754,7 @@ public class CustomerOrderPanel extends JPanel{
 			tableOrders.setAutoCreateRowSorter(true);
 			
 			//Handle double clicking on table to display details of the double-clicked row's order
-			tableOrders.addMouseListener(new MouseAdapter() {
-				   public void mouseClicked(MouseEvent e) {
-				      if (e.getClickCount() == 2) {
-				         JTable target = (JTable)e.getSource();
-				         int row = target.getSelectedRow();
-				         
-				         int id = (int) arrayOrders[row][0];
-				         String customer = (String) arrayOrders[row][1];
-				         String staff = (String) arrayOrders[row][2];
-				         String date = (String) arrayOrders[row][3];
-				         String totalNet = (String) arrayOrders[row][4];
-				         String totalGross = (String) arrayOrders[row][5];
-				         String htmlString = "<html><span style='color:rgb(92, 150, 238); font-size:1.2em'>Order ID:</span> "+id+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> For Customer:</span> "+
-				         customer+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> Made by staff member:</span> "+staff+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> On date:</span> "+date+"<br>";
-				         CustomerOrder doubleClickedOrder = null;
-				         for(CustomerOrder order:Shop.getCustomerOrders()){
-				        	 if(order.getId() == id){
-				        		 doubleClickedOrder = order;
-				        	 }
-				         }
-				         	htmlString += "<br><span style='color:rgb(92, 150, 238); font-size:1.2em'>Products: </span><br>";
-				         	htmlString +="<table style='text-align:left;'><tr style='color:rgb(240, 157, 52)'><th>ID</th><th>Name</th><th>Supplier</th><th>Category</th><th>Price</th><th>Amount</th><th>Total</th></tr>";
-				         for(ProductToOrder prod:doubleClickedOrder.getProducts()){
-				        	 htmlString +=prod.toHtmlString();
-				         }
-				         htmlString +="</table><br><span style='color:rgb(92, 150, 238); font-size:1.2em'>Total Net:</span> "+totalNet+" <span style='color:rgb(92, 150, 238); font-size:1.2em'>Total Gross:</span> "+totalGross+"</html>";
-				         new PopupDialog(htmlString);
-				         }
-				   }
-				});
+			tableOrders.addMouseListener(new DoubleClickMouseHandler());
 			scrollPaneForOrdersTable.getViewport().add(tableOrders);
 		}else{
 			int counter = 0;
@@ -804,38 +776,61 @@ public class CustomerOrderPanel extends JPanel{
 			tableOrders = new JTable(tableModelForOrdersTable);
 			tableOrders.setAutoCreateRowSorter(true);
 			//Handle double clicking on table to display details of the double-clicked row's order
-			tableOrders.addMouseListener(new MouseAdapter() {
-				   public void mouseClicked(MouseEvent e) {
-					      if (e.getClickCount() == 2) {
-						         JTable target = (JTable)e.getSource();
-						         int row = target.getSelectedRow();
-						         
-						         int id = (int) arrayOrders[row][0];
-						         String customer = (String) arrayOrders[row][1];
-						         String staff = (String) arrayOrders[row][2];
-						         String date = (String) arrayOrders[row][3];
-						         String totalNet = (String) arrayOrders[row][4];
-						         String totalGross = (String) arrayOrders[row][5];
-						         String htmlString = "<html><span style='color:rgb(92, 150, 238); font-size:1.2em'>Order ID:</span> "+id+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> For Customer:</span> "+
-						         customer+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> Made by staff member:</span> "+staff+"<span style='color:rgb(92, 150, 238); font-size:1.2em'> On date:</span> "+date+"<br>";
-						         CustomerOrder doubleClickedOrder = null;
-						         for(CustomerOrder order:Shop.getCustomerOrders()){
-						        	 if(order.getId() == id){
-						        		 doubleClickedOrder = order;
-						        	 }
-						         }
-						         	htmlString += "<br><span style='color:rgb(92, 150, 238); font-size:1.2em'>Products: </span><br>";
-						         	htmlString +="<table style='text-align:left;'><tr style='color:rgb(240, 157, 52)'><th>ID</th><th>Name</th><th>Supplier</th><th>Category</th><th>Price</th><th>Amount</th><th>Total</th></tr>";
-						         for(ProductToOrder prod:doubleClickedOrder.getProducts()){
-						        	 htmlString +=prod.toHtmlString();
-						         }
-						         htmlString +="</table><br><span style='color:rgb(92, 150, 238); font-size:1.2em'>Total Net:</span> "+totalNet+" <span style='color:rgb(92, 150, 238); font-size:1.2em'>Total Gross:</span> "+totalGross+"</html>";
-						         new PopupDialog(htmlString);
-						         }
-				   }
-				});
+			tableOrders.addMouseListener(new DoubleClickMouseHandler());
 			scrollPaneForOrdersTable.getViewport().add(tableOrders);
 		}//end else
 	}//end displayPreviousCustomerOrderTable
+	
+	class DoubleClickMouseHandler implements MouseListener{
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+	      if (e.getClickCount() == 2) {
+		         JTable target = (JTable)e.getSource();
+		         int row = target.getSelectedRow();
+		         
+		         int id = (int) arrayOrders[row][0];
+		         String customer = (String) arrayOrders[row][1];
+		         String staff = (String) arrayOrders[row][2];
+		         String date = (String) arrayOrders[row][3];
+		         String totalNet = (String) arrayOrders[row][4];
+		         String totalGross = (String) arrayOrders[row][5];
+		         
+		         String htmlText = "<html><head><style>th {color:#305EE3;font-variant:small-caps;}</style></head>";
+		         htmlText += "<h2>Order details:</h2><table border='1'><tr><th>ID</th><th>Customer</th><th>Staff</th><th>Creation Date</th><th>Total Net</ht<th>Total Gross</th></tr>";
+		         htmlText += "<tr><td>"+id+"</td></td>"+customer+"</td><td>"+ staff+"</td><td>"+date+"</td><td>"+totalNet+"</td><td>"+totalGross+"</td></tr>";
+	        
+		         CustomerOrder orderClicked = null;
+		         for(CustomerOrder order:Shop.getCustomerOrders()){
+		        	 if(order.getId() == id){
+		        		 orderClicked = order;
+		        	 }
+		         }
+			         htmlText += "</table><br><h2>Products:</h2><table border='1'><tr><th>ID</th><th>Name</th><th>Supplier</th><th>Category</th><th>Price</th><th>Amount</th><th>Total</th></tr>";	        	 
+		         for(ProductToOrder prod:orderClicked.getProducts()){
+		        	 htmlText += prod.toHtmlString();
+		         }
+		         htmlText += "</table></html>";
+		         new PopupDialog(htmlText);
+	      }
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {
+		}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {
+		}
+
+		@Override
+		public void mousePressed(MouseEvent arg0) {
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) {
+		}
+		
+	}
 	
 }//end class CustomerOrderPanel
