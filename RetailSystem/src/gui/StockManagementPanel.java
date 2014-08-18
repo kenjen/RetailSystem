@@ -21,6 +21,7 @@ import javax.swing.SwingConstants;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import net.miginfocom.swing.MigLayout;
+import data.JsonExample;
 import data.Product;
 import data.Supplier;
 
@@ -226,14 +227,6 @@ public class StockManagementPanel extends JSplitPane{
 			@Override
 			public void keyPressed(KeyEvent arg0) {}
 		});
-		JButton btnSaveName = new JButton("Save");
-		panel.add(btnSaveName, "cell 7 6");
-		btnSaveName.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				saveName();
-			}
-		});
 		
 		
 		//product category fields
@@ -258,14 +251,6 @@ public class StockManagementPanel extends JSplitPane{
 			}
 			@Override
 			public void keyPressed(KeyEvent arg0) {}
-		});
-		JButton btnSaveCategory = new JButton("Save");
-		panel.add(btnSaveCategory, "cell 7 8");
-		btnSaveCategory.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				saveCategory();
-			}
 		});
 		
 		
@@ -292,14 +277,6 @@ public class StockManagementPanel extends JSplitPane{
 			@Override
 			public void keyPressed(KeyEvent arg0) {}
 		});
-		JButton btnSaveQuantity = new JButton("Save");
-		panel.add(btnSaveQuantity, "cell 7 10");
-		btnSaveQuantity.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				saveQuantity();
-			}
-		});
 		
 		
 		//product threshold fields
@@ -325,14 +302,6 @@ public class StockManagementPanel extends JSplitPane{
 			@Override
 			public void keyPressed(KeyEvent arg0) {}
 		});
-		JButton btnSaveThreshold = new JButton("Save");
-		panel.add(btnSaveThreshold, "cell 7 12");
-		btnSaveThreshold.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				saveThreshold();
-			}
-		});
 		
 		
 		//product price fields
@@ -357,14 +326,6 @@ public class StockManagementPanel extends JSplitPane{
 			}
 			@Override
 			public void keyPressed(KeyEvent arg0) {}
-		});
-		JButton btnSavePrice = new JButton("Save");
-		panel.add(btnSavePrice, "cell 7 14");
-		btnSavePrice.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				savePrice();
-			}
 		});
 		
 		
@@ -403,17 +364,10 @@ public class StockManagementPanel extends JSplitPane{
 		panel.add(comboSelectSupplier, "cell 5 18");
 		comboSelectSupplier.setEditable(true);
 		AutoCompleteDecorator.decorate(comboSelectSupplier);
-		JButton btnSaveSupplier = new JButton("Save");
-		panel.add(btnSaveSupplier, "cell 7 18");
-		btnSaveSupplier.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				saveSupplier();
-			}
-		});
+		
 		
 		JButton btnSaveAll = new JButton("Save All");
-		panel.add(btnSaveAll, "cell 7 19");
+		panel.add(btnSaveAll, "cell 4 19");
 		btnSaveAll.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -424,7 +378,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//mark product as low stock and needing orders
 		btnFlagForOrder = new JButton("Flag For Order");
-		panel.add(btnFlagForOrder, "cell 4 20, center");
+		panel.add(btnFlagForOrder, "cell 4 21, center");
 		btnFlagForOrder.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -435,7 +389,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//discount product by percentage
 		btnDiscountProduct = new JButton("Discount");
-		panel.add(btnDiscountProduct, "cell 4 19, center");
+		panel.add(btnDiscountProduct, "cell 4 20, center");
 		btnDiscountProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -446,7 +400,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//Delete product button
 		btnDeleteProduct = new JButton("Delete");
-		panel.add(btnDeleteProduct, "cell 6 19, center");
+		panel.add(btnDeleteProduct, "cell 6 20, center");
 		btnDeleteProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -457,7 +411,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//Restore product button
 		btnRestoreProduct = new JButton("Restore...");
-		panel.add(btnRestoreProduct, "cell 6 20, center");
+		panel.add(btnRestoreProduct, "cell 6 21, center");
 		btnRestoreProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -468,7 +422,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//create new product button
 		btnCreateNewProduct = new JButton("New Product");
-		panel.add(btnCreateNewProduct, "cell 5 24");
+		panel.add(btnCreateNewProduct, "cell 6 19");
 		btnCreateNewProduct.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -811,7 +765,7 @@ public class StockManagementPanel extends JSplitPane{
 	//TODO test save
 	public void saveDetails(){
 		System.out.println("Saving Products");
-		BufferedWriter writer = null;
+		/*BufferedWriter writer = null;
 		String textToSave = "";
 		int numberOfProducts = 0;
 		int nextId = 0;
@@ -839,6 +793,11 @@ public class StockManagementPanel extends JSplitPane{
 			} catch ( IOException e){
 				e.printStackTrace();
 		    }
+		}*/
+		
+		JsonExample.clearList();
+		for(Product product : Shop.getProducts()){
+			JsonExample.saveProductToFile(product);
 		}
 		System.out.println("Finished save");
 	}
