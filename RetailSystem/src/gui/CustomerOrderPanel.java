@@ -68,7 +68,7 @@ public class CustomerOrderPanel extends JPanel{
 	private JComboBox<String> comboSearchForProducts;
 	private JButton btnAddToOrder = new JButton ("Add to order");
 	private JButton btnViewCurrentOrder = new JButton ("Current Order");
-	private ArrayList<Object[]> arrayCurrentOrder = new ArrayList<Object[]>();
+	private static ArrayList<Object[]> arrayCurrentOrder = new ArrayList<Object[]>();
 	
 	/**
 	 * Adds all the GUI components on the panel
@@ -222,7 +222,6 @@ public class CustomerOrderPanel extends JPanel{
 				boolean found = false;
 				for(int i =0; i< availableProductsArray.length; i++){
 					if((int)availableProductsArray[i][7] > 0 && (int)availableProductsArray[i][6] >= (int)availableProductsArray[i][7]){
-						System.out.println("added product with id: "+availableProductsArray[i][0]);
 						
 						int id = (int) availableProductsArray[i][0];
 						String name = (String) availableProductsArray[i][1];
@@ -238,11 +237,29 @@ public class CustomerOrderPanel extends JPanel{
 						int quantity = (int) availableProductsArray[i][6];
 						int amount = (int) availableProductsArray[i][7];
 						Object[] p = {id, name, supplier, category, markupPrice, discounted, quantity, amount};
-						arrayCurrentOrder.add(p);
+						//check if there already is a product with same id
+						boolean foundIdInCurrentOrder = false;
+						for(Object[] o : arrayCurrentOrder){
+							if(id == (int)o[0]){
+								foundIdInCurrentOrder = true;
+								//check whether the total amount for this product exceeds the product's quantity
+								if((int)o[7]+amount > quantity){
+									JOptionPane.showMessageDialog(CustomerOrderPanel.this, "The total amount for "+(String)o[1]+" would exceed the available quantity: "+quantity+"\nCheck the Current Order");
+									return;
+								}
+								o[7] = (int)o[7]+amount; 
+								break;
+							}
+						}
+						if(foundIdInCurrentOrder== false){
+							arrayCurrentOrder.add(p);
+						}
 						
 						found = true;
-						//decrementProductAvalableQuantity((int)availableProductsArray[i][0], (int)availableProductsArray[i][7]);
+						decrementProductAvalableQuantity((int)availableProductsArray[i][0], (int)availableProductsArray[i][7]);
 						displayErrorMessage("Product(s) added to order", Color.blue);
+						AbstractTableModel model = (AbstractTableModel) tableAvailableProducts.getModel();
+						model.fireTableDataChanged();
 					}else if((int)availableProductsArray[i][7] > 0 && (int)availableProductsArray[i][6] < (int)availableProductsArray[i][7]){
 						displayErrorMessage("You cannot order more than available!", Color.red);
 					}
@@ -254,14 +271,13 @@ public class CustomerOrderPanel extends JPanel{
 					model.fireTableDataChanged();
 				}
 			}
-			
 		});
 		
 		btnViewCurrentOrder.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new CurrentStockOrderDialog().currentCustomerOrder(arrayCurrentOrder);
+				new CurrentCustomerOrderDialog(arrayCurrentOrder);
 			}
 			
 		});
@@ -289,6 +305,14 @@ public class CustomerOrderPanel extends JPanel{
 			return arrayToSort;
 		}
 	
+	public static ArrayList<Object[]> getArrayCurrentOrder() {
+			return arrayCurrentOrder;
+		}
+
+		public static void setArrayCurrentOrder(ArrayList<Object[]> list) {
+			arrayCurrentOrder = list;
+		}
+
 	/**
 	 * Handles enter pressed on the combo box. Selects the Customer and populates table if any products have been ordered
 	 */
@@ -419,7 +443,7 @@ public class CustomerOrderPanel extends JPanel{
 	}
 	
 	/**
-	 *This handler is called when user clicks on New Order button.
+	 *This handler is called when user clicks on Submit Order button.
 	 *If selected customer is not null, then user is prompted to submit the order. If user confirms, the table changes are 
 	 *compared with availableProductArray to find if all product amounts can be purchased. Only then is the order created
 	 *and the table redrawn to reflect changes in product quantity. Product quantity is also adjusted
@@ -428,21 +452,20 @@ public class CustomerOrderPanel extends JPanel{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			
 			if(selectedCustomer == null){
 				displayErrorMessage("Please select a customer!", Color.red);
 				return;
 			}
-			int option = JOptionPane.showConfirmDialog(CustomerOrderPanel.this, 
-					"All the products that have \"Amount to order\" greater than 0\n will be placed on the order." 
-					, "", JOptionPane.OK_CANCEL_OPTION);
-			if (option == JOptionPane.OK_OPTION){
-				//get Updated product list
-				Object[][] updatedProductList = CustomerOrderPanel.this.getAvailableProductsArray();
+			if(arrayCurrentOrder.size() < 1){
+				displayErrorMessage("Nothing to order", Color.red);
+				return;
+			}
+			CurrentCustomerOrderDialog dialog = new CurrentCustomerOrderDialog();
+			dialog.confirmOrder(arrayCurrentOrder);
+			if(dialog.getValue() == 1){
 				ArrayList<ProductToOrder> productsToOrder = new ArrayList<ProductToOrder>();
-				for(Object[] x : updatedProductList){
-					//add only products that have amount set to > 0
-					if((Integer) x[7] > 0){
-						
+				for(Object[] x : arrayCurrentOrder){
 						//check whether the available quantity is less than the amount entered
 						if((Integer) x[6] < (Integer) x[7]){
 							displayErrorMessage("You cannot order higher amount than currently available", Color.red);
@@ -469,10 +492,10 @@ public class CustomerOrderPanel extends JPanel{
 						boolean discounted = (Boolean) x[5];
 						int amount = (Integer) x[7];
 						productsToOrder.add(new ProductToOrder(id, name, tempSupplier, category, price, discounted, amount));	
-					}
 				}
 				
 				//create the actual order
+				//check if the user did not remove manually all products from table
 				if(productsToOrder.size() == 0){
 					displayErrorMessage("Nothing to order!", Color.red);
 					return;
@@ -492,7 +515,7 @@ public class CustomerOrderPanel extends JPanel{
 					displayOrderTable(false);
 					typeOfOrder = "All";
 				}//end else
-			}//end if
+			}
 		}//end actionPerformed()
 	}//end inner class ButtonOrderHandler
 	
