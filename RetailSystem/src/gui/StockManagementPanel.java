@@ -55,7 +55,7 @@ public class StockManagementPanel extends JSplitPane{
 	private JTextField textPrice;
 	private JTextField textDiscountedPrice;
 	private JComboBox<String> comboSelectSupplier;
-	private JComboBox<String> comboSelectId;
+	private static JComboBox<String> comboSelectId;
 
 	private boolean productLoaded = false;
 	private JTextField txtFlaggedForOrder;
@@ -135,6 +135,7 @@ public class StockManagementPanel extends JSplitPane{
 			idValues.add(id);
 		}
 		comboSelectId = new JComboBox(idValues.toArray());
+		refreshCombo();
 		panel.add(comboSelectId, "cell 5 2, center");
 		comboSelectId.setEditable(true);
 		AutoCompleteDecorator.decorate(comboSelectId);
@@ -147,6 +148,7 @@ public class StockManagementPanel extends JSplitPane{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				setupList();
+				refreshCombo();
 			}
 		});
 		
@@ -412,7 +414,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		
 		//Delete product button
-		btnDeleteProduct = new JButton("Delete");
+		btnDeleteProduct = new JButton("Delete...");
 		panel.add(btnDeleteProduct, "cell 6 22, center");
 		btnDeleteProduct.addActionListener(new ActionListener(){
 			@Override
@@ -505,13 +507,15 @@ public class StockManagementPanel extends JSplitPane{
 			}
 			saveDetails();
 			setupList();
+			refreshCombo();
 		}
 	}
 	
 	
 	public void deleteProduct(){
 		if(productLoaded){
-			int id = (int) comboSelectId.getSelectedItem();
+			int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
+			Product remove = null;
 				for(Product product : Shop.getProducts()){
 					if(product.getId() == id && !(product.isDeleted())){
 						int selectedOption = JOptionPane.showConfirmDialog(null, 
@@ -532,17 +536,21 @@ public class StockManagementPanel extends JSplitPane{
 								options[0]); //default button title
 						if(permanentlyDelete == JOptionPane.YES_OPTION){
 							product.setDeleted(true);
-							System.out.println("Product marked as deleted succesfully");
 							saveDetails();
 							setupList();
+							refreshCombo();
 						}else{
-							Shop.getProducts().remove(product);
-							System.out.println("Product deleted from system succesfully");
+							remove = product;
 							saveDetails();
 							setupList();
+							refreshCombo();
 						}
 					}
 				}
+			}
+				
+			if(remove != null){
+				Shop.getProducts().remove(remove);
 			}
 		}
 		saveDetails();
@@ -563,7 +571,7 @@ public class StockManagementPanel extends JSplitPane{
 	
 	public void discountProduct(){
 		if(productLoaded){
-			int id = (int) comboSelectId.getSelectedItem();
+			int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
 			for(Product product : Shop.getProducts()){
 				if(product.getId() == id && !(product.isDeleted())){
 					String input = JOptionPane.showInputDialog("Enter percentage to discount \n"+"Pevious discount "+product.getDiscountedPercentage()+"%");
@@ -613,18 +621,17 @@ public class StockManagementPanel extends JSplitPane{
 	
 	public void flagForOrder(){
 		if(productLoaded){
-			int id = (int) comboSelectId.getSelectedItem();
+			int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
 			for(Product product : Shop.getProducts()){
 				if(product.getId() == id && !(product.isDeleted())){
 					if(product.isFlaggedForOrder()){
 						product.setFlaggedForOrder(false);
 						txtFlaggedForOrder.setVisible(false);
-						System.out.println("Product Item Unflagged Successfully");
 					}else{
 						product.setFlaggedForOrder(true);
 						txtFlaggedForOrder.setVisible(true);
-						System.out.println("Product Item Flagged Successfully");
 					}
+					saveAll();
 				}
 			}
 		}
@@ -635,7 +642,7 @@ public class StockManagementPanel extends JSplitPane{
 		boolean successful = true;
 		int id = 0;
 		Product tempProduct = null;
-		int tempId = (int) comboSelectId.getSelectedItem();
+		int tempId = Integer.parseInt((String) comboSelectId.getSelectedItem());
 		boolean productExists = false;
 		if(successful){
 			for(Product product : Shop.getProducts()){
@@ -672,6 +679,25 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
+	//refresh combo box
+	public static void refreshCombo(){
+		ArrayList<Integer> idValues = new ArrayList<Integer>();
+		idValues.add(0);
+		for (Product product : Shop.getProducts()){
+			if(!product.isDeleted()){
+				int id = product.getId();
+				idValues.add(id);
+			}
+		}
+		comboSelectId.removeAllItems();
+		for(Integer current : idValues){
+			String s = current.toString();
+			comboSelectId.addItem(s);
+		}
+		
+	}
+	
+	
 	//resets the product list to original hard coded values
 	public void resetToDefaultValues(){
 		int selectedOption = JOptionPane.showConfirmDialog(null, 
@@ -696,6 +722,7 @@ public class StockManagementPanel extends JSplitPane{
 			
 			saveDetails();
 			setupList();
+			refreshCombo();
 		}
 	}
 	
@@ -708,8 +735,8 @@ public class StockManagementPanel extends JSplitPane{
 			for(Product product : Shop.getProducts()){
 				if(product.getId() == id && product.isDeleted()){
 					product.setDeleted(false);
-					System.out.println("Product unmarked as deleted succesfully");
 					setupList();
+					refreshCombo();
 				}
 			}
 		}catch(NumberFormatException nfe){
@@ -720,6 +747,7 @@ public class StockManagementPanel extends JSplitPane{
 	
 	
 	public void saveAll(){
+		System.out.println("Saving Product Details");
 		saveCategory();
 		saveName();
 		savePrice();
@@ -729,16 +757,16 @@ public class StockManagementPanel extends JSplitPane{
 		
 		saveDetails();
 		setupList();
+		refreshCombo();
 	}
 	
 	
 	public void saveCategory(){
 		if(productLoaded){
-			int id = (int) comboSelectId.getSelectedItem();
+			int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
 			for(Product product : Shop.getProducts()){
 				if(product.getId() == id && !(product.isDeleted())){
 					product.setCategory(textCategory.getText());
-					System.out.println("Category saved succesfully");
 				}
 			}
 		}
@@ -746,7 +774,6 @@ public class StockManagementPanel extends JSplitPane{
 	
 	
 	public void saveDetails(){
-		System.out.println("Saving Products");
 		
 		JsonExample.clearList("resources/products.json");
 		for(Product product : Shop.getProducts()){
@@ -758,11 +785,10 @@ public class StockManagementPanel extends JSplitPane{
 	
 	public void saveName(){
 		if(productLoaded){
-			int id = (int) comboSelectId.getSelectedItem();
+			int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
 			for(Product product : Shop.getProducts()){
 				if(product.getId() == id && !(product.isDeleted())){
 					product.setName(textName.getText());
-					System.out.println("Name saved succesfully");
 				}
 			}
 		}
@@ -772,7 +798,7 @@ public class StockManagementPanel extends JSplitPane{
 	public void savePrice(){
 		double price = 0;
 		if(productLoaded){
-			int id = (int) comboSelectId.getSelectedItem();
+			int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
 			String tempPrice = textPrice.getText();
 			try{
 				price = Double.parseDouble(tempPrice);
@@ -781,7 +807,6 @@ public class StockManagementPanel extends JSplitPane{
 						String test = String.format("%.2f", price);
 						price = Double.parseDouble(test);
 						product.setPrice(price);
-						System.out.println("Price saved succesfully");
 						loadProductDetails();
 					}
 				}
@@ -794,13 +819,12 @@ public class StockManagementPanel extends JSplitPane{
 	
 	public void saveSupplier(){
 		if(productLoaded){
-			int id = (int) comboSelectId.getSelectedItem();
+			int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
 			for(Supplier supplier : Shop.getSuppliers()){
 				if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
 					for(Product product : Shop.getProducts()){
 						if(product.getId() == id && !(product.isDeleted())){
 							product.setSupplier(supplier);
-							System.out.println("Supplier saved successfully");
 						}
 					}
 				}
@@ -812,14 +836,13 @@ public class StockManagementPanel extends JSplitPane{
 	public void saveThreshold(){
 		int threshold = 0;
 		if(productLoaded){
-			int id = (int) comboSelectId.getSelectedItem();
+			int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
 			String tempThreshold = textThreshold.getText();
 			try{
 				threshold = Integer.parseInt(tempThreshold);
 				for(Product product : Shop.getProducts()){
 					if(product.getId() == id && !(product.isDeleted())){
 						product.setLowStockOrder(threshold);
-						System.out.println("Threshold saved succesfully");
 					}
 				}
 			}catch(NumberFormatException nfe){
@@ -832,14 +855,13 @@ public class StockManagementPanel extends JSplitPane{
 	public void saveQuantity(){
 		int quantity = 0;
 		if(productLoaded){
-			int id = (int) comboSelectId.getSelectedItem();
+			int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
 			String tempQuantity = textQuantity.getText();
 			try{
 				quantity = Integer.parseInt(tempQuantity);
 				for(Product product : Shop.getProducts()){
 					if(product.getId() == id && !(product.isDeleted())){
 						product.setQuantity(quantity);
-						System.out.println("Quantity saved succesfully");
 					}
 				}
 			}catch(NumberFormatException nfe){
