@@ -19,11 +19,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.Font;
 import java.util.ArrayList;
 
 import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
+
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 public class CustomerPanel extends JPanel {
 
@@ -47,6 +51,8 @@ public class CustomerPanel extends JPanel {
 	private JLabel lblEnterSurnameTo;
 	private JTextField searchString;
 	private JButton btnSearch;
+	private JComboBox comboSelectCustomer;
+	private Customer selectedCustomer = null;
 
 	@SuppressWarnings("null")
 	public CustomerPanel() {
@@ -57,9 +63,14 @@ public class CustomerPanel extends JPanel {
 		lblCustomer.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		add(lblCustomer, "cell 1 0");
 
+		//ADD CUSTOMER
 		btnNewButton = new JButton("Add Customer");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				if(fNameInput.getText().length()>0
+					&& lNameInput.getText().length()>0
+					&& addressInput.getText().length()>0
+					&& (mobileInput.getText().length()> 0 || homeInput.getText().length()>0)){
 				String fname = fNameInput.getText();
 				String lname = lNameInput.getText();
 				String address = addressInput.getText();
@@ -82,11 +93,18 @@ public class CustomerPanel extends JPanel {
 				mobileInput.setText("");
 				homeInput.setText("");
 
+			}else{
+				JOptionPane.showMessageDialog(null,
+						"Please input into all fields");
+			}
 			}
 		});
 
+		
 		lblCustomerId = new JLabel("Customer ID");
 		add(lblCustomerId, "cell 0 2,alignx trailing");
+		
+		//COMBOBOX POPULATION
 		ArrayList<Integer> num = new ArrayList<Integer>();
 		Integer[] ids = new Integer[Shop.getCustomers().size()];
 		for (Customer customer : Shop.getCustomers()) {
@@ -98,6 +116,7 @@ public class CustomerPanel extends JPanel {
 		comboBox.setEnabled(false);
 		comboBox.setPreferredSize(new Dimension(225, 20));
 		add(comboBox, "flowx,cell 1 2,alignx left,growy");
+		
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				int chosen = (Integer) comboBox.getSelectedItem();
@@ -154,6 +173,8 @@ public class CustomerPanel extends JPanel {
 		add(homeInput, "cell 1 7,alignx left,growy");
 		add(btnNewButton, "flowx,cell 1 8");
 
+		
+		//EDIT CUSTOMER
 		customerEdit = new JButton("Edit Customer");
 		add(customerEdit, "cell 1 8");
 		customerEdit.setEnabled(false);
@@ -179,6 +200,8 @@ public class CustomerPanel extends JPanel {
 
 		);
 
+		
+		//DELETE CUSTOMER
 		customerDelete = new JButton("Delete Customer");
 		add(customerDelete, "cell 1 8");
 		customerDelete.setEnabled(false);
@@ -195,12 +218,50 @@ public class CustomerPanel extends JPanel {
 			}
 		});
 
+		
+		//SEARCH BY SURNAME
 		lblEnterSurnameTo = new JLabel("Enter Surname to find:");
 		add(lblEnterSurnameTo, "flowx,cell 1 9");
-		searchString = new JTextField();
+		/*searchString = new JTextField();
 		add(searchString, "cell 1 9,alignx trailing");
-		searchString.setColumns(10);
-		btnSearch = new JButton("Search");
+		searchString.setColumns(10);*/
+		
+		ArrayList<String> surnames = new ArrayList<String>();
+		surnames.add("");
+		
+		for ( Customer customer: Shop.getCustomers()){
+			String name = customer.getCustomerLName();
+			surnames.add(name);
+		}
+		
+		comboSelectCustomer = new JComboBox(surnames.toArray());
+		add(comboSelectCustomer, "cell 1 9,alignx trailing");
+		
+		comboSelectCustomer.setEditable(true);
+		AutoCompleteDecorator.decorate(comboSelectCustomer);
+		comboSelectCustomer.getEditor().getEditorComponent().addKeyListener(new CBListener());
+		comboSelectCustomer.addItemListener(new ItemListener(){
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				// TODO Auto-generated method stub
+				if(e.getStateChange() == ItemEvent.SELECTED){
+					Customer customer = getCustomerbyID(e.getItem().toString());
+					if(customer != null){
+						selectedCustomer = customer;
+						comboBox.setSelectedItem(selectedCustomer.getCustomerID());
+					}
+					
+				}
+				
+			}
+
+			
+			
+		});
+		
+		
+		/*btnSearch = new JButton("Search");
 		add(btnSearch, "cell 1 9");
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -209,6 +270,8 @@ public class CustomerPanel extends JPanel {
 				for (Customer customer : Shop.getCustomers()) {
 					if (find.equals(customer.getCustomerLName())) {
 						idLocations.add(customer.getCustomerID());
+						comboBox.setSelectedItem(customer.getCustomerID());
+						
 						// System.out.println(idLocations);
 					}
 				}
@@ -222,8 +285,10 @@ public class CustomerPanel extends JPanel {
 							"Customer "+idLocations+" have the surname "+find);
 				}
 			}
-		});
+		});*/
 
+		
+		//EDIT/DELETE CHECKBOX
 		chckbxEditdelete = new JCheckBox("Edit/Delete");
 		add(chckbxEditdelete, "cell 1 2");
 		chckbxEditdelete.addItemListener(new ItemListener() {
@@ -248,6 +313,48 @@ public class CustomerPanel extends JPanel {
 			}
 
 		});
+		
+		
+	}
+	
+	public Customer getCustomerbyID(String string) {
+		// TODO Auto-generated method stub
+		for(Customer customer :Shop.getCustomers()){
+			if(customer.getCustomerLName().equalsIgnoreCase(string)){
+				return customer;
+			}
+		}
+		return null;
+	}
+	
+	public class CBListener implements KeyListener{
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			// TODO Auto-generated method stub
+			if(e.getKeyCode() == KeyEvent.VK_ENTER){
+			String surname = comboSelectCustomer.getSelectedItem().toString();
+			if(getCustomerbyID(surname) != null){
+				selectedCustomer = getCustomerbyID(surname);
+				comboBox.setSelectedItem(selectedCustomer.getCustomerID());
+			}else{
+				System.out.println("ERROR");
+			}
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 
 }
