@@ -205,7 +205,7 @@ public class Shop {
 
 		toOrder = new ArrayList<ProductToOrder>();
 		toOrder.add(new ProductToOrder(Shop.getProducts().get(3), 5));
-		toOrder.add(new ProductToOrder(Shop.getProducts().get(4), 5));
+		toOrder.add(new ProductToOrder(Shop.getProducts().get(3), 5));
 		
 		try {
 			StockOrder stockOrder = new StockOrder(sd.parse("06/08/2014 13:00"), toOrder, staffMembers.get(2));
