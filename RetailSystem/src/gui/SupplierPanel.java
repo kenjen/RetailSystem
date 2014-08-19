@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import data.JsonExample;
 import data.Product;
 import data.ProductToOrder;
 import data.Supplier;
@@ -380,4 +381,11 @@ public class SupplierPanel extends JPanel{
 				}	
 		}	
 	
+	 public void saveDetails(){
+		 JsonExample.clearList("resources/suppliers.json");
+			for(Supplier supplier: Shop.getSuppliers()){
+				JsonExample.saveSupplierToFile(supplier);
+			}
+			System.out.println("Finished saving suppliers");
+		}
 }
