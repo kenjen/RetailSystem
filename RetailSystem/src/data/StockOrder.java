@@ -16,6 +16,10 @@ public class StockOrder {
 	private Date expectedDeliveryDate;
 	private ArrayList<ProductToOrder> productsToOrder;
 	private boolean completed = false;
+	
+	public StockOrder(){
+		
+	}
 
 	public StockOrder(Date date, ArrayList<ProductToOrder> productsToOrder, Staff staff) {
 		this.id = nextId;
