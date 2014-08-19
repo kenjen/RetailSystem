@@ -245,7 +245,7 @@ stockOrders = JsonExample.readStockOrdersFromFile();
 		
 		}
 		for(StockOrder stockOrder : stockOrders){
-			StockOrder.setNextId(stockOrder.getnextId());
+			StockOrder.setNextId(stockOrder.getNextId());
 		}
 	}
 
