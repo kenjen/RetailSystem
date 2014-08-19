@@ -89,7 +89,7 @@ public class SupplierPanel extends JPanel{
 		
 		// create GUI panel for adding new supplier
 		JPanel addPanel= new JPanel();
-		addPanel.setBackground(Color.lightGray);
+		//addPanel.setBackground(Color.lightGray);
 		addPanel.setBorder(BorderFactory.createLineBorder(Color.red));
 		JLabel newSupplier = new JLabel("CREATE NEW SUPPLIER");
 		addPanel.add(newSupplier);
@@ -124,7 +124,7 @@ public class SupplierPanel extends JPanel{
 		
 		// create GUI panel to edit supplier details
 		JPanel editPanel= new JPanel();
-		editPanel.setBackground(Color.lightGray);
+		//editPanel.setBackground(Color.lightGray);
 		editPanel.setBorder(BorderFactory.createLineBorder(Color.red));
 		JLabel editS = new JLabel("EDIT SUPPLIER DETAILS");
 		editPanel.add(editS);
@@ -160,7 +160,7 @@ public class SupplierPanel extends JPanel{
 		 * search field and button for looking for a supplier by name
 		 */
 		JPanel deletePanel = new JPanel();
-		deletePanel.setBackground(Color.lightGray);
+	//	deletePanel.setBackground(Color.lightGray);
 		deletePanel.setBorder(BorderFactory.createLineBorder(Color.red));
 					
 		// add look for a supplier by name feature
@@ -195,7 +195,7 @@ public class SupplierPanel extends JPanel{
 	
 		// display products for a selected supplier
 		JPanel productPanel= new JPanel();
-		productPanel.setBackground(Color.lightGray);
+		//productPanel.setBackground(Color.lightGray);
 		productPanel.setBorder(BorderFactory.createLineBorder(Color.red));
 		JLabel productLabel = new JLabel("DISPLAY ");
 		productPanel.add(productLabel);
