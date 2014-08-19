@@ -196,6 +196,11 @@ public void populateSuppliers(){
 	}
 
 	public void populateStockOrders() {
+		
+stockOrders = JsonExample.readStockOrdersFromFile();
+
+		
+		if(stockOrders == null){
 		SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		ArrayList<ProductToOrder> toOrder = new ArrayList<ProductToOrder>();
 		toOrder.add(new ProductToOrder(Shop.getProducts().get(0), 20));
@@ -236,6 +241,11 @@ public void populateSuppliers(){
 		} catch (ParseException e) {
 			e.printStackTrace();
 			System.out.println("Order not placed as error with date");
+		}
+		
+		}
+		for(StockOrder stockOrder : stockOrders){
+			StockOrder.setNextId(stockOrder.getnextId());
 		}
 	}
 
