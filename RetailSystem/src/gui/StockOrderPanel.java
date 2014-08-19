@@ -256,6 +256,19 @@ public class StockOrderPanel extends JPanel {
 					
 					//since we have updated the quantity of some products, reload the product table
 					displayProductsTable("","");
+					
+					//save orders to a persistent format
+					if(JsonExample.clearList("resources/stockOrders.json") && JsonExample.clearList("resources/products.json")){
+						for(StockOrder so:Shop.getStockOrders()){
+							JsonExample.saveStockOrdersToFile(so);
+						}
+						
+						for(Product p:Shop.getProducts()){
+							JsonExample.saveProductToFile(p);
+						}
+					}else{
+						displayErrorMessage("Could not persist changes!", Color.red);
+					}
 				}else{
 					displayErrorMessage("Nothing to update", Color.red);
 				}
@@ -333,6 +346,8 @@ public class StockOrderPanel extends JPanel {
 	        		 for (Product product:Shop.getProducts()){
 		        		 if(prodToOrder.getId() == product.getId()){
 		        			 product.setQuantity(product.getQuantity()+prodToOrder.getAmount());
+		        			 product.setAvailable(true);
+		        			 product.setFlaggedForOrder(false);
 		        			 break;
 		        		 }
 	        		 }
@@ -707,6 +722,15 @@ public class StockOrderPanel extends JPanel {
 					invoiceIDData = new ArrayList<Integer>();
 					for(StockOrder or:Shop.getStockOrders()){
 						invoiceIDData.add(or.getId());
+					}
+					
+					//save orders to a persistent format
+					if(JsonExample.clearList("resources/stockOrders.json")){
+						for(StockOrder so:Shop.getStockOrders()){
+							JsonExample.saveStockOrdersToFile(so);
+						}
+					}else{
+						displayErrorMessage("Could not persist changes!", Color.red);
 					}
 				}
 			} else {

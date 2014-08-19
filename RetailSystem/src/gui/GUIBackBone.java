@@ -1,9 +1,11 @@
 package gui;
 
-import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
@@ -37,6 +39,8 @@ public class GUIBackBone  extends JFrame{
 	private static Staff loggedStaffMember;
 	private int previousTabIndex = 0;
 	private JButton btnLogout = new JButton();
+	private static JPanel panel2;
+	private static int counter = 0;
 	
 	
 	public GUIBackBone(boolean isAdmin, Staff loggedStaffMember){
@@ -89,10 +93,9 @@ public class GUIBackBone  extends JFrame{
 			});
 			
 		JLayeredPane lPane = new JLayeredPane();
-		JPanel panel1 = new JPanel();
-		JPanel panel2 = new JPanel();
-		setLayout(new BorderLayout());
-		add(lPane,BorderLayout.CENTER);
+		final JPanel panel2 = new JPanel();
+		setLayout(new GridBagLayout());
+		add(lPane);
 		setContentPane(lPane);
 		setSize(1024,768);
 		
@@ -101,32 +104,47 @@ public class GUIBackBone  extends JFrame{
 		btnLogout.setContentAreaFilled(false);
 		btnLogout.setBorderPainted(false);
 		btnLogout.setSize(48, 48);
-		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-		panel1.setSize(this.getWidth(),this.getHeight());
-		panel1.setOpaque(true);
-		panel1.setLayout(new BorderLayout());
-		panel1.add(tabbedPane, BorderLayout.CENTER);
-		panel1.setBorder(null);
+		btnLogout.setOpaque(false);
+		tabbedPane.setSize(this.getWidth(),this.getHeight());
 		panel2.setBounds(this.getWidth()-50,0,48,48);
 		panel2.setOpaque(true);
 		panel2.setLayout(new FlowLayout());
 		panel2.setBorder(null);
 		panel2.add(btnLogout);
-		lPane.add(panel1, new Integer(0), 0);
+		lPane.add(tabbedPane, new Integer(1), 0);
 		lPane.add(panel2, new Integer(1), 0);
 		lPane.setBorder(null);
-
 		
 		setLocationRelativeTo(null);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("RetailSystem");
 		
+		//When frame is closed, save all details
 		addWindowListener(new WindowAdapter(){
 
 			@Override
 			public void windowClosing(WindowEvent arg0) {
 				saveTabDetails(0);				
+			}
+			
+		});
+		
+		//since we are using fixed bounds for the logout button, at each window resize recalculate and redraw the component
+		addComponentListener(new ComponentAdapter(){
+
+			@Override
+			public void componentResized(ComponentEvent arg0) {
+				JFrame frame = GUIBackBone.this;
+				counter++;
+				if(counter > 3){
+					System.out.println("width: "+GUIBackBone.this.getWidth());
+					System.out.println("width: "+GUIBackBone.this.getHeight());
+					int width = frame.getWidth();
+					int height = frame.getHeight();
+					panel2.setBounds(width-50,0,48,48);
+					tabbedPane.setSize(width,height);
+				}
 			}
 			
 		});
