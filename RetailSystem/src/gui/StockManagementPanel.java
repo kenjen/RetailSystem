@@ -393,7 +393,7 @@ public class StockManagementPanel extends JSplitPane{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
-				deleteProduct(id, Shop.getProducts());
+				deleteProduct(id, Shop.getProducts(), false);
 				clearProductDetails();
 				saveDetails();
 				setupList();
@@ -496,48 +496,54 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
-	public void deleteProduct(int id, ArrayList<Product> products){
+	public Product deleteProduct(int id, ArrayList<Product> products, boolean testing){
 		if(productLoaded){
 			//TODO
 			Product remove = null;
-				for(Product product : products){
-					if(product.getId() == id && !(product.isDeleted())){
-						int selectedOption = JOptionPane.showConfirmDialog(null, 
+			for(Product product : products){
+				if(product.getId() == id && !(product.isDeleted())){
+					int selectedOption;
+					if(testing){
+						selectedOption=JOptionPane.YES_OPTION;
+					}else{
+						selectedOption = JOptionPane.showConfirmDialog(null, 
 								"Are you sure you wish to delete product?",
 								"Warning",
 								JOptionPane.YES_NO_OPTION,
-								JOptionPane.WARNING_MESSAGE); 
+								JOptionPane.WARNING_MESSAGE);
+					}
 					if (selectedOption == JOptionPane.YES_OPTION) {
 						//check if user wants to mark as deleted or completly remove record
 						Object[] options = {"Mark", "Remove"};
-						int permanentlyDelete = JOptionPane.showOptionDialog(null,
-								"Mark as deleted or permanently remove?",
-								"Warning",
-								JOptionPane.YES_NO_OPTION,
-								JOptionPane.WARNING_MESSAGE,
-								null,     //do not use a custom Icon
-								options,  //the titles of buttons
-								options[0]); //default button title
+						int permanentlyDelete;
+						if(testing){
+							permanentlyDelete = JOptionPane.NO_OPTION;
+						}else{
+							permanentlyDelete = JOptionPane.showOptionDialog(null,
+									"Mark as deleted or permanently remove?",
+									"Warning",
+									JOptionPane.YES_NO_OPTION,
+									JOptionPane.WARNING_MESSAGE,
+									null,     //do not use a custom Icon
+									options,  //the titles of buttons
+									options[0]); //default button title
+						}
 						if(permanentlyDelete == JOptionPane.YES_OPTION){
 							product.setDeleted(true);
-							saveDetails();
-							setupList();
-							refreshCombo();
 						}else{
 							remove = product;
-							saveDetails();
-							setupList();
-							refreshCombo();
+							//TODO
+							return product;
 						}
 					}
 				}
 			}
-				
+
 			if(remove != null){
 				products.remove(remove);
 			}
 		}
-		saveDetails();
+		return null;
 	}
 	
 	

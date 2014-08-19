@@ -119,4 +119,12 @@ public class StockOrder {
 		this.completed = completed;
 	}
 
+	public static int getNextId() {
+		return nextId;
+	}
+
+	public static void setNextId(int nextId) {
+		StockOrder.nextId = nextId;
+	}
+
 }

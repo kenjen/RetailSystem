@@ -2,22 +2,30 @@ package data;
 
 public class Supplier {
 	private int supplierId;
+	private static int generatedId = 100;
 	private String supplierName;
 	private String supplierAddress;
 	private boolean supplierDeleted=false;
 
-	public Supplier(int id, String name, String address) {
-		this.supplierId=id;
+	public Supplier(String name, String address) {
+		generatedId++;
+		this.supplierId=generatedId;
 		this.supplierName=name;
 		this.supplierAddress=address;
 		
 	}
+	
 	public Supplier(){
 		this.supplierId=0;
 		this.supplierName="";
 		this.supplierAddress="";
 	}
-
+	public static int getGeneratedId() {
+		return generatedId;
+	}
+	public static void setGeneratedId(int generatedId) {
+		Supplier.generatedId = generatedId;
+	}
 	public boolean isSupplierDeleted() {
 		return supplierDeleted;
 	}
@@ -26,6 +34,7 @@ public class Supplier {
 	}
 	public int getSupplierId() {
 		return supplierId;
+		
 	}
 
 	public void setSupplierId(int supplierId) {

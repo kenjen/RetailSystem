@@ -59,7 +59,7 @@ public class SupplierPanel extends JPanel{
 		JScrollPane listScroller = new JScrollPane(suppliersList);
 		
 		listScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-	    listScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	    listScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	    add(listScroller);
 				
 		// create panel for show and remove buttons
@@ -229,7 +229,7 @@ public class SupplierPanel extends JPanel{
 	public void createSupplier( ){
 		String ids = idField.getText();
 		int id = Integer.parseInt(ids);	
-		Supplier newSupplier = new Supplier(id, nameField.getText(), addressField.getText());
+		Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
 		boolean isValid = true;
 		
 		// if the id entered exists don't add to the list; 
