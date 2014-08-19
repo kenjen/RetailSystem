@@ -14,6 +14,8 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JButton;
 
 import data.Customer;
+import data.JsonExample;
+import data.Product;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -46,12 +48,12 @@ public class CustomerPanel extends JPanel {
 	private JButton customerEdit;
 	private JLabel lblCustomer;
 	private JLabel lblCustomerId;
-	private JComboBox comboBox;
+	private static JComboBox comboBox;
 	private JCheckBox chckbxEditdelete;
 	private JLabel lblEnterSurnameTo;
 	private JTextField searchString;
 	private JButton btnSearch;
-	private JComboBox comboSelectCustomer;
+	private static JComboBox comboSelectCustomer;
 	private Customer selectedCustomer = null;
 
 	@SuppressWarnings("null")
@@ -63,60 +65,33 @@ public class CustomerPanel extends JPanel {
 		lblCustomer.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		add(lblCustomer, "cell 1 0");
 
-		//ADD CUSTOMER
+		// ADD CUSTOMER
 		btnNewButton = new JButton("Add Customer");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if(fNameInput.getText().length()>0
-					&& lNameInput.getText().length()>0
-					&& addressInput.getText().length()>0
-					&& (mobileInput.getText().length()> 0 || homeInput.getText().length()>0)){
-				String fname = fNameInput.getText();
-				String lname = lNameInput.getText();
-				String address = addressInput.getText();
-				String mobile = mobileInput.getText();
-				String home = homeInput.getText();
-
-				Customer c1 = new Customer(fname, lname, address, mobile, home);
-				Shop.getCustomers().add(c1);
-				for (Customer customer : Shop.getCustomers()) {
-					System.out.println(customer.getCustomerID()
-							+ customer.getCustomerLName() + " "
-							+ customer.getCustomerAddress());
-				}
-				JOptionPane.showMessageDialog(null,
-						"You have added a customer!");
-				comboBox.addItem(c1.getCustomerID());
-				fNameInput.setText("");
-				lNameInput.setText("");
-				addressInput.setText("");
-				mobileInput.setText("");
-				homeInput.setText("");
-
-			}else{
-				JOptionPane.showMessageDialog(null,
-						"Please input into all fields");
+				createNewCustomer();
 			}
-			}
+
 		});
 
-		
 		lblCustomerId = new JLabel("Customer ID");
 		add(lblCustomerId, "cell 0 2,alignx trailing");
-		
-		//COMBOBOX POPULATION
-		ArrayList<Integer> num = new ArrayList<Integer>();
-		Integer[] ids = new Integer[Shop.getCustomers().size()];
-		for (Customer customer : Shop.getCustomers()) {
 
+		// COMBOBOX POPULATION
+		ArrayList<Integer> num = new ArrayList<Integer>();
+		
+		for (Customer customer : Shop.getCustomers()) {
+			if(customer.isDeleted()==false){
 			num.add(customer.getCustomerID());
+			}
 		}
+		Integer[] ids = new Integer[num.size()];
 		ids = num.toArray(ids);
 		comboBox = new JComboBox(ids);
 		comboBox.setEnabled(false);
 		comboBox.setPreferredSize(new Dimension(225, 20));
 		add(comboBox, "flowx,cell 1 2,alignx left,growy");
-		
+
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				int chosen = (Integer) comboBox.getSelectedItem();
@@ -173,122 +148,107 @@ public class CustomerPanel extends JPanel {
 		add(homeInput, "cell 1 7,alignx left,growy");
 		add(btnNewButton, "flowx,cell 1 8");
 
-		
-		//EDIT CUSTOMER
+		// EDIT CUSTOMER
 		customerEdit = new JButton("Edit Customer");
 		add(customerEdit, "cell 1 8");
 		customerEdit.setEnabled(false);
 		customerEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Shop.editCustomer((Integer) comboBox.getSelectedItem(),
-						fNameInput.getText(), lNameInput.getText(),
-						addressInput.getText(), mobileInput.getText(),
-						homeInput.getText());
-
-				fNameInput.setText("");
-				lNameInput.setText("");
-				addressInput.setText("");
-				mobileInput.setText("");
-				homeInput.setText("");
-				JOptionPane.showMessageDialog(
-						null,
-						"You have editted customer "
-								+ comboBox.getSelectedItem());
+				editCustomer();
 			}
 
 		}
 
 		);
 
-		
-		//DELETE CUSTOMER
+		// DELETE CUSTOMER
 		customerDelete = new JButton("Delete Customer");
 		add(customerDelete, "cell 1 8");
 		customerDelete.setEnabled(false);
 		customerDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Shop.deleteCustomer((Integer) comboBox.getSelectedItem());
-				comboBox.removeItem(comboBox.getSelectedItem());
+				deleteCustomer();
 				/*
 				 * fNameInput.setText(""); lNameInput.setText("");
 				 * addressInput.setText(""); mobileInput.setText("");
 				 * homeInput.setText("");
 				 */
-
+				
+				saveDetails();
+				refreshCombo();
 			}
+
+			public void deleteCustomer() {
+				Shop.deleteCustomer((Integer) comboBox.getSelectedItem());
+				comboBox.removeItem(comboBox.getSelectedItem());
+				//saveDetails();
+				//refreshCombo();
+			}
+	
 		});
 
-		
-		//SEARCH BY SURNAME
+		// SEARCH BY SURNAME
 		lblEnterSurnameTo = new JLabel("Enter Surname to find:");
 		add(lblEnterSurnameTo, "flowx,cell 1 9");
-		/*searchString = new JTextField();
-		add(searchString, "cell 1 9,alignx trailing");
-		searchString.setColumns(10);*/
-		
+		/*
+		 * searchString = new JTextField(); add(searchString,
+		 * "cell 1 9,alignx trailing"); searchString.setColumns(10);
+		 */
+
 		ArrayList<String> surnames = new ArrayList<String>();
 		surnames.add("");
-		
-		for ( Customer customer: Shop.getCustomers()){
+
+		for (Customer customer : Shop.getCustomers()) {
+			if(customer.isDeleted()==false){
 			String name = customer.getCustomerLName();
 			surnames.add(name);
+			}
 		}
-		
+
 		comboSelectCustomer = new JComboBox(surnames.toArray());
 		add(comboSelectCustomer, "cell 1 9,alignx trailing");
-		
+
 		comboSelectCustomer.setEditable(true);
 		AutoCompleteDecorator.decorate(comboSelectCustomer);
-		comboSelectCustomer.getEditor().getEditorComponent().addKeyListener(new CBListener());
-		comboSelectCustomer.addItemListener(new ItemListener(){
+		comboSelectCustomer.getEditor().getEditorComponent()
+				.addKeyListener(new CBListener());
+		comboSelectCustomer.addItemListener(new ItemListener() {
 
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				// TODO Auto-generated method stub
-				if(e.getStateChange() == ItemEvent.SELECTED){
+				if (e.getStateChange() == ItemEvent.SELECTED) {
 					Customer customer = getCustomerbyID(e.getItem().toString());
-					if(customer != null){
+					if (customer != null) {
 						selectedCustomer = customer;
-						comboBox.setSelectedItem(selectedCustomer.getCustomerID());
+						comboBox.setSelectedItem(selectedCustomer
+								.getCustomerID());
 					}
-					
+
 				}
-				
+
 			}
 
-			
-			
 		});
-		
-		
-		/*btnSearch = new JButton("Search");
-		add(btnSearch, "cell 1 9");
-		btnSearch.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				ArrayList<Integer> idLocations = new ArrayList<Integer>();
-				String find = searchString.getText();
-				for (Customer customer : Shop.getCustomers()) {
-					if (find.equals(customer.getCustomerLName())) {
-						idLocations.add(customer.getCustomerID());
-						comboBox.setSelectedItem(customer.getCustomerID());
-						
-						// System.out.println(idLocations);
-					}
-				}
-				if (idLocations.size() == 0) {
-					JOptionPane
-							.showMessageDialog(null,
-									"There are no customers of this name in the system");
-				} else {
-					JOptionPane
-					.showMessageDialog(null,
-							"Customer "+idLocations+" have the surname "+find);
-				}
-			}
-		});*/
 
-		
-		//EDIT/DELETE CHECKBOX
+		/*
+		 * btnSearch = new JButton("Search"); add(btnSearch, "cell 1 9");
+		 * btnSearch.addActionListener(new ActionListener() { public void
+		 * actionPerformed(ActionEvent arg0) { ArrayList<Integer> idLocations =
+		 * new ArrayList<Integer>(); String find = searchString.getText(); for
+		 * (Customer customer : Shop.getCustomers()) { if
+		 * (find.equals(customer.getCustomerLName())) {
+		 * idLocations.add(customer.getCustomerID());
+		 * comboBox.setSelectedItem(customer.getCustomerID());
+		 * 
+		 * // System.out.println(idLocations); } } if (idLocations.size() == 0)
+		 * { JOptionPane .showMessageDialog(null,
+		 * "There are no customers of this name in the system"); } else {
+		 * JOptionPane .showMessageDialog(null,
+		 * "Customer "+idLocations+" have the surname "+find); } } });
+		 */
+
+		// EDIT/DELETE CHECKBOX
 		chckbxEditdelete = new JCheckBox("Edit/Delete");
 		add(chckbxEditdelete, "cell 1 2");
 		chckbxEditdelete.addItemListener(new ItemListener() {
@@ -313,48 +273,132 @@ public class CustomerPanel extends JPanel {
 			}
 
 		});
-		
-		
+
 	}
-	
+
+	public void saveDetails() {
+		// TODO Auto-generated method stub
+		JsonExample.clearList("resources/customers.json");
+		for (Customer customer : Shop.getCustomers()) {
+			JsonExample.saveCustomerToFile(customer);
+		}
+		System.out.println("Finished save");
+	}
+
 	public Customer getCustomerbyID(String string) {
 		// TODO Auto-generated method stub
-		for(Customer customer :Shop.getCustomers()){
-			if(customer.getCustomerLName().equalsIgnoreCase(string)){
+		for (Customer customer : Shop.getCustomers()) {
+			if (customer.getCustomerLName().equalsIgnoreCase(string)) {
 				return customer;
 			}
 		}
 		return null;
 	}
-	
-	public class CBListener implements KeyListener{
+
+	public class CBListener implements KeyListener {
 
 		@Override
 		public void keyPressed(KeyEvent e) {
 			// TODO Auto-generated method stub
-			if(e.getKeyCode() == KeyEvent.VK_ENTER){
-			String surname = comboSelectCustomer.getSelectedItem().toString();
-			if(getCustomerbyID(surname) != null){
-				selectedCustomer = getCustomerbyID(surname);
-				comboBox.setSelectedItem(selectedCustomer.getCustomerID());
-			}else{
-				System.out.println("ERROR");
-			}
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				String surname = comboSelectCustomer.getSelectedItem()
+						.toString();
+				if (getCustomerbyID(surname) != null) {
+					selectedCustomer = getCustomerbyID(surname);
+					comboBox.setSelectedItem(selectedCustomer.getCustomerID());
+				} else {
+					System.out.println("ERROR");
+				}
 			}
 		}
 
 		@Override
 		public void keyReleased(KeyEvent e) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void keyTyped(KeyEvent e) {
 			// TODO Auto-generated method stub
+
+		}
+
+	}
+
+	public void createNewCustomer() {
+		if (fNameInput.getText().length() > 0
+				&& lNameInput.getText().length() > 0
+				&& addressInput.getText().length() > 0
+				&& (mobileInput.getText().length() > 0 || homeInput.getText()
+						.length() > 0)) {
+			String fname = fNameInput.getText();
+			String lname = lNameInput.getText();
+			String address = addressInput.getText();
+			String mobile = mobileInput.getText();
+			String home = homeInput.getText();
+
+			Customer c1 = new Customer(fname, lname, address, mobile, home);
+			Shop.getCustomers().add(c1);
+			for (Customer customer : Shop.getCustomers()) {
+				System.out.println(customer.getCustomerID()
+						+ customer.getCustomerLName() + " "
+						+ customer.getCustomerAddress());
+			}
+			JOptionPane.showMessageDialog(null, "You have added a customer!");
+			comboBox.addItem(c1.getCustomerID());
+			
+			//refreshCombo();
+			fNameInput.setText("");
+			lNameInput.setText("");
+			addressInput.setText("");
+			mobileInput.setText("");
+			homeInput.setText("");
+
+		} else {
+			JOptionPane.showMessageDialog(null, "Please input into all fields");
+		}
+		saveDetails();
+		refreshCombo();
+	}
+
+	public void editCustomer() {
+		Shop.editCustomer((Integer) comboBox.getSelectedItem(),
+				fNameInput.getText(), lNameInput.getText(),
+				addressInput.getText(), mobileInput.getText(),
+				homeInput.getText());
+
+		fNameInput.setText("");
+		lNameInput.setText("");
+		addressInput.setText("");
+		mobileInput.setText("");
+		homeInput.setText("");
+		JOptionPane.showMessageDialog(null, "You have editted customer "
+				+ comboBox.getSelectedItem());
+		saveDetails();
+		refreshCombo();
+	}
+
+	// refresh combo box
+	public static void refreshCombo() {
+		ArrayList<String> surnames = new ArrayList<String>();
+		surnames.add("");
+
+		for (Customer customer : Shop.getCustomers()) {
+			if (!customer.isDeleted()) {
+			String name = customer.getCustomerLName();
+			surnames.add(name);
+			}
 			
 		}
+			comboSelectCustomer.removeAllItems();
+			for (String current : surnames){
+				comboSelectCustomer.addItem(current);
+			}
+		
 		
 	}
+	
+
 
 }
