@@ -140,17 +140,32 @@ public class Shop {
 	}
 	
 	public void populateStaffMembers(){
+		
+		staffMembers = JsonExample.readStaffFromFile();
+		if(staffMembers == null){
+			System.out.println("null Loop");
+			
 		Staff admin = new Staff("admin","admin",0,"admin","admin");
 		admin.setAdmin(true);
-		Staff john = new Staff("John","Doe",15.23,"JohnDoe","Firefly");
+		Staff john = new Staff("Jhn","Doe",15.23,"JohnDoe","Firefly");
 		Staff mick = new Staff("Mick","Green",8.65,"MickGreen","Avalanche");
 		Staff angela = new Staff("Angela","Blue",23.5,"AngelaBlue","Onyx");
 		staffMembers.add(admin);
 		staffMembers.add(john);
 		staffMembers.add(mick);
 		staffMembers.add(angela);
+		//JsonExample.saveStaffToFile(john);
+		
+		}
+
+		for(Staff staff : staffMembers){
+			Staff.setNextId(staff.getId());
+		}
 
 		System.out.println("Staff members populated");
+		
+		//Save each staff member details to a json file
+		//StaffPersistency.saveStaffToFile(john);
 	}
 	
 	public void populateProducts(){

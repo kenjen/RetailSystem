@@ -1,0 +1,4 @@
+{"id":1,"name":"admin","surname":"admin","salary":0.0,"holidayDaysLeft":21,"admin":true,"username":"admin","password":"admin","deleted":false}
+{"id":2,"name":"John","surname":"Doe","salary":15.23,"holidayDaysLeft":21,"admin":false,"username":"JohnDoe","password":"Firefly","deleted":false}
+{"id":3,"name":"Mi","surname":"Gre","salary":8.6,"holidayDaysLeft":21,"admin":false,"username":"MickGreen","password":"Avala","deleted":false}
+{"id":4,"name":"Angela","surname":"Blue","salary":23.5,"holidayDaysLeft":21,"admin":false,"username":"AngelaBlue","password":"Onyx","deleted":false}

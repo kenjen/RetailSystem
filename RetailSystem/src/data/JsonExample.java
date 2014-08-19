@@ -225,4 +225,44 @@ public class JsonExample {
 			e.printStackTrace();
 		}
 	}
+	
+	public static ArrayList<Staff> readStaffFromFile() {
+		Scanner in=null;
+		try {
+			in = new Scanner(new FileReader("resources/staff.json"));
+			ObjectMapper mapper = new ObjectMapper();
+			while (in.hasNextLine()) {
+				Staff staff = mapper
+						.readValue(in.nextLine(), Staff.class);
+				System.out.println(staff.toString());
+				Shop.getStaffMembers().add(staff);
+			}
+			return Shop.getStaffMembers();
+		} catch (EOFException eof){
+			eof.printStackTrace();
+			return null;
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			in.close();
+		}
+		return null;
+	}
+	
+	public static void saveStaffToFile(Staff staff) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			String result = mapper.writeValueAsString(staff) + "\n";
+			FileWriter writer = new FileWriter("resources/staff.json", true);
+			writer.write(result);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

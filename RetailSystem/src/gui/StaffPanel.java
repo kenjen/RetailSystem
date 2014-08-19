@@ -24,6 +24,8 @@ import java.awt.Insets;
 import javax.swing.BoxLayout;
 
 import data.Customer;
+import data.JsonExample;
+import data.Product;
 import data.Staff;
 
 import java.awt.BorderLayout;
@@ -155,6 +157,7 @@ public class StaffPanel extends JPanel {
 					System.out
 							.println("Invalid. Please Make Sure you fill in each TextField");
 				}
+				saveDetails();
 			}
 		});
 		add(btnAddStaff, "flowx,cell 1 8");
@@ -174,6 +177,7 @@ public class StaffPanel extends JPanel {
 
 				Shop.deleteStaff((String) staffComboBox.getSelectedItem());
 				staffComboBox.removeItem(staffComboBox.getSelectedItem());
+				saveDetails();
 			}
 		});
 
@@ -191,6 +195,8 @@ public class StaffPanel extends JPanel {
 				Shop.EditDetails(nameField.getText(), surNameField.getText(),
 						salaryD, userNameField.getText(),
 						passwordField.getText());
+				
+				saveDetails();
 
 			}
 		});
@@ -228,6 +234,17 @@ public class StaffPanel extends JPanel {
 			}
 		});
 
+	}
+	
+	public void saveDetails(){
+		
+		JsonExample.clearList("resources/staff.json");
+		for(Staff staff : Shop.getStaffMembers()){
+			if(staff.isDeleted() == false){
+				JsonExample.saveStaffToFile(staff);
+			}
+		}
+		System.out.println("Finished save");
 	}
 
 	// Method to retrieve the name from The Array staffMembers in the Shop class
