@@ -124,14 +124,19 @@ public class Shop {
 	
 	
 	public void populateSuppliers(){
+		
+		suppliers = JsonExample.readSuppliersFromFile();
+		if(suppliers == null){
+			System.out.println("reached null loop");
 		Supplier supplier1 = new Supplier(123,"Doyle's", "St.Stephens,Dublin");
 		Supplier supplier2 = new Supplier(234,"Profi", "Baldara, Ashbourne");
 		Supplier supplier3 = new Supplier(345,"Jane LTD", "Kileen, Cork");
-		Supplier supplier4 = new Supplier(456,"G&M", "Hunter's Lane, Navan");
+		Supplier supplier4 = new Supplier(656,"G&M", "Hunter's Lane, Navan");
 		suppliers.add(supplier1);
 		suppliers.add(supplier2);
 		suppliers.add(supplier3);
 		suppliers.add(supplier4);
+		}
 	}
 	
 	public void populateStaffMembers(){
@@ -173,44 +178,51 @@ public class Shop {
 	}
 	
 	public void populateStockOrders(){
-		SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-		ArrayList<ProductToOrder> toOrder = new ArrayList<ProductToOrder>();
-		toOrder.add(new ProductToOrder(Shop.getProducts().get(0), 20));
 		
-		try {
-			StockOrder stockOrder = new StockOrder(sd.parse("10/08/2014 13:36"), toOrder, staffMembers.get(2));
-			stockOrders.add(stockOrder);
-			System.out.println("Order placed with id " + stockOrder.getId());
-		} catch (ParseException e) {
-			e.printStackTrace();
-			System.out.println("Order not placed as error with date");
+		stockOrders = JsonExample.readStockOrdersFromFile();
+		if(stockOrders == null){
+			
+			System.out.println("reached null loop");
+			SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+			ArrayList<ProductToOrder> toOrder = new ArrayList<ProductToOrder>();
+			toOrder.add(new ProductToOrder(Shop.getProducts().get(0), 20));
+			
+			try {
+				StockOrder stockOrder = new StockOrder(sd.parse("10/08/2014 13:36"), toOrder, staffMembers.get(2));
+				stockOrders.add(stockOrder);
+				System.out.println("Order placed with id " + stockOrder.getId());
+			} catch (ParseException e) {
+				e.printStackTrace();
+				System.out.println("Order not placed as error with date");
+			}
+			
+			toOrder = new ArrayList<ProductToOrder>();
+			toOrder.add(new ProductToOrder(Shop.getProducts().get(1), 5));
+			toOrder.add(new ProductToOrder(Shop.getProducts().get(2), 5));
+			
+			try {
+				StockOrder stockOrder = new StockOrder(sd.parse("26/07/2014 10:15"), toOrder, staffMembers.get(2));
+				stockOrders.add(stockOrder);
+				System.out.println("Order placed with id " + stockOrder.getId());
+			} catch (ParseException e) {
+				e.printStackTrace();
+				System.out.println("Order not placed as error with date");
+			}
+			
+			toOrder = new ArrayList<ProductToOrder>();
+			toOrder.add(new ProductToOrder(Shop.getProducts().get(3), 5));
+			toOrder.add(new ProductToOrder(Shop.getProducts().get(3), 5));
+			
+			try {
+				StockOrder stockOrder = new StockOrder(sd.parse("06/08/2014 13:00"), toOrder, staffMembers.get(2));
+				stockOrders.add(stockOrder);
+				System.out.println("Order placed with id " + stockOrder.getId());
+			} catch (ParseException e) {
+				e.printStackTrace();
+				System.out.println("Order not placed as error with date");
+			}
 		}
-		
-		toOrder = new ArrayList<ProductToOrder>();
-		toOrder.add(new ProductToOrder(Shop.getProducts().get(1), 5));
-		toOrder.add(new ProductToOrder(Shop.getProducts().get(2), 5));
-		
-		try {
-			StockOrder stockOrder = new StockOrder(sd.parse("26/07/2014 10:15"), toOrder, staffMembers.get(2));
-			stockOrders.add(stockOrder);
-			System.out.println("Order placed with id " + stockOrder.getId());
-		} catch (ParseException e) {
-			e.printStackTrace();
-			System.out.println("Order not placed as error with date");
-		}
-
-		toOrder = new ArrayList<ProductToOrder>();
-		toOrder.add(new ProductToOrder(Shop.getProducts().get(3), 5));
-		toOrder.add(new ProductToOrder(Shop.getProducts().get(3), 5));
-		
-		try {
-			StockOrder stockOrder = new StockOrder(sd.parse("06/08/2014 13:00"), toOrder, staffMembers.get(2));
-			stockOrders.add(stockOrder);
-			System.out.println("Order placed with id " + stockOrder.getId());
-		} catch (ParseException e) {
-			e.printStackTrace();
-			System.out.println("Order not placed as error with date");
-		}
+			
 	}
 	
 	
