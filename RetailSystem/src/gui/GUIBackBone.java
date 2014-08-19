@@ -1,13 +1,21 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
@@ -28,6 +36,7 @@ public class GUIBackBone  extends JFrame{
 	private static boolean userTypeAdmin = false;
 	private static Staff loggedStaffMember;
 	private int previousTabIndex = 0;
+	private JButton btnLogout = new JButton();
 	
 	
 	public GUIBackBone(boolean isAdmin, Staff loggedStaffMember){
@@ -79,21 +88,77 @@ public class GUIBackBone  extends JFrame{
 				}
 			});
 			
-		JPanel contentPane = new JPanel();
-		contentPane.setLayout(new BorderLayout());
-		contentPane.add(tabbedPane, BorderLayout.CENTER);
-		setContentPane(contentPane);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setVisible(true);
+		JLayeredPane lPane = new JLayeredPane();
+		JPanel panel1 = new JPanel();
+		JPanel panel2 = new JPanel();
+		setLayout(new BorderLayout());
+		add(lPane,BorderLayout.CENTER);
+		setContentPane(lPane);
 		setSize(1024,768);
-		setTitle("RetailSystem");
+		
+		btnLogout.setIcon(new ImageIcon("resources/Logout_closed.png"));
+		btnLogout.setBorder(null);
+		btnLogout.setContentAreaFilled(false);
+		btnLogout.setBorderPainted(false);
+		btnLogout.setSize(48, 48);
+		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+		panel1.setSize(this.getWidth(),this.getHeight());
+		panel1.setOpaque(true);
+		panel1.setLayout(new BorderLayout());
+		panel1.add(tabbedPane, BorderLayout.CENTER);
+		panel1.setBorder(null);
+		panel2.setBounds(this.getWidth()-50,0,48,48);
+		panel2.setOpaque(true);
+		panel2.setLayout(new FlowLayout());
+		panel2.setBorder(null);
+		panel2.add(btnLogout);
+		lPane.add(panel1, new Integer(0), 0);
+		lPane.add(panel2, new Integer(1), 0);
+		lPane.setBorder(null);
+
+		
 		setLocationRelativeTo(null);
+		setVisible(true);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("RetailSystem");
 		
 		addWindowListener(new WindowAdapter(){
 
 			@Override
 			public void windowClosing(WindowEvent arg0) {
 				saveTabDetails(0);				
+			}
+			
+		});
+		
+		btnLogout.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int x = JOptionPane.showConfirmDialog(GUIBackBone.this, "Are you sure you want to log out?","Log Out?", JOptionPane.YES_NO_OPTION);
+				if(x==JOptionPane.YES_OPTION){
+					// run login
+					Login login = new Login(Shop.getStaffMembers());
+					login.drawFrame();
+					saveTabDetails(0);
+					GUIBackBone.this.dispose();
+				}
+				
+			}
+			
+		});
+		btnLogout.addMouseListener(new MouseAdapter(){
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				btnLogout.setIcon(new ImageIcon("resources/Logout.png"));
+				btnLogout.repaint();
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				btnLogout.setIcon(new ImageIcon("resources/Logout_closed.png"));
+				btnLogout.repaint();
 			}
 			
 		});
