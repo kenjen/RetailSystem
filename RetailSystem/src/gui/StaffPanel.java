@@ -187,7 +187,7 @@ public class StaffPanel extends JPanel {
 				// variables for parsing
 				double salaryD = Double.parseDouble(salaryField.getText());
 
-				System.out.println("Edit listener");
+				System.out.println("Cannot Change userName");
 				Shop.EditDetails(nameField.getText(), surNameField.getText(),
 						salaryD, userNameField.getText(),
 						passwordField.getText());
@@ -204,8 +204,11 @@ public class StaffPanel extends JPanel {
 
 				for (Staff s : Shop.getStaffMembers()) {
 
+					
+					//add each staff members details to respective textfields upon selection
 					if (s.getUsername().equals(selectedStaff)) {
 						System.out.println(s.getUsername());
+						System.out.println("SelectedStaff: " +selectedStaff);
 						// Shop.deleteStaff((String)
 						// staffComboBox.getSelectedItem());
 						// staffComboBox.removeItem(staffComboBox.getSelectedItem());
@@ -213,12 +216,14 @@ public class StaffPanel extends JPanel {
 						nameField.setText(s.getName());
 						surNameField.setText(s.getSurname());
 						salaryField.setText(String.valueOf(s.getSalary()));
+						
 						userNameField.setText(s.getUsername());
 						passwordField.setText(s.getPassword());
-						System.out.println("Here");
+						//System.out.println("Here");
 					}
 				}
 				// selectedStaff = null;
+				
 
 			}
 		});
