@@ -119,13 +119,7 @@ public class Shop {
 		
 	}
 	
-	public void createCustomer(){
-		
-	}
 	
-	public void findCustomer(String FName, String LName){
-		
-	}
 	
 	public void populateSuppliers(){
 		Supplier supplier1 = new Supplier(123,"Doyle's", "St.Stephens,Dublin");

@@ -63,6 +63,56 @@ public class JsonExample {
 		}
 	}
 	
+
+	
+	/**
+	 * Returns the whole list of customers stored in /resources/customers.json
+	 * @return
+	 */
+	public static ArrayList<Customer> readCustomersFromFile() {
+		Scanner in=null;
+		try {
+			in = new Scanner(new FileReader("resources/customers.json"));
+			ObjectMapper mapper = new ObjectMapper();
+			while (in.hasNextLine()) {
+				Customer customer = mapper
+						.readValue(in.nextLine(), Customer.class);
+				System.out.println(customer.toString());
+				Shop.getCustomers().add(customer);
+			}
+			return Shop.getCustomers();
+		} catch (EOFException eof){
+			eof.printStackTrace();
+			return null;
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			in.close();
+		}
+		return null;
+	}
+	
+	/**
+	 * Saves the customer in /resources/customers.json as a Json object
+	 * @param customer
+	 */
+	public static void saveCustomerToFile(Customer customer) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			String result = mapper.writeValueAsString(customer) + "\n";
+			FileWriter writer = new FileWriter("resources/customers.json", true);
+			writer.write(result);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Saves the product in file location (e.g. "resources/products.json") as a Json object
 	 * @param product
