@@ -24,6 +24,8 @@ import java.awt.Insets;
 import javax.swing.BoxLayout;
 
 import data.Customer;
+import data.JsonExample;
+import data.Product;
 import data.Staff;
 
 import java.awt.BorderLayout;
@@ -155,6 +157,7 @@ public class StaffPanel extends JPanel {
 					System.out
 							.println("Invalid. Please Make Sure you fill in each TextField");
 				}
+				saveDetails();
 			}
 		});
 		add(btnAddStaff, "flowx,cell 1 8");
@@ -174,6 +177,7 @@ public class StaffPanel extends JPanel {
 
 				Shop.deleteStaff((String) staffComboBox.getSelectedItem());
 				staffComboBox.removeItem(staffComboBox.getSelectedItem());
+				saveDetails();
 			}
 		});
 
@@ -187,10 +191,12 @@ public class StaffPanel extends JPanel {
 				// variables for parsing
 				double salaryD = Double.parseDouble(salaryField.getText());
 
-				System.out.println("Edit listener");
+				System.out.println("Cannot Change userName");
 				Shop.EditDetails(nameField.getText(), surNameField.getText(),
 						salaryD, userNameField.getText(),
 						passwordField.getText());
+				
+				saveDetails();
 
 			}
 		});
@@ -204,8 +210,11 @@ public class StaffPanel extends JPanel {
 
 				for (Staff s : Shop.getStaffMembers()) {
 
+					
+					//add each staff members details to respective textfields upon selection
 					if (s.getUsername().equals(selectedStaff)) {
 						System.out.println(s.getUsername());
+						System.out.println("SelectedStaff: " +selectedStaff);
 						// Shop.deleteStaff((String)
 						// staffComboBox.getSelectedItem());
 						// staffComboBox.removeItem(staffComboBox.getSelectedItem());
@@ -213,16 +222,29 @@ public class StaffPanel extends JPanel {
 						nameField.setText(s.getName());
 						surNameField.setText(s.getSurname());
 						salaryField.setText(String.valueOf(s.getSalary()));
+						
 						userNameField.setText(s.getUsername());
 						passwordField.setText(s.getPassword());
-						System.out.println("Here");
+						//System.out.println("Here");
 					}
 				}
 				// selectedStaff = null;
+				
 
 			}
 		});
 
+	}
+	
+	public void saveDetails(){
+		
+		JsonExample.clearList("resources/staff.json");
+		for(Staff staff : Shop.getStaffMembers()){
+			if(staff.isDeleted() == false){
+				JsonExample.saveStaffToFile(staff);
+			}
+		}
+		System.out.println("Finished save");
 	}
 
 	// Method to retrieve the name from The Array staffMembers in the Shop class

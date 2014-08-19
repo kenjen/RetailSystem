@@ -100,5 +100,8 @@ public class Staff {
 		this.deleted = deleted;
 	}
 	
+	public static void setNextId(int id){
+		nextId = id;
+	}
 
 }
