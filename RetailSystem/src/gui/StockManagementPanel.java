@@ -161,12 +161,14 @@ public class StockManagementPanel extends JSplitPane{
 		});
 		
 				
-		//Setup button to load a products details
+		//Button to load a products details
 		JButton btnIdConfirm = new JButton("Confirm");
 		panel.add(btnIdConfirm, "cell 5 3, center");
 		btnIdConfirm.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				loadProductDetails();
+				int id = 0;
+				id = Integer.parseInt((String) comboSelectId.getSelectedItem());
+				loadProductDetails(id);
 			}
 		});
 		
@@ -361,7 +363,14 @@ public class StockManagementPanel extends JSplitPane{
 		btnCreateNewProduct.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				createNewProduct();
+				Product product = createNewProduct(false);
+				if(product!=null){
+					Shop.getProducts().add(product);
+				}
+				saveDetails();
+				setupList();
+				refreshCombo();
+				comboSelectId.setSelectedItem(product.getId());
 			}
 		});
 		
@@ -383,7 +392,12 @@ public class StockManagementPanel extends JSplitPane{
 		btnDeleteProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				deleteProduct();
+				int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
+				deleteProduct(id, Shop.getProducts());
+				clearProductDetails();
+				saveDetails();
+				setupList();
+				refreshCombo();
 			}
 		});
 		
@@ -419,17 +433,20 @@ public class StockManagementPanel extends JSplitPane{
 		textQuantity.setText("");
 		textThreshold.setText("");
 		textPrice.setText("");
+		txtDiscountedAmount.setText("");
 		textDiscountedPrice.setText("");
 		txtFlaggedForOrder.setVisible(false);
 		comboSelectSupplier.setSelectedIndex(0);
 	}
 	
 	
-	public void createNewProduct(){
+	public Product createNewProduct(boolean testing){
 		if(productLoaded){
 			//clear fields to add new details
 			productLoaded = false;
 			clearProductDetails();
+			textName.requestFocus();
+			return null;
 		}else{
 			//take in new details and create new product
 			if(!textName.equals("")){
@@ -440,26 +457,24 @@ public class StockManagementPanel extends JSplitPane{
 							Double.parseDouble(textPrice.getText());
 							try{
 								Integer.parseInt(textThreshold.getText());
-								if(comboSelectSupplier.getSelectedIndex()>0){
-									for(Supplier supplier : Shop.getSuppliers()){
-										if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
-											Product product = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Double.parseDouble(textPrice.getText()), supplier, true, 20);
-											product.setLowStockOrder(Integer.parseInt(textThreshold.getText()));
-											Shop.getProducts().add(product);
-											comboSelectId.setSelectedItem(product.getId());
-											textName.setText("");
-											textCategory.setText("");
-											textQuantity.setText("");
-											textThreshold.setText("");
-											textPrice.setText("");
-											textDiscountedPrice.setText("");
-											comboSelectSupplier.setSelectedIndex(0);
-											System.out.println("Product Created Succesfully");
-											break;
+								if(!testing){
+									if(comboSelectSupplier.getSelectedIndex()>0){
+										for(Supplier supplier : Shop.getSuppliers()){
+											if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
+												Product product = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Double.parseDouble(textPrice.getText()), supplier, true, 20);
+												product.setLowStockOrder(Integer.parseInt(textThreshold.getText()));
+												clearProductDetails();
+												System.out.println("Product Created Succesfully");
+												return product;
+											}
 										}
+									}else{
+										System.out.println("No supplier selected");
 									}
 								}else{
-									System.out.println("No supplier selected");
+									Product product = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Double.parseDouble(textPrice.getText()), new Supplier(), true, 20);
+									product.setLowStockOrder(Integer.parseInt(textThreshold.getText()));
+									return product;
 								}
 							}catch(NumberFormatException nfe){
 								System.out.println("number format exception");
@@ -476,18 +491,16 @@ public class StockManagementPanel extends JSplitPane{
 			}else{
 				System.out.println("Blank Name");
 			}
-			saveDetails();
-			setupList();
-			refreshCombo();
 		}
+		return null;
 	}
 	
 	
-	public void deleteProduct(){
+	public void deleteProduct(int id, ArrayList<Product> products){
 		if(productLoaded){
-			int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
+			//TODO
 			Product remove = null;
-				for(Product product : Shop.getProducts()){
+				for(Product product : products){
 					if(product.getId() == id && !(product.isDeleted())){
 						int selectedOption = JOptionPane.showConfirmDialog(null, 
 								"Are you sure you wish to delete product?",
@@ -521,7 +534,7 @@ public class StockManagementPanel extends JSplitPane{
 			}
 				
 			if(remove != null){
-				Shop.getProducts().remove(remove);
+				products.remove(remove);
 			}
 		}
 		saveDetails();
@@ -557,7 +570,8 @@ public class StockManagementPanel extends JSplitPane{
 							}else{
 								product.setDiscounted(true);
 							}
-							loadProductDetails();
+							int tempId = Integer.parseInt((String) comboSelectId.getSelectedItem());
+							loadProductDetails(tempId);
 						}catch(NumberFormatException nfe){
 							System.out.println("Entered value not a valid integer");
 						}
@@ -609,20 +623,15 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
-	public void loadProductDetails(){
-		boolean successful = true;
-		int id = 0;
+	public void loadProductDetails(int id){
 		Product tempProduct = null;
-		int tempId = Integer.parseInt((String) comboSelectId.getSelectedItem());
 		boolean productExists = false;
-		if(successful){
-			for(Product product : Shop.getProducts()){
-				if(product.getId() == tempId && !(product.isDeleted())){
-					productExists = true;
-					tempProduct = product;
-					productLoaded = true;
-					break;
-				}
+		for(Product product : Shop.getProducts()){
+			if(product.getId() == id && !(product.isDeleted())){
+				productExists = true;
+				tempProduct = product;
+				productLoaded = true;
+				break;
 			}
 		}
 		if(!productExists){
@@ -750,7 +759,7 @@ public class StockManagementPanel extends JSplitPane{
 		for(Product product : Shop.getProducts()){
 			JsonExample.saveProductToFile(product);
 		}
-		System.out.println("Finished save");
+		System.out.println("Finished saving products");
 	}
 	
 	
@@ -849,5 +858,72 @@ public class StockManagementPanel extends JSplitPane{
 				listModel.addElement("Id=" + product.getId() + "   " + product.getQuantity() + "/" + product.getLowStockOrder() + " " + " Units    " + product.getName());
 			}
 		}
+	}
+	
+	
+	/*
+	 * 
+	private JTextField textName;
+	private JTextField textCategory;
+	private JTextField textQuantity;
+	private JTextField textThreshold;
+	private JTextField textPrice;
+	private JTextField textDiscountedPrice;
+	*/
+	
+	public String getDisplayedName(){
+		return textName.getText();
+	}
+	
+	public String getDisplayedCategory(){
+		return textCategory.getText();
+	}
+	
+	public String getDisplayedQuantity(){
+		return textQuantity.getText();
+	}
+	
+	public String getDisplayedThreshold(){
+		return textThreshold.getText();
+	}
+	
+	public String getDisplayedPrice(){
+		return textPrice.getText();
+	}
+	
+	public String getDisplayedDiscountPrice(){
+		return textDiscountedPrice.getText();
+	}
+
+	public String getDisplayedDiscountPercent(){
+		return txtDiscountedAmount.getText();
+	}
+	
+	public void setDisplayedName(String str){
+		textName.setText(str);
+	}
+	
+	public void setDisplayedCategory(String str){
+		textCategory.setText(str);
+	}
+	
+	public void setDisplayedQuantity(String str){
+		textQuantity.setText(str);
+	}
+	
+	public void setDisplayedThreshold(String str){
+		textThreshold.setText(str);
+	}
+	
+	public void setDisplayedPrice(String str){
+		textPrice.setText(str);
+	}
+	
+	public void setDisplayedDiscountPrice(String str){
+		textDiscountedPrice.setText(str);
+	}
+
+	public void setDisplayedDiscountPercent(String str){
+		txtDiscountedAmount.setText(str);
 	}
 }
