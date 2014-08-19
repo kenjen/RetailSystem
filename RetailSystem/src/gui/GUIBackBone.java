@@ -3,7 +3,8 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -87,6 +88,15 @@ public class GUIBackBone  extends JFrame{
 		setSize(1024,768);
 		setTitle("RetailSystem");
 		setLocationRelativeTo(null);
+		
+		addWindowListener(new WindowAdapter(){
+
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				saveTabDetails(0);				
+			}
+			
+		});
 	}
 
 

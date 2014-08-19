@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -259,15 +260,33 @@ public class JsonExample {
 		}
 	}
 	
+	/**
+	 * clears the contents onf the file specified in the "file" param. If successful TRUE is returned, otherwise, FALSE
+	 * @param file
+	 * @return
+	 */
+	public static boolean clearList(String file){
+		try{
+			new FileWriter(new File(file));
+			return true;
+		}catch(FileNotFoundException fnfe){
+			fnfe.printStackTrace();
+			return false;
+		}catch(IOException e){
+			e.printStackTrace();
+			return false;
+		}
+	}
 	
 	/**
-	 * Saves the product in file location (e.g. "resources/products.json") as a Json object
+	 * Saves the customer order in resources/customerOrder.json as a Json object
 	 * @param product
 	 */
-	public static void clearList(String file){
-		try{
-			String result = "";
-			FileWriter writer = new FileWriter(file);
+	public static void saveCustomerOrdersToFile(CustomerOrder customerOrder) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			String result = mapper.writeValueAsString(customerOrder) + "\n";
+			FileWriter writer = new FileWriter("resources/customerOrders.json",true);
 			writer.write(result);
 			writer.flush();
 			writer.close();
@@ -276,4 +295,43 @@ public class JsonExample {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Returns the whole list of products stored in /resources/products.json
+	 * @return
+	 */
+	public static ArrayList<CustomerOrder> readCustomerOrdersFromFile() {
+		Scanner in=null;
+		try {
+			//if this is the first time to read from the file then create it
+			try{
+				new FileReader("resources/customerOrders.json");
+			}catch(FileNotFoundException fnfe){
+				new FileWriter(new File("resources/customerOrders.json"));
+			}
+			
+			
+			in = new Scanner(new FileReader("resources/customerOrders.json"));
+			ObjectMapper mapper = new ObjectMapper();
+			while (in.hasNextLine()) {
+				CustomerOrder custOrder = mapper
+						.readValue(in.nextLine(), CustomerOrder.class);
+				System.out.println(custOrder.toString());
+				Shop.getCustomerOrders().add(custOrder);
+			}
+			return Shop.getCustomerOrders();
+		} catch (EOFException eof){
+			eof.printStackTrace();
+			return null;
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			in.close();
+		}
+		return null;
+	}
+	
 }
