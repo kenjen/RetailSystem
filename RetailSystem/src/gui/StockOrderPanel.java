@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -24,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -60,9 +62,13 @@ public class StockOrderPanel extends JPanel {
 	private JLabel lblError = new JLabel("");
 	private Timer timer;
 	private JComboBox<String> comboSearchForProducts;
-	private JButton btnDisplayCurrentOrder = new JButton("Show Current Order");
+	private JButton btnDisplayCurrentOrder = new JButton("Current Order");
 	private JButton btnUpdateOrderCompletion = new JButton("Update Orders");
 	private JLabel lblProductsSearch = new JLabel("Product search: ");
+	private static ArrayList<Integer> invoiceIDData = new ArrayList<Integer>();
+	private JTextField txtInvoiceIDSearch = new JTextField("",5);
+	private JLabel lblFindInvoice = new JLabel("Find Invoice");
+	private JButton btnDisplayAllInvoices = new JButton("Show all");
 
 	public StockOrderPanel() {
 		setLayout(new MigLayout());
@@ -200,6 +206,7 @@ public class StockOrderPanel extends JPanel {
 		JPanel tempPanel = new JPanel();
 		tempPanel.setLayout(new MigLayout());
 		tempPanel.add(btnAddToOrder, "wrap, growx, pushx");
+		tempPanel.add(btnDisplayCurrentOrder,"growx, wrap");
 		tempPanel.add(btnOrder, "growx, pushx");
 		add(tempPanel, "wrap, alignx left, aligny top, growx");
 
@@ -207,20 +214,23 @@ public class StockOrderPanel extends JPanel {
 		btnOrder.addActionListener(new ButtonOrderHandler());
 		JLabel lblOrders = new JLabel("Orders:");
 		add(lblError, "pushx ,alignx center, wrap");
-		add(lblOrders,"wrap");
+		add(lblOrders, "split 3");
 		lblError.setVisible(false);
 		lblError.setFont(new Font("Serif",Font.BOLD,15));
+		
+		add(lblFindInvoice,"gapx 50");
+		add(txtInvoiceIDSearch,"wrap");
 //-----------------//
 //---ORDER TABLE---//
 //-----------------//
 		scrollPaneOrders = new JScrollPane();
 		add(scrollPaneOrders, "push,grow,span 3");
-		displayOrderTable();
+		displayOrderTable(0);
 		
 		JPanel panelx = new JPanel();
 		panelx.setLayout(new MigLayout());
-		panelx.add(btnDisplayCurrentOrder,"growx, wrap");
-		panelx.add(btnUpdateOrderCompletion,"growx");
+		panelx.add(btnUpdateOrderCompletion,"growx, wrap");
+		panelx.add(btnDisplayAllInvoices,"growx");
 		add(panelx,"alignx left, aligny top");
 		
 		//When this button is pressed, update the order for all orders that have true assigned to 'completed'
@@ -260,7 +270,47 @@ public class StockOrderPanel extends JPanel {
 				new CurrentStockOrderDialog(arrayTemporaryOrder);
 			}
 		});
+		
+		//load invoice id's in the array 
+				invoiceIDData = new ArrayList<Integer>();
+				for(StockOrder order:Shop.getStockOrders()){
+					invoiceIDData.add(order.getId());
+				}
+				
+				txtInvoiceIDSearch.addKeyListener(new KeyAdapter(){
+					@Override
+					public void keyPressed(KeyEvent e) {
+						if(e.getKeyCode() == KeyEvent.VK_ENTER){
+							
+							if(txtInvoiceIDSearch.getText() == "" || txtInvoiceIDSearch.getText() == null){
+								displayOrderTable(0);
+							}else{
+								try{
+									int x = Integer.parseInt(txtInvoiceIDSearch.getText());
+									if(invoiceIDData.contains(x)){
+										displayOrderTable(x);
+									}else{
+										displayErrorMessage("No such invoice", Color.red);	
+									}
+								}catch(InputMismatchException ime){
+									displayErrorMessage("Invalid Input", Color.red);
+								}catch(NumberFormatException nfe){
+									displayErrorMessage("Invalid Input", Color.red);
+								}
+							}
+						}
+					}
+				});
 
+				btnDisplayAllInvoices.addActionListener(new ActionListener(){
+
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						displayOrderTable(0);
+					}
+					
+				});
+				
 	}// end Constructor
 	
 	public void saveDetails(){
@@ -338,20 +388,38 @@ public class StockOrderPanel extends JPanel {
 //-------------------------//
 //---Display Order Table---//
 //-------------------------//
-	public void displayOrderTable() {
+	public void displayOrderTable(int orderID) {
 		String columnNamesForOrders[] = { "Id", "Staff member",
 				"Date of order", "Total", "Completed" };
-
-		ArrayList<StockOrder> stockOrders = Shop.getStockOrders();
-		arrayTableOrders = new Object[stockOrders.size()][5];
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-		for (int x=0; x<stockOrders.size(); x++) {
-			arrayTableOrders[x][0] = stockOrders.get(x).getId();
-			arrayTableOrders[x][1] = stockOrders.get(x).getStaff().getName()
-					+ " " + stockOrders.get(x).getStaff().getSurname();
-			arrayTableOrders[x][2] = sdf.format(stockOrders.get(x).getDate());
-			arrayTableOrders[x][3] = stockOrders.get(x).getTotal();
-			arrayTableOrders[x][4] = stockOrders.get(x).isCompleted();
+		ArrayList<StockOrder> stockOrders = Shop.getStockOrders();
+
+		//no id has been specified for an order
+		if(orderID ==0){
+			arrayTableOrders = new Object[stockOrders.size()][5];
+			
+			for (int x=0; x<stockOrders.size(); x++) {
+				arrayTableOrders[x][0] = stockOrders.get(x).getId();
+				arrayTableOrders[x][1] = stockOrders.get(x).getStaff().getName()
+						+ " " + stockOrders.get(x).getStaff().getSurname();
+				arrayTableOrders[x][2] = sdf.format(stockOrders.get(x).getDate());
+				arrayTableOrders[x][3] = stockOrders.get(x).getTotal();
+				arrayTableOrders[x][4] = stockOrders.get(x).isCompleted();
+			}
+		}else{
+			//and id is specified, make a model only for this one id
+			arrayTableOrders = new Object[1][5];
+			
+			for (StockOrder so:stockOrders) {
+				if(so.getId() == orderID){
+					arrayTableOrders[0][0] = so.getId();
+					arrayTableOrders[0][1] = so.getStaff().getName()
+							+ " " + so.getStaff().getSurname();
+					arrayTableOrders[0][2] = sdf.format(so.getDate());
+					arrayTableOrders[0][3] = so.getTotal();
+					arrayTableOrders[0][4] = so.isCompleted();
+				}
+			}
 		}
 
 		ProductTableModel ordersTableModel = new ProductTableModel(
@@ -581,7 +649,7 @@ public class StockOrderPanel extends JPanel {
 					}
 				}
 				tableModel.fireTableDataChanged();
-				displayOrderTable();
+				displayOrderTable(0);
 				displayErrorMessage("Added", Color.blue);
 			}
 		}
@@ -624,10 +692,17 @@ public class StockOrderPanel extends JPanel {
 					StockOrder sO = new StockOrder(productsToOrder, GUIBackBone.getLoggedStaffMember());
 					Shop.getStockOrders().add(sO);
 	
-					displayOrderTable();
+					displayOrderTable(0);
+					
 					// clear the temporaryArrayOforders
 					arrayTemporaryOrder = new ArrayList<Object[]>();
 					displayErrorMessage("Order has been submitted", Color.blue);
+					
+					//load invoice id's in the array 
+					invoiceIDData = new ArrayList<Integer>();
+					for(StockOrder or:Shop.getStockOrders()){
+						invoiceIDData.add(or.getId());
+					}
 				}
 			} else {
 				displayErrorMessage("No order to submit", Color.red);
