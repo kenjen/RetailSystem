@@ -97,10 +97,10 @@ public class GUIBackBone  extends JFrame{
 	public void saveTabDetails(int index){
 		panelStockManagement.saveDetails();
 		panelStockManagement.setupList();
-		panelStockOrder.displayOrderTable();
+		panelStockOrder.displayOrderTable(0);
 		panelStockOrder.displayProductsTable("", "");
 		panelStockOrder.repaint();
-		panelCustomerOrders.displayOrderTable(false);
+		panelCustomerOrders.displayOrderTable(false,0);
 		panelCustomerOrders.displayProductsTable("");
 		panelSupplier.saveDetails();
 	}

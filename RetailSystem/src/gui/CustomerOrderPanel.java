@@ -4,8 +4,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -17,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -24,6 +28,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -38,6 +43,7 @@ import data.Customer;
 import data.CustomerOrder;
 import data.Product;
 import data.ProductToOrder;
+import data.StockOrder;
 import data.Supplier;
 
 //this class deals with customer ordering only.
@@ -70,6 +76,9 @@ public class CustomerOrderPanel extends JPanel{
 	private JButton btnAddToOrder = new JButton ("Add to order");
 	private JButton btnViewCurrentOrder = new JButton ("Current Order");
 	private static ArrayList<Object[]> arrayCurrentOrder = new ArrayList<Object[]>();
+	private JLabel lblFindInvoice = new JLabel("Find Invoice");
+	private static ArrayList<Integer> invoiceIDData = new ArrayList<Integer>();
+	private JTextField txtInvoiceIDSearch = new JTextField("",5);
 	
 	/**
 	 * Adds all the GUI components on the panel
@@ -196,14 +205,17 @@ public class CustomerOrderPanel extends JPanel{
 		//add the gui elements to view previous orders of a customer
 		lblPreviousCustomerOrder = new JLabel("Previous Orders:");
 		add(lblError,"cell 0 3, wrap, pushx, alignx center");
-		add(lblPreviousCustomerOrder, "wrap");
+		add(lblPreviousCustomerOrder, "split 3");
 		lblError.setVisible(false);
 		lblError.setForeground(Color.red);
 		lblError.setFont(new Font("Serif",Font.BOLD,15));
 		
+		add(lblFindInvoice,"gapx 50");
+		add(txtInvoiceIDSearch,"wrap");
+		
 		scrollPaneForOrdersTable = new JScrollPane();
 		add(scrollPaneForOrdersTable, "span 5 3, grow, push");
-		displayOrderTable(false);
+		displayOrderTable(false, 0);
 		typeOfOrder = "All";
 		
 		JPanel oneCellPanel = new JPanel();
@@ -283,6 +295,35 @@ public class CustomerOrderPanel extends JPanel{
 			
 		});
 		
+		//load invoice id's in the array 
+		invoiceIDData = new ArrayList<Integer>();
+		for(CustomerOrder order:Shop.getCustomerOrders()){
+			invoiceIDData.add(order.getId());
+		}
+		
+		txtInvoiceIDSearch.addKeyListener(new KeyAdapter(){
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER){
+					
+						try{
+							if(txtInvoiceIDSearch.getText() != null){
+								int x = Integer.parseInt(txtInvoiceIDSearch.getText());
+								if(invoiceIDData.contains(x)){
+									displayOrderTable(false,x);
+								}else{
+									displayErrorMessage("No such invoice", Color.red);	
+								}
+							}
+						}catch(InputMismatchException ime){
+							displayErrorMessage("Invalid Input", Color.red);
+						}catch(NumberFormatException nfe){
+							displayErrorMessage("Invalid Input", Color.red);
+						}
+				}
+			}
+		});
+		
 	}//end constructor
 	
 	//returns an array of product names
@@ -351,7 +392,12 @@ public class CustomerOrderPanel extends JPanel{
 	
 	public void displayProductsTable(String productName){
 			if(productName == ""){
-				availableProductsArray = new Object[Shop.getProducts().size()][8];
+				int availableCounter = 0;
+				for(Product prod : Shop.getProducts()){
+					if(prod.isAvailable() && prod.isDeleted() == false)
+						availableCounter ++;
+				}
+				availableProductsArray = new Object[availableCounter][8];
 				int counter = 0;
 				//make products array to feed into the table model
 				DecimalFormat df = new DecimalFormat("#.00");
@@ -414,7 +460,6 @@ public class CustomerOrderPanel extends JPanel{
 			         try{
 			        	 if(choice != null){
 			        		 int parsedChoice = Integer.parseInt(choice);
-			        		 System.out.println("Parsed choice: "+parsedChoice);
 			        		 target.setValueAt(parsedChoice, row, cell);
 			        	 }
 			         }catch (InputMismatchException ex){
@@ -506,15 +551,28 @@ public class CustomerOrderPanel extends JPanel{
 					System.out.println("Order has been created\nOrder id:"+order.getId()+"\nOrder totalGross: "+order.getTotalGross()+"\nOrder totalNet: "+order.getTotalNet() + order.getCustomer().getCustomerFName());
 					//update table model data to reflect changes
 					for(ProductToOrder x:productsToOrder){
-						decrementProductAvalableQuantity(x.getId(),x.getAmount());
+						//decrementProductAvalableQuantity(x.getId(),x.getAmount());
 						decrementProductQuantityFromProducts(x.getId(),x.getAmount());
 					}
 					AbstractTableModel model = (AbstractTableModel) tableAvailableProducts.getModel();
 					model.fireTableDataChanged();
 					
 					//update previousCustomerOrderTable with the new order.
-					displayOrderTable(false);
+					displayOrderTable(false, 0);
 					typeOfOrder = "All";
+					
+					//update products table just in case a product has been sold out
+					displayProductsTable("");
+					
+					//reset the array of current orders
+					arrayCurrentOrder = new ArrayList<Object[]>();
+					
+					//load invoice id's in the array 
+					invoiceIDData = new ArrayList<Integer>();
+					for(CustomerOrder or:Shop.getCustomerOrders()){
+						invoiceIDData.add(or.getId());
+					}
+					
 				}//end else
 			}
 		}//end actionPerformed()
@@ -530,7 +588,7 @@ public class CustomerOrderPanel extends JPanel{
 		public void actionPerformed(ActionEvent e) {
 			if(selectedCustomer != null && getSelectedCustomerOrders() != null){
 				isActiveCustomerOrderTablePopulated = true;
-				displayOrderTable(true);
+				displayOrderTable(true,0);
 				typeOfOrder = "Customer";
 			}else{
 				System.out.println("clearTable");
@@ -553,7 +611,7 @@ public class CustomerOrderPanel extends JPanel{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			isActiveCustomerOrderTablePopulated = false;
-			displayOrderTable(false);
+			displayOrderTable(false,0);
 			typeOfOrder = "All";
 		}//end actionPerformed
 		
@@ -588,19 +646,19 @@ public class CustomerOrderPanel extends JPanel{
 					
 					//update previousCustomerOrderTable with the new order.
 					if(typeOfOrder.equals("All")){
-						displayOrderTable(false);
+						displayOrderTable(false,0);
 						typeOfOrder = "All";
 					}else{
-						displayOrderTable(true);
+						displayOrderTable(true,0);
 						typeOfOrder = "Customer";
 					}
 					displayErrorMessage("Order(s) has(have) been updated successfully.", Color.BLUE);
 				}else if(foundInvalidOperation){
 					if(typeOfOrder.equals("All")){
-						displayOrderTable(false);
+						displayOrderTable(false,0);
 						typeOfOrder = "All";
 					}else{
-						displayOrderTable(true);
+						displayOrderTable(true,0);
 						typeOfOrder = "Customer";
 					}
 					displayErrorMessage("You cannot change the status of already completed orders!", Color.red);
@@ -720,9 +778,9 @@ public class CustomerOrderPanel extends JPanel{
 		for(Product y:Shop.getProducts()){
 			if(y.getId() == productId){
 				y.setQuantity(y.getQuantity()-deductableAmount);
-/*				if(y.getQuantity() == 0){
+				if(y.getQuantity() == 0){
 					y.setAvailable(false);
-				}*/
+				}
 				return true;
 			}
 		}
@@ -730,7 +788,7 @@ public class CustomerOrderPanel extends JPanel{
 	}
 	
 	
-	public void displayOrderTable(boolean forCustomerOnly){
+	public void displayOrderTable(boolean forCustomerOnly, int stockOrderID){
 		//display the order in the previousOrderTable
 		String columnNames1[] = {"Id","Customer","Staff","Date","Total Net","Total Gross","Completed?"};
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -739,7 +797,28 @@ public class CustomerOrderPanel extends JPanel{
 		arrayOrders = new Object[currentCustomerOrders.size()][7];
 		
 		//if forCustomerOnly = false then display all orders in the CustomeOrder array, otherwise only for the selected customer
-		if(forCustomerOnly == false){
+		if(stockOrderID !=0){
+			arrayOrders = new Object[1][7];
+			for(CustomerOrder custOrder:currentCustomerOrders){
+				if(stockOrderID == custOrder.getId()){
+					arrayOrders[0][0] = custOrder.getId();
+					arrayOrders[0][1] = custOrder.getCustomer().getCustomerFName()+" "+custOrder.getCustomer().getCustomerLName();
+					arrayOrders[0][2] = custOrder.getStaff().getName()+" "+custOrder.getStaff().getSurname();
+					arrayOrders[0][3] = sdf.format(custOrder.getCreationDate());
+					arrayOrders[0][4] = df.format(custOrder.getTotalNet());
+					arrayOrders[0][5] = df.format(custOrder.getTotalGross());
+					arrayOrders[0][6] = custOrder.isComplete();
+					break;
+				}
+			}
+			tableModelForOrdersTable = new ProductTableModel(arrayOrders, columnNames1);
+			tableOrders = new JTable(tableModelForOrdersTable);
+			tableOrders.setAutoCreateRowSorter(true);
+			
+			//Handle double clicking on table to display details of the double-clicked row's order
+			tableOrders.addMouseListener(new DoubleClickMouseHandler());
+			scrollPaneForOrdersTable.getViewport().add(tableOrders);
+		}else if(forCustomerOnly == false){
 			for(int i=0; i< currentCustomerOrders.size(); i++){
 				arrayOrders[i][0] = currentCustomerOrders.get(i).getId();
 				arrayOrders[i][1] = currentCustomerOrders.get(i).getCustomer().getCustomerFName()+" "+currentCustomerOrders.get(i).getCustomer().getCustomerLName();
@@ -778,6 +857,13 @@ public class CustomerOrderPanel extends JPanel{
 			//Handle double clicking on table to display details of the double-clicked row's order
 			tableOrders.addMouseListener(new DoubleClickMouseHandler());
 			scrollPaneForOrdersTable.getViewport().add(tableOrders);
+			
+			//update array Find By ID data
+			invoiceIDData = new ArrayList<Integer>();
+			for(CustomerOrder or:Shop.getCustomerOrders()){
+				invoiceIDData.add(or.getId());
+			}
+			
 		}//end else
 	}//end displayPreviousCustomerOrderTable
 	
