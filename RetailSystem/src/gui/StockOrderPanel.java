@@ -36,6 +36,7 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import tableModels.ProductTableModel;
+import data.JsonExample;
 import data.Product;
 import data.ProductToOrder;
 import data.StockOrder;
@@ -311,6 +312,15 @@ public class StockOrderPanel extends JPanel {
 				});
 				
 	}// end Constructor
+	
+	public void saveDetails(){
+		 JsonExample.clearList("resources/stockOrders.json");
+		for(StockOrder stockOrder: Shop.getStockOrders()){
+				JsonExample.saveStockOrdersToFile(stockOrder);
+			}
+			System.out.println("Finished saving stockOrders");
+		}
+	
 	
 	//
 	public void changeStockOrderToComplete(int id){

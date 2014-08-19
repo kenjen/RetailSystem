@@ -162,6 +162,103 @@ public class JsonExample {
 		}
 	}
 	
+	/**
+	 * Returns the whole list of StockOrders stored in /resources/stockOrders.json
+	 * @return
+	 */
+	
+	public static ArrayList<StockOrder> readStockOrdersFromFile() {
+		Scanner in=null;
+		try {
+			in = new Scanner(new FileReader("resources/stockOrders.json"));
+			ObjectMapper mapper = new ObjectMapper();
+			while (in.hasNextLine()) {
+				StockOrder stockOrder = mapper
+						.readValue(in.nextLine(), 	StockOrder.class);
+				System.out.println(stockOrder.toString());
+				Shop.getStockOrders().add(stockOrder);
+			}
+			return Shop.getStockOrders();
+		} catch (EOFException eof){
+			eof.printStackTrace();
+			return null;
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			in.close();
+		}
+		return null;
+	}
+
+	/**
+	 * Saves the stock order in /StockOrders/products.json as a Json object
+	 * @param product
+	 */
+	public static void saveStockOrdersToFile(StockOrder stockOrder) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			String result = mapper.writeValueAsString(stockOrder) + "\n";
+			FileWriter writer = new FileWriter("resources/stockOrders.json", true);
+			writer.write(result);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Returns the whole list of staff stored in /resources/staff.json
+	 * @return
+	 */
+	public static ArrayList<Staff> readStaffFromFile() {
+		Scanner in=null;
+		try {
+			in = new Scanner(new FileReader("resources/staff.json"));
+			ObjectMapper mapper = new ObjectMapper();
+			while (in.hasNextLine()) {
+				Staff staff = mapper
+						.readValue(in.nextLine(), Staff.class);
+				System.out.println(staff.toString());
+				Shop.getStaffMembers().add(staff);
+			}
+			return Shop.getStaffMembers();
+		} catch (EOFException eof){
+			eof.printStackTrace();
+			return null;
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			in.close();
+		}
+		return null;
+	}
+
+	/**
+	 * Saves the staff in /resources/staff.json as a Json object
+	 * @param supplier
+	 */
+	public static void saveStaffToFile(Staff staff) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			String result = mapper.writeValueAsString(staff) + "\n";
+			FileWriter writer = new FileWriter("resources/staff.json", true);
+			writer.write(result);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	
 	/**
 	 * Saves the product in file location (e.g. "resources/products.json") as a Json object

@@ -3,7 +3,7 @@ package data;
 import java.util.ArrayList;
 
 public class Customer {
-	private static int nextID = 101;
+	private static int nextID;
 	private int customerID;
 	private String customerFName;
 	private String customerLName;
@@ -13,17 +13,23 @@ public class Customer {
 	private boolean deleted = false;
 	//private ArrayList<Customer> customers = new ArrayList<Customer>();
 
+	public Customer(){
+		
+	}
+	
 	public Customer(String customerFName, String customerLName,
 			String customerAddress, String customerMobile, String customerHome) {
 		// TODO Auto-generated constructor stub
-		setCustomerID(nextID);
+		nextID++;
+		//setCustomerID(nextID);
+		this.customerID=nextID;
 		this.customerFName = customerFName;
 		this.customerLName = customerLName;
 		this.customerAddress = customerAddress;
 		this.customerMobile = customerMobile;
 		this.customerHome = customerHome;
 		setDeleted(deleted);
-		nextID++;
+		
 	}
 
 	public int getCustomerID() {
@@ -80,6 +86,10 @@ public class Customer {
 
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
+	}
+	
+	public static void setNextId(int tempNextId){
+		nextID = tempNextId;
 	}
 
 }
