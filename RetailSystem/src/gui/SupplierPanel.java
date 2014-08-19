@@ -44,22 +44,27 @@ public class SupplierPanel extends JPanel{
 
 	public SupplierPanel() {
 		// set panel layout
-		super(new GridLayout(4,0));
+		super(new GridLayout(0,1));
 		setBorder(BorderFactory.createLineBorder(Color.black));
 		
 		// call method to populate the suppliers list
 		populateSuppliers();
-
-		// create panel for the suppliers list
-		JPanel listPanel = new JPanel();
-		listPanel.setBackground(Color.WHITE);
-		listPanel.setBorder(BorderFactory.createLineBorder(Color.red));
+		
 		// create list type
 		listModel = new DefaultListModel();
 		suppliersList = new JList(listModel);
 		suppliersList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		suppliersList.setVisibleRowCount(-1);
 		suppliersList.setSelectedIndex(0);
+		JScrollPane listScroller = new JScrollPane(suppliersList);
+		
+		listScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    listScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	    add(listScroller);
+				
+		// create panel for show and remove buttons
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setBorder(BorderFactory.createLineBorder(Color.red));
 		JButton showS = new JButton("Show Suppliers");
 		// add action listener to button
 		showS.addActionListener(new ActionListener(){
@@ -67,26 +72,15 @@ public class SupplierPanel extends JPanel{
 				showSuppliers();
 			}
 		});
-		listPanel.add(showS);
-		// create labels
-		title= new JLabel("SUPPLIERS");	
-		listPanel.add(title,BorderLayout.PAGE_START);
-		idLabel = new JLabel(" ID Number");
-		nameLabel = new JLabel(" Name");
-		addressLabel = new JLabel(" Address");
-		//add labels to list
-		listPanel.add(idLabel);
-		listPanel.add(nameLabel);
-		listPanel.add(addressLabel);
+		buttonPanel.add(showS);
+		add(buttonPanel, BorderLayout.PAGE_START);
+		// add button to delete supplier
+		remove = new JButton(removeSupplier);
+		remove.setActionCommand(removeSupplier);
+		remove.addActionListener(new Remove());
+		buttonPanel.add(remove);	
 	
-		
-		// add scroll to list
-		JScrollPane listScroller = new JScrollPane(suppliersList);
-		listPanel.add(listScroller);
-		listPanel.add(suppliersList);
-		add(listPanel, BorderLayout.PAGE_START);
-		
-		
+			
 		// create GUI panel for adding new supplier
 		JPanel addPanel= new JPanel();
 		//addPanel.setBackground(Color.lightGray);
@@ -114,13 +108,7 @@ public class SupplierPanel extends JPanel{
 		addPanel.add(addressLabel);
 		addPanel.add(addressField);
 		addPanel.add(add);
-		// add button to delete supplier
-		remove = new JButton(removeSupplier);
-		remove.setActionCommand(removeSupplier);
-		remove.addActionListener(new Remove());
-		addPanel.add(remove);	
 		add(addPanel, BorderLayout.CENTER);
-		
 		
 		// create GUI panel to edit supplier details
 		JPanel editPanel= new JPanel();
@@ -156,12 +144,10 @@ public class SupplierPanel extends JPanel{
 		
 
 		/*
-		 * create GUI panel for delete and show deleted buttons;
-		 * search field and button for looking for a supplier by name
+		 * create GUI panel search field and button for looking for a supplier by name
 		 */
-		JPanel deletePanel = new JPanel();
-	//	deletePanel.setBackground(Color.lightGray);
-		deletePanel.setBorder(BorderFactory.createLineBorder(Color.red));
+		JPanel searchPanel = new JPanel();
+		searchPanel.setBorder(BorderFactory.createLineBorder(Color.red));
 					
 		// add look for a supplier by name feature
 		JLabel search = new JLabel(" SEARCH FOR A SUPPLIER BY NAME");
@@ -175,6 +161,7 @@ public class SupplierPanel extends JPanel{
 					if(searchField.getText().equalsIgnoreCase(supplier.getSupplierName())){
 						JOptionPane.showMessageDialog(null, "Found it! Supplier id is: "+ supplier.getSupplierId());
 						foundIt = true;
+						searchField.setText("");
 						break;
 					}
 					else{
@@ -187,10 +174,10 @@ public class SupplierPanel extends JPanel{
 				}
 			}
 		});
-		deletePanel.add(search);
-		deletePanel.add(searchField);
-		deletePanel.add(searchSupplier);
-		add(deletePanel, BorderLayout.PAGE_END);
+		searchPanel.add(search);
+		searchPanel.add(searchField);
+		searchPanel.add(searchSupplier);
+		add(searchPanel, BorderLayout.PAGE_END);
 
 	
 		// display products for a selected supplier
@@ -226,11 +213,9 @@ public class SupplierPanel extends JPanel{
 		listModel.clear();
 		// show suppliers list on GUI
 		for(Supplier supplier:suppliers){
-			
 			listModel.addElement("Id: "+supplier.getSupplierId()+", name: " + supplier.getSupplierName()+
 				", address: "+ supplier.getSupplierAddress());
 			}
-		
 	}
 	
 	// call method from Shop class to populate suppliers list
