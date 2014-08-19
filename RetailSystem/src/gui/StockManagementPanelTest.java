@@ -2,11 +2,14 @@ package gui;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import data.Product;
+import data.Supplier;
 
 public class StockManagementPanelTest {
 	
@@ -59,7 +62,17 @@ public class StockManagementPanelTest {
 
 	@Test
 	public void testDeleteProduct() {
-		fail("Not yet implemented");
+		Product p1 = new Product("name", "category",  30, 12.0, null, true, 20);
+		Product p2 = new Product("name", "category",  30, 12.0, null, true, 20);
+		p1.setId(1);
+		p2.setId(2);
+		ArrayList<Product> products = new ArrayList<Product>();
+		products.add(p1);
+		products.add(p2);
+		int before = products.size();
+		Product p = panel.deleteProduct(1, products, true);
+		products.remove(p);
+		assertEquals(before-1, products.size());
 	}
 
 	@Test

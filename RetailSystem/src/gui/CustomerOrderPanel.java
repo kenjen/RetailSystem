@@ -41,6 +41,7 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import tableModels.ProductTableModel;
 import data.Customer;
 import data.CustomerOrder;
+import data.JsonExample;
 import data.Product;
 import data.ProductToOrder;
 import data.StockOrder;
@@ -547,6 +548,7 @@ public class CustomerOrderPanel extends JPanel{
 					return;
 				}else{
 					CustomerOrder order = new CustomerOrder(selectedCustomer, GUIBackBone.getLoggedStaffMember(), productsToOrder);
+					order.setId(Shop.getCustomerOrders().get(Shop.getCustomerOrders().size()-1).getId()+1);
 					Shop.getCustomerOrders().add(order);
 					System.out.println("Order has been created\nOrder id:"+order.getId()+"\nOrder totalGross: "+order.getTotalGross()+"\nOrder totalNet: "+order.getTotalNet() + order.getCustomer().getCustomerFName());
 					//update table model data to reflect changes
@@ -572,6 +574,22 @@ public class CustomerOrderPanel extends JPanel{
 					for(CustomerOrder or:Shop.getCustomerOrders()){
 						invoiceIDData.add(or.getId());
 					}
+					
+					//save orders to a persistent format
+					if(JsonExample.clearList("resources/customerOrders.json") && JsonExample.clearList("resources/products.json")){
+						for(CustomerOrder co:Shop.getCustomerOrders()){
+							JsonExample.saveCustomerOrdersToFile(co);
+						}
+						
+						//save products to a persistent format
+						for(Product p:Shop.getProducts()){
+							JsonExample.saveProductToFile(p);
+						}
+					}else{
+						displayErrorMessage("Could not persist changes!", Color.red);
+					}
+					
+					
 					
 				}//end else
 			}
@@ -780,6 +798,7 @@ public class CustomerOrderPanel extends JPanel{
 				y.setQuantity(y.getQuantity()-deductableAmount);
 				if(y.getQuantity() == 0){
 					y.setAvailable(false);
+					y.setFlaggedForOrder(true);
 				}
 				return true;
 			}
