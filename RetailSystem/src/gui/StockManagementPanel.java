@@ -157,7 +157,10 @@ public class StockManagementPanel extends JSplitPane{
 		btnRestoreDefaultProducts.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				resetToDefaultValues();
+				resetToDefaultValues(Shop.getProducts(), false);
+				saveDetails();
+				setupList();
+				refreshCombo(Shop.getProducts());
 			}
 		});
 		
@@ -382,7 +385,10 @@ public class StockManagementPanel extends JSplitPane{
 		btnDiscountProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				discountProduct();
+				if(productLoaded){
+					int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
+					discountProduct(id, Shop.getProducts(), false);
+				}
 			}
 		});
 		
@@ -394,7 +400,7 @@ public class StockManagementPanel extends JSplitPane{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
-				deleteProduct(id, Shop.getProducts());
+				deleteProduct(id, Shop.getProducts(), false);
 				clearProductDetails();
 				saveDetails();
 				setupList();
@@ -508,29 +514,39 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
-	public void deleteProduct(int id, ArrayList<Product> products){
+	public void deleteProduct(int id, ArrayList<Product> products, boolean testing){
 		if(productLoaded){
 			Product remove = null;
 			for(Product product : products){
 				if(product.getId() == id && !(product.isDeleted())){
-					int selectedOption = JOptionPane.showConfirmDialog(null, 
-							"Are you sure you wish to delete product?",
-							"Warning",
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.WARNING_MESSAGE);
+					int selectedOption = 0;
+					if(testing){
+						selectedOption = JOptionPane.YES_OPTION;
+					}else{
+						selectedOption = JOptionPane.showConfirmDialog(null, 
+								"Are you sure you wish to delete product?",
+								"Warning",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.WARNING_MESSAGE);
+					}
 					if (selectedOption == JOptionPane.YES_OPTION) {
 						//check if user wants to mark as deleted or completly remove record
 						Object[] options = {"Mark", "Remove"};
-						int permanentlyDelete;
-						permanentlyDelete = JOptionPane.showOptionDialog(null,
-								"Mark as deleted or permanently remove?",
-								"Warning",
-								JOptionPane.YES_NO_OPTION,
-								JOptionPane.WARNING_MESSAGE,
-								null,     //do not use a custom Icon
-								options,  //the titles of buttons
-								options[0]); //default button title
-						if(permanentlyDelete == JOptionPane.YES_OPTION){
+						int markAsDeleted;
+						if(testing){
+							markAsDeleted = JOptionPane.NO_OPTION;
+						}
+						else{
+							markAsDeleted = JOptionPane.showOptionDialog(null,
+									"Mark as deleted or permanently remove?",
+									"Warning",
+									JOptionPane.YES_NO_OPTION,
+									JOptionPane.WARNING_MESSAGE,
+									null,     //do not use a custom Icon
+									options,  //the titles of buttons
+									options[0]); //default button title
+						}
+						if(markAsDeleted == JOptionPane.YES_OPTION){
 							product.setDeleted(true);
 						}else{
 							remove = product;
@@ -562,28 +578,30 @@ public class StockManagementPanel extends JSplitPane{
 		return counter;
 	}
 	
-	public void discountProduct(){
-		if(productLoaded){
-			int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
-			for(Product product : Shop.getProducts()){
-				if(product.getId() == id && !(product.isDeleted())){
-					String input = JOptionPane.showInputDialog("Enter percentage to discount \n"+"Pevious discount "+product.getDiscountedPercentage()+"%");
-					if(input!=null){
-						try{
-							double inputD = Double.parseDouble(input);
-							String test = String.format("%.2f", inputD);
-							Double percent = Double.parseDouble(test);
-							product.setDiscountedPercentage(percent);
-							if(percent==0){
-								product.setDiscounted(false);
-							}else{
-								product.setDiscounted(true);
-							}
-							int tempId = Integer.parseInt((String) comboSelectId.getSelectedItem());
-							loadProductDetails(tempId, Shop.getProducts());
-						}catch(NumberFormatException nfe){
-							System.out.println("Entered value not a valid integer");
+	public void discountProduct(int id, ArrayList<Product> products, boolean testing){
+		for(Product product : products){
+			if(product.getId() == id && !(product.isDeleted())){
+				String input = null;
+				if(testing){
+					input = "33";
+				}else{
+					input = JOptionPane.showInputDialog("Enter percentage to discount \n"+"Pevious discount "+product.getDiscountedPercentage()+"%");
+				}
+				if(input!=null){
+					try{
+						double inputD = Double.parseDouble(input);
+						String test = String.format("%.2f", inputD);
+						Double percent = Double.parseDouble(test);
+						product.setDiscountedPercentage(percent);
+						if(percent==0){
+							product.setDiscounted(false);
+						}else{
+							product.setDiscounted(true);
 						}
+						int tempId = Integer.parseInt((String) comboSelectId.getSelectedItem());
+						loadProductDetails(tempId, Shop.getProducts());
+					}catch(NumberFormatException nfe){
+						System.out.println("Entered value not a valid integer");
 					}
 				}
 			}
@@ -695,30 +713,45 @@ public class StockManagementPanel extends JSplitPane{
 	
 	
 	//resets the product list to original hard coded values
-	public void resetToDefaultValues(){
-		int selectedOption = JOptionPane.showConfirmDialog(null, 
-                "Are you sure you wish to restore product defaults?", 
-                "Warning", 
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE); 
+	public void resetToDefaultValues(ArrayList<Product> products, boolean testing){
+		int selectedOption = 0;
+		if(testing){
+			selectedOption = JOptionPane.YES_OPTION;
+		}else{
+			selectedOption = JOptionPane.showConfirmDialog(null, 
+					"Are you sure you wish to restore product defaults?", 
+					"Warning", 
+					JOptionPane.YES_NO_OPTION,
+					JOptionPane.WARNING_MESSAGE); 
+		}
 		if (selectedOption == JOptionPane.YES_OPTION) {
-			Shop.getProducts().clear();
+			products.clear();
 			Product.setNextId(0);
-			Product p1 = new Product("Pear", "Food", 70, 0.23, Shop.getSuppliers().get(0), true, 80);
-			Product p2 = new Product("Coat", "Clothing", 50, 29.99, Shop.getSuppliers().get(1), true, 10);
-			Product p3 = new Product("Trousers", "Clothing", 80, 40.0, Shop.getSuppliers().get(1), true, 15);
-			Product p4 = new Product("Ham", "Food", 120, 4.50, Shop.getSuppliers().get(0), true, 60);
-			Product p5 = new Product("Broom", "Hygene", 20, 12.0, Shop.getSuppliers().get(2), true, 3);
+			Product p1;
+			Product p2;
+			Product p3;
+			Product p4;
+			Product p5;
 			
-			Shop.getProducts().add(p1);
-			Shop.getProducts().add(p2);
-			Shop.getProducts().add(p3);
-			Shop.getProducts().add(p4);
-			Shop.getProducts().add(p5);
-			
-			saveDetails();
-			setupList();
-			refreshCombo(Shop.getProducts());
+			//used for junit tests
+			if(testing){
+				p1 = new Product("Pear", "Food", 70, 0.23, null, true, 80);
+				p2 = new Product("Coat", "Clothing", 50, 29.99, null, true, 10);
+				p3 = new Product("Trousers", "Clothing", 80, 40.0, null, true, 15);
+				p4 = new Product("Ham", "Food", 120, 4.50, null, true, 60);
+				p5 = new Product("Broom", "Hygene", 20, 12.0, null, true, 3);
+			}else{
+				p1 = new Product("Pear", "Food", 70, 0.23, Shop.getSuppliers().get(0), true, 80);
+				p2 = new Product("Coat", "Clothing", 50, 29.99, Shop.getSuppliers().get(1), true, 10);
+				p3 = new Product("Trousers", "Clothing", 80, 40.0, Shop.getSuppliers().get(1), true, 15);
+				p4 = new Product("Ham", "Food", 120, 4.50, Shop.getSuppliers().get(0), true, 60);
+				p5 = new Product("Broom", "Hygene", 20, 12.0, Shop.getSuppliers().get(2), true, 3);
+			}
+			products.add(p1);
+			products.add(p2);
+			products.add(p3);
+			products.add(p4);
+			products.add(p5);
 		}
 	}
 	
