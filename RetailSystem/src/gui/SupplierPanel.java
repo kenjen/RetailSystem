@@ -5,11 +5,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeListener;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import org.codehaus.jackson.map.ObjectMapper;
 
 import data.JsonExample;
 import data.Product;
@@ -54,7 +58,7 @@ public class SupplierPanel extends JPanel{
 		listModel = new DefaultListModel();
 		suppliersList = new JList(listModel);
 		suppliersList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		suppliersList.setVisibleRowCount(-1);
+		suppliersList.setVisibleRowCount(0);
 		suppliersList.setSelectedIndex(0);
 		JScrollPane listScroller = new JScrollPane(suppliersList);
 		
@@ -83,7 +87,6 @@ public class SupplierPanel extends JPanel{
 			
 		// create GUI panel for adding new supplier
 		JPanel addPanel= new JPanel();
-		//addPanel.setBackground(Color.lightGray);
 		addPanel.setBorder(BorderFactory.createLineBorder(Color.red));
 		JLabel newSupplier = new JLabel("CREATE NEW SUPPLIER");
 		addPanel.add(newSupplier);
@@ -95,14 +98,10 @@ public class SupplierPanel extends JPanel{
 			}
 		});
 		// create labels and textfields for user input
-		idLabel = new JLabel(" ID Number");
 		nameLabel = new JLabel(" Name");
 		addressLabel = new JLabel(" Address");
-		idField = new JTextField(10);
 		nameField = new JTextField(10);
 		addressField = new JTextField(30);
-		addPanel.add(idLabel);
-		addPanel.add(idField);
 		addPanel.add(nameLabel);
 		addPanel.add(nameField);
 		addPanel.add(addressLabel);
@@ -112,7 +111,6 @@ public class SupplierPanel extends JPanel{
 		
 		// create GUI panel to edit supplier details
 		JPanel editPanel= new JPanel();
-		//editPanel.setBackground(Color.lightGray);
 		editPanel.setBorder(BorderFactory.createLineBorder(Color.red));
 		JLabel editS = new JLabel("EDIT SUPPLIER DETAILS");
 		editPanel.add(editS);
@@ -213,8 +211,14 @@ public class SupplierPanel extends JPanel{
 		listModel.clear();
 		// show suppliers list on GUI
 		for(Supplier supplier:suppliers){
+			if(supplier.isSupplierDeleted()== false){
 			listModel.addElement("Id: "+supplier.getSupplierId()+", name: " + supplier.getSupplierName()+
 				", address: "+ supplier.getSupplierAddress());
+			}
+			else{
+			listModel.addElement("REMOVED    "+"Id: "+supplier.getSupplierId()+", name: " + supplier.getSupplierName()+
+					", address: "+ supplier.getSupplierAddress());
+			}
 			}
 	}
 	
@@ -227,32 +231,17 @@ public class SupplierPanel extends JPanel{
 
 	// create new supplier
 	public void createSupplier( ){
-		String ids = idField.getText();
-		int id = Integer.parseInt(ids);	
-		Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
-		boolean isValid = true;
-		
-		// if the id entered exists don't add to the list; 
-		for(Supplier supplier:suppliers){	
-			if(supplier.getSupplierId() != id){
-				idField.setText("");
-				nameField.setText("");
-				addressField.setText("");
-			}else if(supplier.getSupplierId() == id){
-				isValid=false;
-			}
-
-		}
-		// if the id entered doesn't exist don't add it to the list; 
-		if(isValid){
+			saveDetails();
+			Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
 			suppliers.add(newSupplier);
+			
+			JsonExample.saveSupplierToFile(newSupplier);
 			listModel.addElement("Id: "+newSupplier.getSupplierId()+", name: " + newSupplier.getSupplierName()+
 					", address: "+ newSupplier.getSupplierAddress());
-		}
-		// give warning message
-		else{
-			JOptionPane.showMessageDialog(null, "The ID entered exists. Please enter another ID");
-		}
+				nameField.setText("");
+				addressField.setText("");
+			
+		
 	}
 
 	// inner class to delete supplier from GUI list and set it as deleted in the Arraylist
@@ -266,15 +255,23 @@ public class SupplierPanel extends JPanel{
 								
 					}
 				if(deleted!= null){
-					deletedSuppliers.add(deleted);
-					suppliers.remove(index);
-					listModel.remove(index);
+				//	deletedSuppliers.add(deleted);
+				//	suppliers.remove(index);
+				//	listModel.remove(index);
+					deleted.setSupplierDeleted(true);
+					Object newElement ="REMOVED"+"   "+ "Id: "+deleted.getSupplierId()+", name: " + deleted.getSupplierName()+
+							", address: "+ deleted.getSupplierAddress();
+					listModel.setElementAt(newElement, index);
+				
+					
 				}
 			}
 			else{
 				JOptionPane.showMessageDialog(null, " You didn't select a supplier to remove!");
 					}
+			saveDetails();
 			}
+		
 	}
 	
 	// inner class get suppliers details in the textfield to be edited
@@ -331,15 +328,19 @@ public class SupplierPanel extends JPanel{
 				editAddressField.setText("");
 			
 			}
-		}		
+		}	
+		saveDetails();
 	}
 	
 	// display deleted suppliers
 	public void showDeletedSuppliers(){
 		listModel.clear();
-		for(Supplier deletedSupplier : deletedSuppliers){
-			listModel.addElement( "Deleted supplier: "+"  Id: "+deletedSupplier.getSupplierId( )+", name: " + deletedSupplier.getSupplierName()+
-					", address: "+ deletedSupplier.getSupplierAddress());
+	//	for(Supplier deletedSupplier : deletedSuppliers){
+			for(Supplier supplier:suppliers){
+			if(supplier.isSupplierDeleted()==true){
+			listModel.addElement( "Deleted supplier: "+"  Id: "+supplier.getSupplierId( )+", name: " + supplier.getSupplierName()+
+					", address: "+ supplier.getSupplierAddress());
+			}
 		}
 	}
 	// display products for each supplier
@@ -352,12 +353,14 @@ public class SupplierPanel extends JPanel{
 					int id = tempSupplier.getSupplierId( );
 					listModel.clear();
 					listModel.addElement("The products for Supplier id "+ tempSupplier.getSupplierId()+" are: ");
+					
 						// call Shop class to display products for the selected supplier
 						for(Product product:Shop.getProducts()){	
 							if(product.getSupplier().getSupplierId() == id){
 								listModel.addElement("\n"+ product.getName());
+								
 							}
-					}
+						}
 				}
 			}
 			// if no supplier is selected show warning message
@@ -373,4 +376,5 @@ public class SupplierPanel extends JPanel{
 			}
 			System.out.println("Finished saving suppliers");
 		}
+	
 }
