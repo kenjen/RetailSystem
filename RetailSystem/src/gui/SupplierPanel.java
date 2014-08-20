@@ -92,6 +92,7 @@ public class SupplierPanel extends JPanel{
 		addPanel.add(newSupplier);
 		JButton add = new JButton("SUBMIT");
 		// add action listener to button
+		
 		add.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				createSupplier();
@@ -230,17 +231,21 @@ public class SupplierPanel extends JPanel{
 	}
 
 	// create new supplier
-	public void createSupplier( ){
+	public void createSupplier(){
+		if((nameField.getText().isEmpty()==false)&&(addressField.getText().isEmpty()==false)){
+			System.out.println("Not empty");
 			saveDetails();
 			Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
 			suppliers.add(newSupplier);
-			
 			JsonExample.saveSupplierToFile(newSupplier);
 			listModel.addElement("Id: "+newSupplier.getSupplierId()+", name: " + newSupplier.getSupplierName()+
 					", address: "+ newSupplier.getSupplierAddress());
 				nameField.setText("");
 				addressField.setText("");
-			
+		}
+		else{
+			JOptionPane.showMessageDialog(null, " Enter details for new supplier");
+		}
 		
 	}
 

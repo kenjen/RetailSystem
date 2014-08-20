@@ -129,7 +129,7 @@ public class GUIBackBone  extends JFrame{
 				saveTabDetails(0);
 				
 				//Remove the contents of staff.json file
-				JsonExample.clearList("resources/staff.json");
+				//JsonExample.clearList("resources/staff.json");
 			}
 			
 		});

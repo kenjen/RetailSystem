@@ -14,7 +14,7 @@ import data.Supplier;
 public class StockManagementPanelTest {
 	
 	StockManagementPanel panel;
-	ArrayList<Product> products;
+	ArrayList<Product> products = new ArrayList<Product>();
 	Product p1;
 
 	@Before
@@ -62,6 +62,7 @@ public class StockManagementPanelTest {
 		panel.setDisplayedQuantity("20");
 		panel.setDisplayedThreshold("20");
 		panel.setDisplayedPrice("19.99");
+		panel.setProductLoaded(false);
 		Product p = panel.createNewProduct(true);
 		if(p==null){
 			fail("Product not created sucesfully");
@@ -74,7 +75,7 @@ public class StockManagementPanelTest {
 		p2.setId(2);
 		products.add(p2);
 		int before = products.size();
-		panel.deleteProduct(1, products);
+		panel.deleteProduct(1, products, true);
 		assertEquals(before-1, products.size());
 	}
 
@@ -92,7 +93,9 @@ public class StockManagementPanelTest {
 
 	@Test
 	public void testDiscountProduct() {
-		fail("Not yet implemented");
+		panel.setProductLoaded(true);
+		panel.discountProduct(1, products, true);
+		assertEquals(products.get(0).getDiscountedPercentage(), 33d, .001);
 	}
 
 	@Test
@@ -168,7 +171,9 @@ public class StockManagementPanelTest {
 
 	@Test
 	public void testResetToDefaultValues() {
-		fail("Not yet implemented");
+		assertEquals(1, products.size());
+		panel.resetToDefaultValues(products, true);
+		assertEquals(5, products.size());
 	}
 
 	@Test
