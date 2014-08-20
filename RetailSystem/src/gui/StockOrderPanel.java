@@ -69,6 +69,7 @@ public class StockOrderPanel extends JPanel {
 	private JTextField txtInvoiceIDSearch = new JTextField("",5);
 	private JLabel lblFindInvoice = new JLabel("Find Invoice");
 	private JButton btnDisplayAllInvoices = new JButton("Show all");
+	private boolean stockOrderLoaded;
 
 	public StockOrderPanel() {
 		setLayout(new MigLayout());
@@ -746,5 +747,10 @@ public class StockOrderPanel extends JPanel {
 
 	public static void setArrayTemporaryOrder(ArrayList<Object[]> x) {
 		arrayTemporaryOrder = x;
+	}
+
+	public void setStockOrderLoaded(boolean stockOrderLoaded) {
+		this.stockOrderLoaded = stockOrderLoaded;
+		
 	}
 }// end class
