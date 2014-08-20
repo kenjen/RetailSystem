@@ -58,6 +58,7 @@ public class StockManagementPanel extends JSplitPane{
 	private static JComboBox<String> comboSelectId;
 
 	private boolean productLoaded = false;
+
 	private JTextField txtFlaggedForOrder;
 	private JButton btnCreateNewProduct;
 	private JButton btnDisplayProducts;
@@ -88,7 +89,7 @@ public class StockManagementPanel extends JSplitPane{
 		//add panel to right hand side
 		JPanel panel = new JPanel();
 		setRightComponent(panel);
-		panel.setLayout(new MigLayout("", "[][100px:n][grow][70px:n,grow][grow][100px:n,grow][100px:n,grow][40px:n,grow]", "[][20px:n][][][][][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow]"));
+		panel.setLayout(new MigLayout("", "[][100px:n][grow][70px:n,grow][grow][100px:n,grow][100px:n,grow][40px:n,grow]", "[][20px:n][][][][][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][30px:n,grow]"));
 		
 		
 		//drop down menu  to enter id of product
@@ -99,7 +100,7 @@ public class StockManagementPanel extends JSplitPane{
 			idValues.add(id);
 		}
 		comboSelectId = new JComboBox(idValues.toArray());
-		refreshCombo();
+		refreshCombo(Shop.getProducts());
 		panel.add(comboSelectId, "cell 5 2, center");
 		comboSelectId.setEditable(true);
 		AutoCompleteDecorator.decorate(comboSelectId);
@@ -112,7 +113,7 @@ public class StockManagementPanel extends JSplitPane{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				setupList();
-				refreshCombo();
+				refreshCombo(Shop.getProducts());
 			}
 		});
 		
@@ -369,7 +370,7 @@ public class StockManagementPanel extends JSplitPane{
 				}
 				saveDetails();
 				setupList();
-				refreshCombo();
+				refreshCombo(Shop.getProducts());
 				comboSelectId.setSelectedItem(product.getId());
 			}
 		});
@@ -393,11 +394,11 @@ public class StockManagementPanel extends JSplitPane{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
-				deleteProduct(id, Shop.getProducts(), false);
+				deleteProduct(id, Shop.getProducts());
 				clearProductDetails();
 				saveDetails();
 				setupList();
-				refreshCombo();
+				refreshCombo(Shop.getProducts());
 			}
 		});
 		
@@ -408,7 +409,9 @@ public class StockManagementPanel extends JSplitPane{
 		btnFlagForOrder.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				flagForOrder();
+				int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
+				flagForOrder(id, Shop.getProducts());
+				saveAll();
 			}
 		});
 		
@@ -419,7 +422,16 @@ public class StockManagementPanel extends JSplitPane{
 		btnRestoreProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				restoreProduct();
+				try{
+					String tempId = JOptionPane.showInputDialog("Enter id of product to restore");
+					int id = Integer.parseInt(tempId);
+					restoreProduct(id, Shop.getProducts());
+				}catch(NumberFormatException nfe){
+					System.out.println("number entered not an integer");
+				}
+				saveDetails();
+				setupList();
+				refreshCombo(Shop.getProducts());
 			}
 		});
 	}
@@ -496,44 +508,34 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
-	public Product deleteProduct(int id, ArrayList<Product> products, boolean testing){
+	public void deleteProduct(int id, ArrayList<Product> products){
+		
 		if(productLoaded){
 			//TODO
 			Product remove = null;
 			for(Product product : products){
 				if(product.getId() == id && !(product.isDeleted())){
-					int selectedOption;
-					if(testing){
-						selectedOption=JOptionPane.YES_OPTION;
-					}else{
-						selectedOption = JOptionPane.showConfirmDialog(null, 
-								"Are you sure you wish to delete product?",
-								"Warning",
-								JOptionPane.YES_NO_OPTION,
-								JOptionPane.WARNING_MESSAGE);
-					}
+					int selectedOption = JOptionPane.showConfirmDialog(null, 
+							"Are you sure you wish to delete product?",
+							"Warning",
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.WARNING_MESSAGE);
 					if (selectedOption == JOptionPane.YES_OPTION) {
 						//check if user wants to mark as deleted or completly remove record
 						Object[] options = {"Mark", "Remove"};
 						int permanentlyDelete;
-						if(testing){
-							permanentlyDelete = JOptionPane.NO_OPTION;
-						}else{
-							permanentlyDelete = JOptionPane.showOptionDialog(null,
-									"Mark as deleted or permanently remove?",
-									"Warning",
-									JOptionPane.YES_NO_OPTION,
-									JOptionPane.WARNING_MESSAGE,
-									null,     //do not use a custom Icon
-									options,  //the titles of buttons
-									options[0]); //default button title
-						}
+						permanentlyDelete = JOptionPane.showOptionDialog(null,
+								"Mark as deleted or permanently remove?",
+								"Warning",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.WARNING_MESSAGE,
+								null,     //do not use a custom Icon
+								options,  //the titles of buttons
+								options[0]); //default button title
 						if(permanentlyDelete == JOptionPane.YES_OPTION){
 							product.setDeleted(true);
 						}else{
 							remove = product;
-							//TODO
-							return product;
 						}
 					}
 				}
@@ -543,7 +545,6 @@ public class StockManagementPanel extends JSplitPane{
 				products.remove(remove);
 			}
 		}
-		return null;
 	}
 	
 	
@@ -610,10 +611,10 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
-	public void flagForOrder(){
+	public void flagForOrder(int id, ArrayList<Product> products){
 		if(productLoaded){
-			int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
-			for(Product product : Shop.getProducts()){
+			//int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
+			for(Product product : products){
 				if(product.getId() == id && !(product.isDeleted())){
 					if(product.isFlaggedForOrder()){
 						product.setFlaggedForOrder(false);
@@ -622,7 +623,6 @@ public class StockManagementPanel extends JSplitPane{
 						product.setFlaggedForOrder(true);
 						txtFlaggedForOrder.setVisible(true);
 					}
-					saveAll();
 				}
 			}
 		}
@@ -666,20 +666,23 @@ public class StockManagementPanel extends JSplitPane{
 	
 	
 	//refresh combo box
-	public static void refreshCombo(){
+	public static int refreshCombo(ArrayList<Product> products){
 		ArrayList<Integer> idValues = new ArrayList<Integer>();
 		idValues.add(0);
-		for (Product product : Shop.getProducts()){
+		for (Product product : products){
 			if(!product.isDeleted()){
 				int id = product.getId();
 				idValues.add(id);
 			}
 		}
 		comboSelectId.removeAllItems();
+		int counter = 0;
 		for(Integer current : idValues){
 			String s = current.toString();
 			comboSelectId.addItem(s);
+			counter++;
 		}
+		return counter;
 	}
 	
 	
@@ -707,27 +710,17 @@ public class StockManagementPanel extends JSplitPane{
 			
 			saveDetails();
 			setupList();
-			refreshCombo();
+			refreshCombo(Shop.getProducts());
 		}
 	}
 	
 	
-	public void restoreProduct(){
-		int id = 0;
-		String tempId = JOptionPane.showInputDialog("Enter id of product to restore");
-		try{
-			id = Integer.parseInt(tempId);
-			for(Product product : Shop.getProducts()){
-				if(product.getId() == id && product.isDeleted()){
-					product.setDeleted(false);
-					setupList();
-					refreshCombo();
-				}
+	public void restoreProduct(int id, ArrayList<Product> products){
+		for(Product product : products){
+			if(product.getId() == id && product.isDeleted()){
+				product.setDeleted(false);
 			}
-		}catch(NumberFormatException nfe){
-			System.out.println("number entered not an integer");
 		}
-		saveDetails();
 	}
 	
 	
@@ -742,7 +735,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		saveDetails();
 		setupList();
-		refreshCombo();
+		refreshCombo(Shop.getProducts());
 		clearProductDetails();
 	}
 	
@@ -931,5 +924,9 @@ public class StockManagementPanel extends JSplitPane{
 
 	public void setDisplayedDiscountPercent(String str){
 		txtDiscountedAmount.setText(str);
+	}
+	
+	public void setProductLoaded(boolean productLoaded) {
+		this.productLoaded = productLoaded;
 	}
 }

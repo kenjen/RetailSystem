@@ -14,10 +14,18 @@ import data.Supplier;
 public class StockManagementPanelTest {
 	
 	StockManagementPanel panel;
+	ArrayList<Product> products;
+	Product p1;
 
 	@Before
 	public void setUp() throws Exception {
 		panel = new StockManagementPanel();
+		p1 = new Product("name", "category",  30, 12.0, null, true, 20);
+		p1.setId(1);
+		panel.setProductLoaded(true);
+		products = new ArrayList<Product>();
+		products.clear();
+		products.add(p1);
 	}
 
 	@Test
@@ -62,16 +70,11 @@ public class StockManagementPanelTest {
 
 	@Test
 	public void testDeleteProduct() {
-		Product p1 = new Product("name", "category",  30, 12.0, null, true, 20);
 		Product p2 = new Product("name", "category",  30, 12.0, null, true, 20);
-		p1.setId(1);
 		p2.setId(2);
-		ArrayList<Product> products = new ArrayList<Product>();
-		products.add(p1);
 		products.add(p2);
 		int before = products.size();
-		Product p = panel.deleteProduct(1, products, true);
-		products.remove(p);
+		panel.deleteProduct(1, products);
 		assertEquals(before-1, products.size());
 	}
 
@@ -97,7 +100,14 @@ public class StockManagementPanelTest {
 
 	@Test
 	public void testFlagForOrder() {
-		fail("Not yet implemented");
+		boolean first = products.get(0).isFlaggedForOrder();
+		panel.flagForOrder(1, products);
+		boolean second = products.get(0).isFlaggedForOrder();
+		assertNotEquals(first, second);
+		panel.flagForOrder(1, products);
+		first = products.get(0).isFlaggedForOrder();
+		assertNotEquals(first, second);
+		assertTrue(second);
 	}
 
 	@Test
@@ -107,7 +117,14 @@ public class StockManagementPanelTest {
 
 	@Test
 	public void testRefreshCombo() {
-		fail("Not yet implemented");
+		assertEquals(2, panel.refreshCombo(products));
+		Product p2 = new Product("name", "category",  30, 12.0, null, true, 20);
+		p2.setId(2);
+		products.add(p2);
+		Product p3 = new Product("name", "category",  30, 12.0, null, true, 20);
+		p3.setId(3);
+		products.add(p3);
+		assertEquals(4, panel.refreshCombo(products));
 	}
 
 	@Test
@@ -117,52 +134,10 @@ public class StockManagementPanelTest {
 
 	@Test
 	public void testRestoreProduct() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSaveAll() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSaveCategory() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSaveDetails() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSaveName() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSavePrice() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSaveSupplier() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSaveThreshold() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSaveQuantity() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetupList() {
-		fail("Not yet implemented");
+		p1.setDeleted(true);
+		assertTrue(products.get(0).isDeleted());
+		panel.restoreProduct(1, products);
+		assertFalse(products.get(0).isDeleted());
 	}
 
 }
