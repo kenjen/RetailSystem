@@ -1,5 +1,7 @@
 package gui;
 
+import gui.CustomerPanel.CBListener;
+
 import javax.swing.JPanel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -23,6 +25,8 @@ import java.awt.Insets;
 
 import javax.swing.BoxLayout;
 
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+
 import data.Customer;
 import data.JsonExample;
 import data.Product;
@@ -31,8 +35,11 @@ import data.Staff;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
-
 public class StaffPanel extends JPanel {
 
 	/**
@@ -49,12 +56,15 @@ public class StaffPanel extends JPanel {
 
 	ArrayList<String> staffMembers = new ArrayList<String>();
 	JComboBox staffComboBox = new JComboBox(staffMembers.toArray());
+	
+	//this.comboBox = new JComboBox(new Object[] { "Ester", "Jordi",
+	//        "Jordina", "Jorge", "Sergi" });
+	//AutoCompleteDecorator.decorate(this.comboBox);
 
 	// private Shop shop;
 
 	public StaffPanel() {
-		setLayout(new MigLayout("", "[][grow][grow][][][][][][][][]",
-				"[][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
+		setLayout(new MigLayout("", "[][][][grow][grow][][][][][][][][]", "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
 
 		for (Staff s : Shop.getStaffMembers()) {
 			String name = s.getName() + " " + s.getSurname();
@@ -63,6 +73,8 @@ public class StaffPanel extends JPanel {
 				staffComboBox.addItem(s.getUsername());
 			}
 		}
+		
+		saveDetails();
 
 		JLabel lblName = new JLabel("ADD NEW STAFF HERE: ");
 		add(lblName, "cell 0 0");
@@ -72,35 +84,35 @@ public class StaffPanel extends JPanel {
 
 		// Get values from each field and add to staffMembers
 		nameField = new JTextField();
-		add(nameField, "cell 1 2,growx");
+		add(nameField, "cell 3 2,growx");
 		nameField.setColumns(10);
 
 		JLabel lblSurname = new JLabel("Surname");
 		add(lblSurname, "cell 0 3,alignx trailing");
 
 		surNameField = new JTextField();
-		add(surNameField, "cell 1 3,growx");
+		add(surNameField, "cell 3 3,growx");
 		surNameField.setColumns(10);
 
 		JLabel lblNewLabel_1 = new JLabel("Salary");
 		add(lblNewLabel_1, "cell 0 4,alignx trailing");
 
 		salaryField = new JTextField();
-		add(salaryField, "cell 1 4,growx");
+		add(salaryField, "cell 3 4,growx");
 		salaryField.setColumns(10);
 
 		JLabel lblUsername = new JLabel("UserName");
 		add(lblUsername, "cell 0 5,alignx trailing");
 
 		userNameField = new JTextField();
-		add(userNameField, "cell 1 5,growx");
+		add(userNameField, "cell 3 5,growx");
 		userNameField.setColumns(10);
 
 		JLabel lblPassword = new JLabel("Password");
 		add(lblPassword, "cell 0 6,alignx trailing");
 
 		passwordField = new JPasswordField();
-		add(passwordField, "cell 1 6,growx");
+		add(passwordField, "cell 3 6,growx");
 		passwordField.setColumns(10);
 
 		// Get the Values from each textField and save them to their respective
@@ -123,7 +135,7 @@ public class StaffPanel extends JPanel {
 					Staff s = new Staff(nameField.getText(), surNameField
 							.getText(), salaryD, userNameField.getText(),
 							passwordField.getText());
-
+					
 					// Access the Shop class and the staffMembers Array
 					// shop = new Shop();
 					ArrayList<Staff> staffMembers = Shop.getStaffMembers();
@@ -160,16 +172,77 @@ public class StaffPanel extends JPanel {
 				saveDetails();
 			}
 		});
-		add(btnAddStaff, "flowx,cell 1 8");
+		add(btnAddStaff, "flowx,cell 3 8");
+		
+				JLabel lblMembers = new JLabel("Members");
+				add(lblMembers, "flowx,cell 0 15");
+				
+				//ComboBox Design with AutoComplete
+				
+				ArrayList<String> userNames = new ArrayList<String>();
+				userNames.add("");
+				
+				for (Staff staff: Shop.getStaffMembers()){
+					String name = staff.getUsername();
+					userNames.add(name);
+				}
+				
+				add(staffComboBox, "wrap");
+				add(staffComboBox, "cell 1 15,alignx trailing");
+				
+				staffComboBox.setEditable(true);
+				AutoCompleteDecorator.decorate(staffComboBox);
+				
+				staffComboBox.getEditor().getEditorComponent().addKeyListener(new CBListener());
+				staffComboBox.addItemListener(new ItemListener(){
 
-		JLabel lblMembers = new JLabel("Members");
-		add(lblMembers, "cell 0 14");
+								@Override
+								public void itemStateChanged(ItemEvent e) {
+									// TODO Auto-generated method stub
+									if(e.getStateChange() == ItemEvent.SELECTED){
+										Staff selectedStaff = getStaffbyID(e.getItem().toString());
+										if(selectedStaff != null){
+											//Staff selectedStaff = staff;
+											//staffComboBox.setSelectedItem(selectedStaff.getUsername());
+											
+											//Object selectedStaff1 = staffComboBox.getSelectedItem();
+											
+											System.out.println("Combo Select: " + selectedStaff);
+							
+											//for (Staff s : Shop.getStaffMembers()) {
+							
+												
+												//add each staff members details to respective textfields upon selection
+												//if (s.getUsername().equals(selectedStaff)) {
+													System.out.println(selectedStaff.getUsername());
+													System.out.println("SelectedStaff: " +selectedStaff);
+													// Shop.deleteStaff((String)
+													// staffComboBox.getSelectedItem());
+													// staffComboBox.removeItem(staffComboBox.getSelectedItem());
+							
+													nameField.setText(selectedStaff.getName());
+													surNameField.setText(selectedStaff.getSurname());
+													salaryField.setText(String.valueOf(selectedStaff.getSalary()));
+													
+													userNameField.setText(selectedStaff.getUsername());
+													passwordField.setText(selectedStaff.getPassword());
+													//System.out.println("Here");
+												//}
+											//}
+											
+										}
+										
+									}
+									
+								}								
+							});
+	
+				
 
-		add(staffComboBox, "wrap");
-		add(staffComboBox, "cell 1 14,growx");
+								// selectedStaff = null;					
 
 		JButton btnRemove = new JButton("Remove");
-		add(btnRemove, "cell 3 25");
+		add(btnRemove, "cell 5 28");
 
 		// Remove Selected Item from ComboBox
 		btnRemove.addActionListener(new ActionListener() {
@@ -180,10 +253,11 @@ public class StaffPanel extends JPanel {
 				saveDetails();
 			}
 		});
+		
 
 		// Edit Details
 		JButton btnEditdetails = new JButton("EditDetails");
-		add(btnEditdetails, "cell 4 25");
+		add(btnEditdetails, "cell 6 28");
 
 		btnEditdetails.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -201,39 +275,16 @@ public class StaffPanel extends JPanel {
 			}
 		});
 
-		staffComboBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				Object selectedStaff = staffComboBox.getSelectedItem();
-
-				System.out.println("Combo Select: " + selectedStaff);
-
-				for (Staff s : Shop.getStaffMembers()) {
-
-					
-					//add each staff members details to respective textfields upon selection
-					if (s.getUsername().equals(selectedStaff)) {
-						System.out.println(s.getUsername());
-						System.out.println("SelectedStaff: " +selectedStaff);
-						// Shop.deleteStaff((String)
-						// staffComboBox.getSelectedItem());
-						// staffComboBox.removeItem(staffComboBox.getSelectedItem());
-
-						nameField.setText(s.getName());
-						surNameField.setText(s.getSurname());
-						salaryField.setText(String.valueOf(s.getSalary()));
-						
-						userNameField.setText(s.getUsername());
-						passwordField.setText(s.getPassword());
-						//System.out.println("Here");
-					}
-				}
-				// selectedStaff = null;
-				
-
+	}
+	
+	public Staff getStaffbyID(String string) {
+		// TODO Auto-generated method stub
+		for(Staff staff :Shop.getStaffMembers()){
+			if(staff.getUsername().equalsIgnoreCase(string)){
+				return staff;
 			}
-		});
-
+		}
+		return null;
 	}
 	
 	public void saveDetails(){
@@ -256,5 +307,34 @@ public class StaffPanel extends JPanel {
 			}
 		}
 		return null;
+	}
+	public class CBListener implements KeyListener{
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			// TODO Auto-generated method stub
+			if(e.getKeyCode() == KeyEvent.VK_ENTER){
+			String username = staffComboBox.getSelectedItem().toString();
+			if(getStaffbyID(username) != null){
+				Staff selectedStaff = getStaffbyID(username);
+				staffComboBox.setSelectedItem(selectedStaff.getUsername());
+			}else{
+				System.out.println("ERROR");
+			}
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 }

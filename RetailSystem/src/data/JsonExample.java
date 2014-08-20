@@ -221,6 +221,7 @@ public class JsonExample {
 		try {
 			in = new Scanner(new FileReader("resources/staff.json"));
 			ObjectMapper mapper = new ObjectMapper();
+		if(in.hasNextLine()){	
 			while (in.hasNextLine()) {
 				Staff staff = mapper
 						.readValue(in.nextLine(), Staff.class);
@@ -228,6 +229,10 @@ public class JsonExample {
 				Shop.getStaffMembers().add(staff);
 			}
 			return Shop.getStaffMembers();
+		}
+		else{
+			return null;
+		}
 		} catch (EOFException eof){
 			eof.printStackTrace();
 			return null;

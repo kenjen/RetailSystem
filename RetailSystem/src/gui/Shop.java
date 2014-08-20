@@ -153,6 +153,14 @@ public void populateSuppliers(){
 	}
 
 	public void populateStaffMembers() {
+		
+		staffMembers = JsonExample.readStaffFromFile();
+		
+		if (staffMembers == null) {
+			System.out.println("reached null loop");
+			
+			staffMembers = new ArrayList<Staff>();
+
 		Staff admin = new Staff("admin", "admin", 0, "admin", "admin");
 		admin.setAdmin(true);
 		Staff john = new Staff("John", "Doe", 15.23, "JohnDoe", "Firefly");
@@ -162,8 +170,10 @@ public void populateSuppliers(){
 		staffMembers.add(john);
 		staffMembers.add(mick);
 		staffMembers.add(angela);
+		
+		}
 
-		System.out.println("Staff members populated");
+		//System.out.println("Staff members populated");
 	}
 
 	public void populateProducts() {
