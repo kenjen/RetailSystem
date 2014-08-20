@@ -94,7 +94,7 @@ public class CustomerOrderPanel extends JPanel{
 		customerNames.add("");
 		
 		//concatenate customer names and add them to the combo box
-		for ( Customer customer: Shop.getCustomers()){
+		for (Customer customer: Shop.getCustomers()){
 			String name = customer.getCustomerFName()+" "+customer.getCustomerLName();
 			customerNames.add(name);
 		}		
@@ -549,6 +549,15 @@ public class CustomerOrderPanel extends JPanel{
 				}else{
 					CustomerOrder order = new CustomerOrder(selectedCustomer, GUIBackBone.getLoggedStaffMember(), productsToOrder);
 					order.setId(Shop.getCustomerOrders().get(Shop.getCustomerOrders().size()-1).getId()+1);
+					//check if a discount applies
+					if(order.getTotalGross() > 5000){
+						order.setTotalGross(order.getTotalGross()*0.9);
+						order.setTotalGross(order.getTotalNet()*0.9);
+					}else if(order.getTotalGross() > 2000){
+						order.setTotalGross(order.getTotalGross()*0.95);
+						order.setTotalGross(order.getTotalNet()*0.95);
+					}
+					
 					Shop.getCustomerOrders().add(order);
 					System.out.println("Order has been created\nOrder id:"+order.getId()+"\nOrder totalGross: "+order.getTotalGross()+"\nOrder totalNet: "+order.getTotalNet() + order.getCustomer().getCustomerFName());
 					//update table model data to reflect changes
