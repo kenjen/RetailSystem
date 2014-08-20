@@ -23,6 +23,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import data.JsonExample;
 import data.Staff;
 
 public class GUIBackBone  extends JFrame{
@@ -125,7 +126,10 @@ public class GUIBackBone  extends JFrame{
 
 			@Override
 			public void windowClosing(WindowEvent arg0) {
-				saveTabDetails(0);				
+				saveTabDetails(0);
+				
+				//Remove the contents of staff.json file
+				JsonExample.clearList("resources/staff.json");
 			}
 			
 		});

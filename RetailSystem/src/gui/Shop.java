@@ -114,9 +114,11 @@ public class Shop {
 	}
 
 	public static void EditDetails(String name, String surname, double salary,
-			String username, String password) {
+			String username, String password, int id) {
 		for (Staff staff : staffMembers) {
-			if (staff.getUsername().equals(username)) {
+			//if the id of the staffmember matches the id passed in
+			//set the values according to whats in the textFields
+			if (staff.getId()==id) {
 
 				System.out.println("Edit Details loop");
 
