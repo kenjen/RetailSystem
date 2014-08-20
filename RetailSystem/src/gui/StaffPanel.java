@@ -2,6 +2,7 @@ package gui;
 
 import gui.CustomerPanel.CBListener;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -53,9 +54,9 @@ public class StaffPanel extends JPanel {
 	private JTextField passwordField;
 
 	private Staff activeMember;
+	private JComboBox staffComboBox;
+	private ArrayList<String> staffMembers;
 
-	ArrayList<String> staffMembers = new ArrayList<String>();
-	JComboBox staffComboBox = new JComboBox(staffMembers.toArray());
 	
 	//this.comboBox = new JComboBox(new Object[] { "Ester", "Jordi",
 	//        "Jordina", "Jorge", "Sergi" });
@@ -65,6 +66,8 @@ public class StaffPanel extends JPanel {
 
 	public StaffPanel() {
 		setLayout(new MigLayout("", "[][][][grow][grow][][][][][][][][]", "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
+		staffMembers = new ArrayList<String>();
+		staffComboBox = new JComboBox(staffMembers.toArray());
 
 		for (Staff s : Shop.getStaffMembers()) {
 			String name = s.getName() + " " + s.getSurname();
@@ -264,13 +267,29 @@ public class StaffPanel extends JPanel {
 
 				// variables for parsing
 				double salaryD = Double.parseDouble(salaryField.getText());
-
+				
+				//find the selected user by username and get the id. 
+				//The id never changes
+				int id=0;
+				for(Staff staff:Shop.getStaffMembers()){
+					if(staff.getUsername().equals(staffComboBox.getSelectedItem())){
+						id = staff.getId();
+					}
+				}
+				
 				System.out.println("Cannot Change userName");
 				Shop.EditDetails(nameField.getText(), surNameField.getText(),
 						salaryD, userNameField.getText(),
-						passwordField.getText());
+						passwordField.getText(), id);
 				
 				saveDetails();
+				
+				DefaultComboBoxModel model = (DefaultComboBoxModel) staffComboBox.getModel();
+				model.removeAllElements();
+				for(Staff staff:Shop.getStaffMembers()){
+					model.addElement(staff.getUsername());
+				}
+				staffComboBox.repaint();
 
 			}
 		});
