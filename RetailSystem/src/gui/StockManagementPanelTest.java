@@ -80,7 +80,14 @@ public class StockManagementPanelTest {
 
 	@Test
 	public void testDisplayAllProducts() {
-		fail("Not yet implemented");
+		assertEquals(1, panel.displayAllProducts(products));
+		Product p2 = new Product("name", "category",  30, 12.0, null, true, 20);
+		p2.setId(2);
+		products.add(p2);
+		Product p3 = new Product("name", "category",  30, 12.0, null, true, 20);
+		p3.setId(3);
+		products.add(p3);
+		assertEquals(3, panel.displayAllProducts(products));
 	}
 
 	@Test
@@ -90,12 +97,36 @@ public class StockManagementPanelTest {
 
 	@Test
 	public void testDisplayDeletedStock() {
-		fail("Not yet implemented");
+		assertEquals(0, panel.displayDeletedStock(products));
+		Product p2 = new Product("name", "category",  30, 12.0, null, true, 20);
+		p2.setId(2);
+		products.add(p2);
+		Product p3 = new Product("name", "category",  30, 12.0, null, true, 20);
+		p3.setId(3);
+		products.add(p3);
+		assertEquals(0, panel.displayDeletedStock(products));
+		products.get(0).setDeleted(true);
+		assertEquals(1, panel.displayDeletedStock(products));
+		products.get(1).setDeleted(true);
+		products.get(2).setDeleted(true);
+		assertEquals(3, panel.displayDeletedStock(products));
 	}
 
 	@Test
 	public void testDisplayLowStock() {
-		fail("Not yet implemented");
+		assertEquals(0, panel.displayLowStock(products));
+		Product p2 = new Product("name", "category",  30, 12.0, null, true, 20);
+		p2.setId(2);
+		products.add(p2);
+		Product p3 = new Product("name", "category",  30, 12.0, null, true, 20);
+		p3.setId(3);
+		products.add(p3);
+		assertEquals(0, panel.displayLowStock(products));
+		products.get(0).setLowStockOrder(300);
+		assertEquals(1, panel.displayLowStock(products));
+		products.get(1).setLowStockOrder(300);
+		products.get(2).setLowStockOrder(300);
+		assertEquals(3, panel.displayLowStock(products));
 	}
 
 	@Test
@@ -112,7 +143,15 @@ public class StockManagementPanelTest {
 
 	@Test
 	public void testLoadProductDetails() {
-		fail("Not yet implemented");
+		panel.loadProductDetails(1, products);
+		assertEquals(panel.getDisplayedName(), products.get(0).getName());
+		assertEquals(panel.getDisplayedCategory(), products.get(0).getCategory());
+		assertEquals(panel.getDisplayedQuantity(), Integer.toString(products.get(0).getQuantity()));
+		assertEquals(panel.getDisplayedThreshold(), Integer.toString(products.get(0).getLowStockOrder()));
+		assertEquals(panel.getDisplayedPrice(), Double.toString(products.get(0).getPrice()));
+		assertEquals(Double.parseDouble(panel.getDisplayedDiscountPrice()), (double)products.get(0).getPrice() - (products.get(0).getPrice()*(products.get(0).getDiscountedPercentage()/100)), .0001);
+		assertEquals(panel.getDisplayedDiscountPercent(), products.get(0).getDiscountedPercentage() + "%");
+		assertEquals(panel.isFlaggedForOrderVisible(), products.get(0).isFlaggedForOrder());
 	}
 
 	@Test
