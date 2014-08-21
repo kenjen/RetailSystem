@@ -1,4 +1,4 @@
-package gui;
+package test;
 
 
 import static org.junit.Assert.*;
@@ -24,7 +24,8 @@ public class StockOrderPanelTest {
 	StockOrderPanel panel;
 	ArrayList<StockOrder> stockOrders;
 	StockOrder so1;
-	ArrayList<ProductToOrder> po1 = new ArrayList<ProductToOrder>();
+	Product po1;
+	ArrayList<ProductToOrder> pto1;
 	Supplier sup01;
 	Staff staff1;
 	Date da1;
@@ -34,13 +35,14 @@ public class StockOrderPanelTest {
 		panel = new StockOrderPanel();
 		sup01 = new Supplier("Doyle's", "St.Stephens,Dublin");	
 		staff1 = new Staff("name", "surname", 300, "username", "password");		
-		so1 = new StockOrder(da1, po1, staff1);
+		po1 = new Product("name", "category",  30, 12.0, null, true, 20);
+		ArrayList<ProductToOrder> pto1 = new ArrayList<ProductToOrder>(100);
+		so1 = new StockOrder(da1, pto1, staff1);
 		so1.setId(1);
 		panel.setStockOrderLoaded(true);
 		stockOrders = new ArrayList<StockOrder>();
 		stockOrders.clear();
 		stockOrders.add(so1);
-		
 		
 	}
 
@@ -48,7 +50,19 @@ public class StockOrderPanelTest {
 
 	@Test
 	public void testSaveDetails() {
-		//assertequals
+		so1.setId(100);
+		so1.setProductsToOrder(pto1);
+		so1.setStaff(staff1);
+		
+		panel.saveDetails();
+		
+		if(so1.getProductsToOrder().lastIndexOf(so1)==0) {
+			fail("ID not Saved");
+		}
+		
+
+		
+
 		//fail("Not yet implemented");
 	}
 
