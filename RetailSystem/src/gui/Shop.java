@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.JOptionPane;
+
 import data.Customer;
 import data.CustomerOrder;
 import data.JsonExample;
@@ -118,6 +120,7 @@ public class Shop {
 		for (Staff staff : staffMembers) {
 			//if the id of the staffmember matches the id passed in
 			//set the values according to whats in the textFields
+			
 			if (staff.getId()==id) {
 
 				System.out.println("Edit Details loop");
