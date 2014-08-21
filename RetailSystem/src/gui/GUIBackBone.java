@@ -36,7 +36,7 @@ public class GUIBackBone extends JFrame {
 	public GUIBackBone(boolean isAdmin, Staff logStaff) {
 		JPanel logoutPanel = new JPanel();
 		lblLogout.setIcon(new ImageIcon("resources/Logout_closed.png"));
-
+		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT );
 		if (isAdmin == true) {
 			userTypeAdmin = true;
 			loggedStaffMember = logStaff;
