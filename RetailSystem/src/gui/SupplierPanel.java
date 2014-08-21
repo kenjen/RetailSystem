@@ -15,7 +15,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
-import data.JsonExample;
+import data.Json;
 import data.Product;
 import data.ProductToOrder;
 import data.Supplier;
@@ -237,7 +237,7 @@ public class SupplierPanel extends JPanel{
 			saveDetails();
 			Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
 			suppliers.add(newSupplier);
-			JsonExample.saveSupplierToFile(newSupplier);
+			Json.saveSupplierToFile(newSupplier);
 			listModel.addElement("Id: "+newSupplier.getSupplierId()+", name: " + newSupplier.getSupplierName()+
 					", address: "+ newSupplier.getSupplierAddress());
 				nameField.setText("");
@@ -375,9 +375,9 @@ public class SupplierPanel extends JPanel{
 		}	
 	
 	 public void saveDetails(){
-		 JsonExample.clearList("resources/suppliers.json");
+		 Json.clearList("resources/suppliers.json");
 			for(Supplier supplier: Shop.getSuppliers()){
-				JsonExample.saveSupplierToFile(supplier);
+				Json.saveSupplierToFile(supplier);
 			}
 			System.out.println("Finished saving suppliers");
 		}

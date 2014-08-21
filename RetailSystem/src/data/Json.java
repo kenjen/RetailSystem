@@ -14,7 +14,7 @@ import java.util.Scanner;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
-public class JsonExample {
+public class Json {
 
 	/**
 	 * Returns the whole list of products stored in /resources/products.json

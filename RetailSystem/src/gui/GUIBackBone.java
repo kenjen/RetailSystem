@@ -46,7 +46,7 @@ public class GUIBackBone extends JFrame {
 			tabbedPane.addTab("Staff", panelStaff);
 			tabbedPane.addTab("Customer", panelCustomer);
 			tabbedPane.addTab("Supplier", panelSupplier);
-			tabbedPane.addTab("Finance", panelProfit);
+			//tabbedPane.addTab("Finance", panelProfit);
 			tabbedPane.addTab("", logoutPanel);
 			tabbedPane.setIconAt(0,
 					new ImageIcon(getClass().getResource("/CheckList.png")));
@@ -60,7 +60,7 @@ public class GUIBackBone extends JFrame {
 					new ImageIcon(getClass().getResource("/Customer.png")));
 			tabbedPane.setIconAt(5,
 					new ImageIcon(getClass().getResource("/Supplier.png")));
-			tabbedPane.setTabComponentAt(7, lblLogout);
+			tabbedPane.setTabComponentAt(6, lblLogout);
 
 		} else {
 			loggedStaffMember = logStaff;
@@ -88,7 +88,7 @@ public class GUIBackBone extends JFrame {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				saveTabDetails(0);
-				if (tabbedPane.getSelectedIndex() == 7
+				if (tabbedPane.getSelectedIndex() == 6
 						|| (tabbedPane.getSelectedIndex() == 5 && GUIBackBone.loggedStaffMember
 								.isAdmin() == false)) {
 					System.out.println("selected index - "

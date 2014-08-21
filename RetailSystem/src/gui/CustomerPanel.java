@@ -14,7 +14,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JButton;
 
 import data.Customer;
-import data.JsonExample;
+import data.Json;
 import data.Product;
 
 import java.awt.event.ActionListener;
@@ -287,9 +287,9 @@ public class CustomerPanel extends JPanel {
 
 	public void saveDetails() {
 		// TODO Auto-generated method stub
-		JsonExample.clearList("resources/customers.json");
+		Json.clearList("resources/customers.json");
 		for (Customer customer : Shop.getCustomers()) {
-			JsonExample.saveCustomerToFile(customer);
+			Json.saveCustomerToFile(customer);
 		}
 		System.out.println("Finished save");
 	}

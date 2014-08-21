@@ -36,7 +36,7 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import tableModels.ProductTableModel;
-import data.JsonExample;
+import data.Json;
 import data.Product;
 import data.ProductToOrder;
 import data.StockOrder;
@@ -259,13 +259,13 @@ public class StockOrderPanel extends JPanel {
 					displayProductsTable("","");
 					
 					//save orders to a persistent format
-					if(JsonExample.clearList("resources/stockOrders.json") && JsonExample.clearList("resources/products.json")){
+					if(Json.clearList("resources/stockOrders.json") && Json.clearList("resources/products.json")){
 						for(StockOrder so:Shop.getStockOrders()){
-							JsonExample.saveStockOrdersToFile(so);
+							Json.saveStockOrdersToFile(so);
 						}
 						
 						for(Product p:Shop.getProducts()){
-							JsonExample.saveProductToFile(p);
+							Json.saveProductToFile(p);
 						}
 					}else{
 						displayErrorMessage("Could not persist changes!", Color.red);
@@ -328,9 +328,9 @@ public class StockOrderPanel extends JPanel {
 	}// end Constructor
 	
 	public void saveDetails(){
-		 JsonExample.clearList("resources/stockOrders.json");
+		 Json.clearList("resources/stockOrders.json");
 		for(StockOrder stockOrder: Shop.getStockOrders()){
-				JsonExample.saveStockOrdersToFile(stockOrder);
+				Json.saveStockOrdersToFile(stockOrder);
 			}
 			System.out.println("Finished saving stockOrders");
 		}
@@ -726,9 +726,9 @@ public class StockOrderPanel extends JPanel {
 					}
 					
 					//save orders to a persistent format
-					if(JsonExample.clearList("resources/stockOrders.json")){
+					if(Json.clearList("resources/stockOrders.json")){
 						for(StockOrder so:Shop.getStockOrders()){
-							JsonExample.saveStockOrdersToFile(so);
+							Json.saveStockOrdersToFile(so);
 						}
 					}else{
 						displayErrorMessage("Could not persist changes!", Color.red);

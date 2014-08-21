@@ -41,7 +41,7 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import tableModels.ProductTableModel;
 import data.Customer;
 import data.CustomerOrder;
-import data.JsonExample;
+import data.Json;
 import data.Product;
 import data.ProductToOrder;
 import data.StockOrder;
@@ -585,14 +585,14 @@ public class CustomerOrderPanel extends JPanel{
 					}
 					
 					//save orders to a persistent format
-					if(JsonExample.clearList("resources/customerOrders.json") && JsonExample.clearList("resources/products.json")){
+					if(Json.clearList("resources/customerOrders.json") && Json.clearList("resources/products.json")){
 						for(CustomerOrder co:Shop.getCustomerOrders()){
-							JsonExample.saveCustomerOrdersToFile(co);
+							Json.saveCustomerOrdersToFile(co);
 						}
 						
 						//save products to a persistent format
 						for(Product p:Shop.getProducts()){
-							JsonExample.saveProductToFile(p);
+							Json.saveProductToFile(p);
 						}
 					}else{
 						displayErrorMessage("Could not persist changes!", Color.red);

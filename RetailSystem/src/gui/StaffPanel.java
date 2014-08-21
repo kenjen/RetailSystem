@@ -29,7 +29,7 @@ import javax.swing.BoxLayout;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import data.Customer;
-import data.JsonExample;
+import data.Json;
 import data.Product;
 import data.Staff;
 
@@ -308,10 +308,10 @@ public class StaffPanel extends JPanel {
 	
 	public void saveDetails(){
 		
-		JsonExample.clearList("resources/staff.json");
+		Json.clearList("resources/staff.json");
 		for(Staff staff : Shop.getStaffMembers()){
 			if(staff.isDeleted() == false){
-				JsonExample.saveStaffToFile(staff);
+				Json.saveStaffToFile(staff);
 			}
 		}
 		System.out.println("Finished save");

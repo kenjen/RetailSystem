@@ -21,7 +21,7 @@ import javax.swing.SwingConstants;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import net.miginfocom.swing.MigLayout;
-import data.JsonExample;
+import data.Json;
 import data.Product;
 import data.Supplier;
 
@@ -797,9 +797,9 @@ public class StockManagementPanel extends JSplitPane{
 	
 	public void saveDetails(){
 		
-		JsonExample.clearList("resources/products.json");
+		Json.clearList("resources/products.json");
 		for(Product product : Shop.getProducts()){
-			JsonExample.saveProductToFile(product);
+			Json.saveProductToFile(product);
 		}
 		System.out.println("Finished saving products");
 	}
