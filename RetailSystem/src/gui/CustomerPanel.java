@@ -180,7 +180,11 @@ public class CustomerPanel extends JPanel {
 
 			public void deleteCustomer() {
 				Shop.deleteCustomer((Integer) comboBox.getSelectedItem());
+				String fname = fNameInput.getText();
+				String lname = lNameInput.getText();
 				comboBox.removeItem(comboBox.getSelectedItem());
+				JOptionPane.showMessageDialog(null, "You have deleted "
+						+ fname + " " + lname);
 				//saveDetails();
 				//refreshCombo();
 			}
@@ -268,6 +272,11 @@ public class CustomerPanel extends JPanel {
 					btnNewButton.setEnabled(true);
 					customerDelete.setEnabled(false);
 					customerEdit.setEnabled(false);
+					fNameInput.setText("");
+					lNameInput.setText("");
+					addressInput.setText("");
+					mobileInput.setText("");
+					homeInput.setText("");
 					;
 				}
 			}
@@ -363,6 +372,11 @@ public class CustomerPanel extends JPanel {
 	}
 
 	public void editCustomer() {
+		if (fNameInput.getText().length() > 0
+				&& lNameInput.getText().length() > 0
+				&& addressInput.getText().length() > 0
+				&& (mobileInput.getText().length() > 0 || homeInput.getText()
+						.length() > 0)) {
 		Shop.editCustomer((Integer) comboBox.getSelectedItem(),
 				fNameInput.getText(), lNameInput.getText(),
 				addressInput.getText(), mobileInput.getText(),
@@ -375,6 +389,10 @@ public class CustomerPanel extends JPanel {
 		homeInput.setText("");
 		JOptionPane.showMessageDialog(null, "You have editted customer "
 				+ comboBox.getSelectedItem());
+		}else {
+			JOptionPane.showMessageDialog(null,
+					"You have to fill in all fields ");
+		}
 		saveDetails();
 		refreshCombo();
 	}
