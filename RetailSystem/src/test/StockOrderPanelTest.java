@@ -61,7 +61,7 @@ public class StockOrderPanelTest {
 		}
 		
 
-		//assertequals
+		
 
 		//fail("Not yet implemented");
 	}
