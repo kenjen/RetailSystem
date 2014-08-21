@@ -181,7 +181,9 @@ public class CurrentCustomerOrderDialog extends JDialog implements ActionListene
 			        System.out.println(row);
 			        model.removeRow(row);
 			        table.repaint();
+			        Object[] object = passedList.get(row);
 			        passedList.remove(row);
+			        
 		         };
 		      }
 		}

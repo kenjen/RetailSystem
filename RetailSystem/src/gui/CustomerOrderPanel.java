@@ -51,7 +51,7 @@ import data.Supplier;
 public class CustomerOrderPanel extends JPanel{
 
 	private static final long serialVersionUID = 1L;
-	private JComboBox comboSelectCustomer;
+	private static JComboBox comboSelectCustomer;
 	private JButton btnSelectCustomer;
 	private Customer selectedCustomer = null;;
 	private JLabel lblProductList;
@@ -80,6 +80,7 @@ public class CustomerOrderPanel extends JPanel{
 	private JLabel lblFindInvoice = new JLabel("Find Invoice");
 	private static ArrayList<Integer> invoiceIDData = new ArrayList<Integer>();
 	private JTextField txtInvoiceIDSearch = new JTextField("",5);
+	private static ArrayList<String> customerNames;
 	
 	/**
 	 * Adds all the GUI components on the panel
@@ -90,14 +91,17 @@ public class CustomerOrderPanel extends JPanel{
 		JLabel lblCustomer = new JLabel("Customer:");
 		add(lblCustomer, "split 6");
 		
-		ArrayList<String> customerNames = new ArrayList<String>();
+		customerNames = new ArrayList<String>();
 		customerNames.add("");
 		
 		//concatenate customer names and add them to the combo box
 		for (Customer customer: Shop.getCustomers()){
-			String name = customer.getCustomerFName()+" "+customer.getCustomerLName();
-			customerNames.add(name);
+			if(customer.isDeleted() == false){
+				String name = customer.getCustomerFName()+" "+customer.getCustomerLName();
+				customerNames.add(name);
+			}
 		}		
+		
 		comboSelectCustomer = new JComboBox(customerNames.toArray());
 		add(comboSelectCustomer);
 		//allow for auto-completion
@@ -326,6 +330,25 @@ public class CustomerOrderPanel extends JPanel{
 		});
 		
 	}//end constructor
+	
+	//populate customer names for the combo box
+	public static void populateCustomerNames(){
+		customerNames = new ArrayList<String>();
+		customerNames.add("");
+		
+		//concatenate customer names and add them to the combo box
+		for (Customer customer: Shop.getCustomers()){
+			if(customer.isDeleted() == false){
+				String name = customer.getCustomerFName()+" "+customer.getCustomerLName();
+				customerNames.add(name);
+			}
+		}		
+		comboSelectCustomer.removeAllItems();
+		for(String x:customerNames){
+			comboSelectCustomer.addItem(x);
+		}
+		comboSelectCustomer.revalidate();
+	}
 	
 	//returns an array of product names
 		public String[] getProductNamesForComboBox(){

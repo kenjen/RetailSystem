@@ -187,6 +187,7 @@ public class GUIBackBone extends JFrame {
 		panelStockOrder.repaint();
 		panelCustomerOrders.displayOrderTable(false, 0);
 		panelCustomerOrders.displayProductsTable("");
+		panelCustomerOrders.populateCustomerNames();
 
 		panelCustomer.saveDetails();
 
