@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
 
 import data.Customer;
 import data.CustomerOrder;
-import data.JsonExample;
+import data.Json;
 import data.Product;
 import data.ProductToOrder;
 import data.Staff;
@@ -53,7 +53,7 @@ public class Shop {
 	}
 
 	public void populateCustomers() {
-		customers = JsonExample.readCustomersFromFile();
+		customers = Json.readCustomersFromFile();
 
 		if (customers == null) {
 			Customer c1 = new Customer("Dave", "Foley", "23 Main Street",
@@ -138,7 +138,7 @@ public class Shop {
 
 public void populateSuppliers(){
 		
-		suppliers = JsonExample.readSuppliersFromFile();
+		suppliers = Json.readSuppliersFromFile();
 		if(suppliers == null){
 			System.out.println("reached null loop");
 			
@@ -159,7 +159,7 @@ public void populateSuppliers(){
 
 	public void populateStaffMembers() {
 		
-		staffMembers = JsonExample.readStaffFromFile();
+		staffMembers = Json.readStaffFromFile();
 		
 		if (staffMembers == null) {
 			System.out.println("reached null loop");
@@ -182,7 +182,7 @@ public void populateSuppliers(){
 	}
 
 	public void populateProducts() {
-		products = JsonExample.readProductsFromFile();
+		products = Json.readProductsFromFile();
 
 		// if error occured during load, load default products
 		if (products == null) {
@@ -212,7 +212,7 @@ public void populateSuppliers(){
 
 	public void populateStockOrders() {
 		
-stockOrders = JsonExample.readStockOrdersFromFile();
+stockOrders = Json.readStockOrdersFromFile();
 
 		
 		if(stockOrders == null){
@@ -265,7 +265,7 @@ stockOrders = JsonExample.readStockOrdersFromFile();
 	}
 
 	public void populateCustomerOrders() {
-		customerOrders = JsonExample.readCustomerOrdersFromFile();
+		customerOrders = Json.readCustomerOrdersFromFile();
 	}
 
 	public void updateStockOrderDevilveryDates() {

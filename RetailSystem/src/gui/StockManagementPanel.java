@@ -21,7 +21,7 @@ import javax.swing.SwingConstants;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import net.miginfocom.swing.MigLayout;
-import data.JsonExample;
+import data.Json;
 import data.Product;
 import data.Supplier;
 
@@ -82,14 +82,14 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//Add scroll pane to left size with list of products
 		JScrollPane scrollPane = new JScrollPane(list);
-		this.setDividerLocation(300);
+		//this.setDividerLocation(300);
 		setLeftComponent(scrollPane);
 		
 		
 		//add panel to right hand side
 		JPanel panel = new JPanel();
 		setRightComponent(panel);
-		panel.setLayout(new MigLayout("", "[][100px:n][grow][70px:n,grow][grow][100px:n,grow][100px:n,grow][40px:n,grow]", "[][20px:n][][][][][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][30px:n,grow]"));
+		panel.setLayout(new MigLayout("", "[][170px:n,grow][grow][70px:n,grow][::30px][100px:n,grow][100px:n,grow]", "[][20px:n][][][][][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][grow][][30px:n,grow]"));
 		
 		
 		//drop down menu  to enter id of product
@@ -101,14 +101,26 @@ public class StockManagementPanel extends JSplitPane{
 		}
 		comboSelectId = new JComboBox(idValues.toArray());
 		refreshCombo(Shop.getProducts());
-		panel.add(comboSelectId, "cell 5 2, center");
+		panel.add(comboSelectId, "cell 3 3, alignx right");//TODO
 		comboSelectId.setEditable(true);
 		AutoCompleteDecorator.decorate(comboSelectId);
 		
+				
+		//Button to load a products details
+		JButton btnIdConfirm = new JButton("Load Details");
+		panel.add(btnIdConfirm, "cell 5 3, alignx left");
+		btnIdConfirm.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int id = 0;
+				id = Integer.parseInt((String) comboSelectId.getSelectedItem());
+				loadProductDetails(id, Shop.getProducts());
+			}
+		});
+		
 		
 		//display all products button
-		btnDisplayProducts = new JButton("Display Products");
-		panel.add(btnDisplayProducts, "cell 1 1");
+		btnDisplayProducts = new JButton("Display Stock");
+		panel.add(btnDisplayProducts, "cell 1 1, growx");
 		btnDisplayProducts.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -120,7 +132,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//Button to display products with stock levels below threshold
 		btnDisplayLowStock = new JButton("Display Low Stock");
-		panel.add(btnDisplayLowStock, "cell 1 2");
+		panel.add(btnDisplayLowStock, "cell 1 2, growx");
 		btnDisplayLowStock.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -130,8 +142,8 @@ public class StockManagementPanel extends JSplitPane{
 		
 		
 		//Button to display deleted products
-		btnDisplayDeletedStock = new JButton("Display Deleted Products");
-		panel.add(btnDisplayDeletedStock, "cell 1 3");
+		btnDisplayDeletedStock = new JButton("Display Deleted Stock");
+		panel.add(btnDisplayDeletedStock, "cell 1 3, growx");
 		btnDisplayDeletedStock.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -141,8 +153,8 @@ public class StockManagementPanel extends JSplitPane{
 				
 		
 		//Button to display all products including deleted products
-		btnDisplayAllProducts = new JButton("Display All Products");
-		panel.add(btnDisplayAllProducts, "cell 1 4");
+		btnDisplayAllProducts = new JButton("Display All Stock");
+		panel.add(btnDisplayAllProducts, "cell 1 4, growx");
 		btnDisplayAllProducts.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -153,7 +165,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//Button to reset products to defaults
 		btnRestoreDefaultProducts = new JButton("Restore Defaults");
-		panel.add(btnRestoreDefaultProducts, "cell 1 5");
+		panel.add(btnRestoreDefaultProducts, "cell 1 5, growx");
 		btnRestoreDefaultProducts.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -161,18 +173,6 @@ public class StockManagementPanel extends JSplitPane{
 				saveDetails();
 				setupList();
 				refreshCombo(Shop.getProducts());
-			}
-		});
-		
-				
-		//Button to load a products details
-		JButton btnIdConfirm = new JButton("Confirm");
-		panel.add(btnIdConfirm, "cell 5 3, center");
-		btnIdConfirm.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				int id = 0;
-				id = Integer.parseInt((String) comboSelectId.getSelectedItem());
-				loadProductDetails(id, Shop.getProducts());
 			}
 		});
 		
@@ -328,7 +328,7 @@ public class StockManagementPanel extends JSplitPane{
 		txtDiscountedAmount.setHorizontalAlignment(SwingConstants.CENTER);
 		txtDiscountedAmount.setEditable(false);
 		txtDiscountedAmount.setText("");
-		panel.add(txtDiscountedAmount, "cell 7 16");
+		panel.add(txtDiscountedAmount, "cell 6 16");
 		txtDiscountedAmount.setColumns(5);
 		
 		
@@ -352,7 +352,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		
 		JButton btnSaveAll = new JButton("Save All");
-		panel.add(btnSaveAll, "cell 4 20, center");
+		panel.add(btnSaveAll, "cell 3 20, growx, center");
 		btnSaveAll.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -363,7 +363,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//create new product button
 		btnCreateNewProduct = new JButton("New Product");
-		panel.add(btnCreateNewProduct, "cell 6 20, center");
+		panel.add(btnCreateNewProduct, "cell 5 20, growx, center");
 		btnCreateNewProduct.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -374,14 +374,15 @@ public class StockManagementPanel extends JSplitPane{
 				saveDetails();
 				setupList();
 				refreshCombo(Shop.getProducts());
-				comboSelectId.setSelectedItem(product.getId());
+				//comboSelectId.setSelectedItem(product.getId());
+					
 			}
 		});
 		
 		
 		//discount product by percentage
 		btnDiscountProduct = new JButton("Discount");
-		panel.add(btnDiscountProduct, "cell 4 22, center");
+		panel.add(btnDiscountProduct, "cell 3 22, growx, center");
 		btnDiscountProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -395,7 +396,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//Delete product button
 		btnDeleteProduct = new JButton("Delete...");
-		panel.add(btnDeleteProduct, "cell 6 22, center");
+		panel.add(btnDeleteProduct, "cell 5 22, growx, center");
 		btnDeleteProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -411,7 +412,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//mark product as low stock and needing orders
 		btnFlagForOrder = new JButton("Flag For Order");
-		panel.add(btnFlagForOrder, "cell 4 24, center");
+		panel.add(btnFlagForOrder, "cell 3 24, growx, center");
 		btnFlagForOrder.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -424,7 +425,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//Restore product button
 		btnRestoreProduct = new JButton("Restore...");
-		panel.add(btnRestoreProduct, "cell 6 24, center");
+		panel.add(btnRestoreProduct, "cell 5 24, growx, center");
 		btnRestoreProduct.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -459,6 +460,7 @@ public class StockManagementPanel extends JSplitPane{
 	
 	
 	public Product createNewProduct(boolean testing){
+		//TODO popup displaying why not created
 		if(productLoaded){
 			//clear fields to add new details
 			productLoaded = false;
@@ -795,9 +797,9 @@ public class StockManagementPanel extends JSplitPane{
 	
 	public void saveDetails(){
 		
-		JsonExample.clearList("resources/products.json");
+		Json.clearList("resources/products.json");
 		for(Product product : Shop.getProducts()){
-			JsonExample.saveProductToFile(product);
+			Json.saveProductToFile(product);
 		}
 		System.out.println("Finished saving products");
 	}

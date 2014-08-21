@@ -8,7 +8,6 @@ import java.util.Date;
 public class StockOrder {
 	
 	private static int nextId = 100;
-	
 	private int id;
 	private Date date;
 	private double total;

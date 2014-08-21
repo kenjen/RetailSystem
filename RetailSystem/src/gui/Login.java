@@ -26,7 +26,7 @@ public class Login extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField textField;
+	private JTextField txtUserName;
 	private JPasswordField passwordField;
 	private JPanel panel;
 	private Timer timer;
@@ -54,8 +54,8 @@ public class Login extends JFrame {
 
 		JLabel lblUsername = new JLabel("Username");
 
-		textField = new JTextField();
-		textField.setColumns(20);
+		txtUserName = new JTextField();
+		txtUserName.setColumns(20);
 
 		JLabel lblPassword = new JLabel("Password");
 
@@ -73,14 +73,14 @@ public class Login extends JFrame {
 				passwordField.selectAll();
 			}
 		});
-		textField.addFocusListener(new FocusListener() {	
+		txtUserName.addFocusListener(new FocusListener() {	
 			@Override
 			public void focusLost(FocusEvent arg0) {
 			}
 			@Override
 			public void focusGained(FocusEvent arg0) {
 				//passwordField.setText("");
-				textField.selectAll();
+				txtUserName.selectAll();
 			}
 		});
 		passwordField.addKeyListener(new KeyAdapter() {
@@ -88,7 +88,7 @@ public class Login extends JFrame {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER
-						&& textField.getText().length() > 0
+						&& txtUserName.getText().length() > 0
 						&& passwordField.getPassword().length > 0) {
 					if (findLoginDetailsFromList()) {
 						//redirect to main app, set user type = admin
@@ -102,12 +102,12 @@ public class Login extends JFrame {
 			}
 		});
 		
-		textField.addKeyListener(new KeyAdapter() {
+		txtUserName.addKeyListener(new KeyAdapter() {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER
-						&& textField.getText().length() > 0
+						&& txtUserName.getText().length() > 0
 						&& passwordField.getPassword().length > 0) {
 					if (findLoginDetailsFromList()) {
 						//redirect to main app, set user type = admin
@@ -133,7 +133,7 @@ public class Login extends JFrame {
 		panel.setLayout(new MigLayout());
 		panel.add(new JLabel(icon),"pushx, alignx center, wrap, span");
 		panel.add(lblUsername);
-		panel.add(textField, "wrap");
+		panel.add(txtUserName, "wrap");
 		panel.add(lblPassword);
 		panel.add(passwordField, "wrap");
 		panel.add(btnLogin, "span, center");
@@ -145,7 +145,7 @@ public class Login extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				if (textField.getText().length() > 0 && passwordField.getPassword().length > 0) {
+				if (txtUserName.getText().length() > 0 && passwordField.getPassword().length > 0) {
 					if (findLoginDetailsFromList()) {
 						//redirect to main app, set user type = admin
 						new GUIBackBone(admin, loggedStaffMember);
@@ -160,7 +160,7 @@ public class Login extends JFrame {
 		});
 		
 		//Populate login details for quick login, Remove this when project is complete
-		textField.setText("admin");
+		txtUserName.setText("admin");
 		passwordField.setText("admin");
 		
 		setVisible(true);
@@ -169,7 +169,7 @@ public class Login extends JFrame {
 	public boolean findLoginDetailsFromList(){
 		boolean found = false;
 		for(Staff staff:listOfMemebers){
-			if(staff.getUsername().equalsIgnoreCase(textField.getText().toString()) &&
+			if(staff.getUsername().equalsIgnoreCase(txtUserName.getText().toString()) &&
 					staff.getPassword().equals(new String(passwordField.getPassword())) && 
 					staff.isDeleted() == false){
 				found = true;

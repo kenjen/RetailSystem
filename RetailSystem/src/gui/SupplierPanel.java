@@ -15,7 +15,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
-import data.JsonExample;
+import data.Json;
 import data.Product;
 import data.ProductToOrder;
 import data.Supplier;
@@ -92,6 +92,7 @@ public class SupplierPanel extends JPanel{
 		addPanel.add(newSupplier);
 		JButton add = new JButton("SUBMIT");
 		// add action listener to button
+		
 		add.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				createSupplier();
@@ -151,30 +152,37 @@ public class SupplierPanel extends JPanel{
 		JLabel search = new JLabel(" SEARCH FOR A SUPPLIER BY NAME");
 		final JTextField searchField = new JTextField (20); 
 		JButton searchSupplier = new JButton ("SEARCH");
-		searchSupplier.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				boolean foundIt = true;
-				// create method to look for a supplier by name
-				for(Supplier supplier:suppliers){
-					if(searchField.getText().equalsIgnoreCase(supplier.getSupplierName())){
-						JOptionPane.showMessageDialog(null, "Found it! Supplier id is: "+ supplier.getSupplierId());
-						foundIt = true;
-						searchField.setText("");
-						break;
-					}
-					else{
-						foundIt = false;
-					}
-					}
-				// show message if supplier is not found
-				if(foundIt == false){
-					JOptionPane.showMessageDialog(null, "Didn't find supplier");
-				}
-			}
-		});
 		searchPanel.add(search);
 		searchPanel.add(searchField);
 		searchPanel.add(searchSupplier);
+		searchSupplier.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				boolean foundIt = true;
+				if((searchField.getText().isEmpty()==false)){
+					// create method to look for a supplier by name
+					for(Supplier supplier:suppliers){
+					
+						if(searchField.getText().equalsIgnoreCase(supplier.getSupplierName())){
+							JOptionPane.showMessageDialog(null, "Found it! Supplier id is: "+ supplier.getSupplierId());
+							foundIt = true;
+							searchField.setText("");
+							break;
+						}
+						else{
+							foundIt = false;
+						}
+					}
+							// show message if supplier is not found
+					if(foundIt == false){
+					JOptionPane.showMessageDialog(null, "Didn't find supplier");
+					}
+				}
+				else{
+					JOptionPane.showMessageDialog(null, "Plese enter a name");
+				}
+			
+			}
+		});
 		add(searchPanel, BorderLayout.PAGE_END);
 
 	
@@ -215,11 +223,7 @@ public class SupplierPanel extends JPanel{
 			listModel.addElement("Id: "+supplier.getSupplierId()+", name: " + supplier.getSupplierName()+
 				", address: "+ supplier.getSupplierAddress());
 			}
-			else{
-			listModel.addElement("REMOVED    "+"Id: "+supplier.getSupplierId()+", name: " + supplier.getSupplierName()+
-					", address: "+ supplier.getSupplierAddress());
-			}
-			}
+		}
 	}
 	
 	// call method from Shop class to populate suppliers list
@@ -230,40 +234,44 @@ public class SupplierPanel extends JPanel{
 	}
 
 	// create new supplier
-	public void createSupplier( ){
+	public void createSupplier(){
+		if((nameField.getText().isEmpty()==false)&&(addressField.getText().isEmpty()==false)){
+			System.out.println("Not empty");
 			saveDetails();
 			Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
 			suppliers.add(newSupplier);
-			
-			JsonExample.saveSupplierToFile(newSupplier);
+			Json.saveSupplierToFile(newSupplier);
 			listModel.addElement("Id: "+newSupplier.getSupplierId()+", name: " + newSupplier.getSupplierName()+
 					", address: "+ newSupplier.getSupplierAddress());
 				nameField.setText("");
 				addressField.setText("");
-			
+		}
+		else{
+			JOptionPane.showMessageDialog(null, " Enter details for new supplier");
+		}
 		
 	}
 
 	// inner class to delete supplier from GUI list and set it as deleted in the Arraylist
 	class Remove implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			// get index and id for selected supplier
 			int index = suppliersList.getSelectedIndex();
+			String supplierFromList = (String) suppliersList.getSelectedValue();
+			char[] charList = supplierFromList.toCharArray();
+			String id = "";
+			id = id + charList[4] + charList[5] + charList[6];
 			if (index != -1) {
 				Supplier deleted = null;
 				for(Supplier supplier:suppliers){
-					deleted = suppliers.get(index);
-								
+					//deleted = suppliers.get(index);
+						if(supplier.getSupplierId() == Integer.parseInt(id)){
+							deleted = supplier;
+						}
 					}
 				if(deleted!= null){
-				//	deletedSuppliers.add(deleted);
-				//	suppliers.remove(index);
-				//	listModel.remove(index);
+					listModel.remove(index);
 					deleted.setSupplierDeleted(true);
-					Object newElement ="REMOVED"+"   "+ "Id: "+deleted.getSupplierId()+", name: " + deleted.getSupplierName()+
-							", address: "+ deleted.getSupplierAddress();
-					listModel.setElementAt(newElement, index);
-				
-					
 				}
 			}
 			else{
@@ -283,13 +291,15 @@ public class SupplierPanel extends JPanel{
 			// select supplier
 			if (index != -1) {
 				for(Supplier supplier:suppliers){
-					// get index of selected supplier
-					tempSupplier = suppliers.get(index);
-					int id = tempSupplier.getSupplierId( );
-					String idS = Integer.toString(id);
+					// get index and id of selected supplier
+					String supplierFromList = (String) suppliersList.getSelectedValue();
+					char[] charList = supplierFromList.toCharArray();
+					String id = "";
+					id = id + charList[4] + charList[5] + charList[6];
+					String ids = Integer.toString(supplier.getSupplierId());
 					// show details of selected supplier in the textfield
-					if(supplier.getSupplierId()==id){
-						editIdField.setText(idS);
+					if(ids.equals(id)){
+						editIdField.setText(ids);
 						editNameField.setText(supplier.getSupplierName());
 						editAddressField.setText(supplier.getSupplierAddress());
 						// set the id field to non-editable
@@ -307,18 +317,22 @@ public class SupplierPanel extends JPanel{
 	// method for editing supplier details
 	public void addEditedSupplier(){
 		Supplier tempSupplier = null;
+		if((editNameField.getText().isEmpty()==false)&&(editAddressField.getText().isEmpty()==false)){
 		for(Supplier supplier:suppliers){
-			// get index of selected supplier
+			// get index and id of selected supplier
 			int index = suppliersList.getSelectedIndex();
-			tempSupplier = suppliers.get(index);
-			int id = tempSupplier.getSupplierId( );
+			String supplierFromList = (String) suppliersList.getSelectedValue();
+			char[] charList = supplierFromList.toCharArray();
+			String id = "";
+			id = id + charList[4] + charList[5] + charList[6];
+			System.out.println(id);
+			String ids = Integer.toString(supplier.getSupplierId());
 			// get the edited details from the GUI textfield
-			if(supplier.getSupplierId() == id){
+			if(id.equals(ids)){
 				// replace old details with new details using index of selected supplier
-				supplier.setSupplierId(id);
 				supplier.setSupplierName(editNameField.getText());
 				supplier.setSupplierAddress(editAddressField.getText());
-			
+				
 				Object newElement = "Id: "+ editIdField.getText() +", name: " + editNameField.getText()+
 					", address: "+ editAddressField.getText();
 				listModel.setElementAt(newElement, index);
@@ -326,9 +340,12 @@ public class SupplierPanel extends JPanel{
 				editIdField.setText("");
 				editNameField.setText("");
 				editAddressField.setText("");
-			
+				}
 			}
 		}	
+		else{
+			JOptionPane.showMessageDialog(null, "Select a supplier to edit");
+		}
 		saveDetails();
 	}
 	
@@ -370,9 +387,9 @@ public class SupplierPanel extends JPanel{
 		}	
 	
 	 public void saveDetails(){
-		 JsonExample.clearList("resources/suppliers.json");
+		 Json.clearList("resources/suppliers.json");
 			for(Supplier supplier: Shop.getSuppliers()){
-				JsonExample.saveSupplierToFile(supplier);
+				Json.saveSupplierToFile(supplier);
 			}
 			System.out.println("Finished saving suppliers");
 		}

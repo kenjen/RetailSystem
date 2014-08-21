@@ -14,7 +14,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JButton;
 
 import data.Customer;
-import data.JsonExample;
+import data.Json;
 import data.Product;
 
 import java.awt.event.ActionListener;
@@ -48,7 +48,7 @@ public class CustomerPanel extends JPanel {
 	private JButton customerEdit;
 	private JLabel lblCustomer;
 	private JLabel lblCustomerId;
-	private static JComboBox comboBox;
+	private static JComboBox comboCustomerID;
 	private JCheckBox chckbxEditdelete;
 	private JLabel lblEnterSurnameTo;
 	private JTextField searchString;
@@ -87,14 +87,14 @@ public class CustomerPanel extends JPanel {
 		}
 		Integer[] ids = new Integer[num.size()];
 		ids = num.toArray(ids);
-		comboBox = new JComboBox(ids);
-		comboBox.setEnabled(false);
-		comboBox.setPreferredSize(new Dimension(225, 20));
-		add(comboBox, "flowx,cell 1 2,alignx left,growy");
+		comboCustomerID = new JComboBox(ids);
+		comboCustomerID.setEnabled(false);
+		comboCustomerID.setPreferredSize(new Dimension(225, 20));
+		add(comboCustomerID, "flowx,cell 1 2,alignx left,growy");
 
-		comboBox.addActionListener(new ActionListener() {
+		comboCustomerID.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				int chosen = (Integer) comboBox.getSelectedItem();
+				int chosen = (Integer) comboCustomerID.getSelectedItem();
 				System.out.println(chosen);
 
 				for (Customer customer : Shop.getCustomers()) {
@@ -179,8 +179,12 @@ public class CustomerPanel extends JPanel {
 			}
 
 			public void deleteCustomer() {
-				Shop.deleteCustomer((Integer) comboBox.getSelectedItem());
-				comboBox.removeItem(comboBox.getSelectedItem());
+				Shop.deleteCustomer((Integer) comboCustomerID.getSelectedItem());
+				String fname = fNameInput.getText();
+				String lname = lNameInput.getText();
+				comboCustomerID.removeItem(comboCustomerID.getSelectedItem());
+				JOptionPane.showMessageDialog(null, "You have deleted "
+						+ fname + " " + lname);
 				//saveDetails();
 				//refreshCombo();
 			}
@@ -221,7 +225,7 @@ public class CustomerPanel extends JPanel {
 					Customer customer = getCustomerbyID(e.getItem().toString());
 					if (customer != null) {
 						selectedCustomer = customer;
-						comboBox.setSelectedItem(selectedCustomer
+						comboCustomerID.setSelectedItem(selectedCustomer
 								.getCustomerID());
 					}
 
@@ -239,7 +243,7 @@ public class CustomerPanel extends JPanel {
 		 * (Customer customer : Shop.getCustomers()) { if
 		 * (find.equals(customer.getCustomerLName())) {
 		 * idLocations.add(customer.getCustomerID());
-		 * comboBox.setSelectedItem(customer.getCustomerID());
+		 * comboCustomerID.setSelectedItem(customer.getCustomerID());
 		 * 
 		 * // System.out.println(idLocations); } } if (idLocations.size() == 0)
 		 * { JOptionPane .showMessageDialog(null,
@@ -257,17 +261,22 @@ public class CustomerPanel extends JPanel {
 			public void itemStateChanged(ItemEvent e) {
 				// TODO Auto-generated method stub
 				if (chckbxEditdelete.isSelected()) {
-					comboBox.enable(true);
+					comboCustomerID.enable(true);
 					btnNewButton.setEnabled(false);
 					;
 					customerDelete.setEnabled(true);
 					customerEdit.setEnabled(true);
 					;
 				} else {
-					comboBox.enable(false);
+					comboCustomerID.enable(false);
 					btnNewButton.setEnabled(true);
 					customerDelete.setEnabled(false);
 					customerEdit.setEnabled(false);
+					fNameInput.setText("");
+					lNameInput.setText("");
+					addressInput.setText("");
+					mobileInput.setText("");
+					homeInput.setText("");
 					;
 				}
 			}
@@ -278,9 +287,9 @@ public class CustomerPanel extends JPanel {
 
 	public void saveDetails() {
 		// TODO Auto-generated method stub
-		JsonExample.clearList("resources/customers.json");
+		Json.clearList("resources/customers.json");
 		for (Customer customer : Shop.getCustomers()) {
-			JsonExample.saveCustomerToFile(customer);
+			Json.saveCustomerToFile(customer);
 		}
 		System.out.println("Finished save");
 	}
@@ -305,7 +314,7 @@ public class CustomerPanel extends JPanel {
 						.toString();
 				if (getCustomerbyID(surname) != null) {
 					selectedCustomer = getCustomerbyID(surname);
-					comboBox.setSelectedItem(selectedCustomer.getCustomerID());
+					comboCustomerID.setSelectedItem(selectedCustomer.getCustomerID());
 				} else {
 					System.out.println("ERROR");
 				}
@@ -346,7 +355,7 @@ public class CustomerPanel extends JPanel {
 						+ customer.getCustomerAddress());
 			}
 			JOptionPane.showMessageDialog(null, "You have added a customer!");
-			comboBox.addItem(c1.getCustomerID());
+			comboCustomerID.addItem(c1.getCustomerID());
 			
 			//refreshCombo();
 			fNameInput.setText("");
@@ -363,7 +372,12 @@ public class CustomerPanel extends JPanel {
 	}
 
 	public void editCustomer() {
-		Shop.editCustomer((Integer) comboBox.getSelectedItem(),
+		if (fNameInput.getText().length() > 0
+				&& lNameInput.getText().length() > 0
+				&& addressInput.getText().length() > 0
+				&& (mobileInput.getText().length() > 0 || homeInput.getText()
+						.length() > 0)) {
+		Shop.editCustomer((Integer) comboCustomerID.getSelectedItem(),
 				fNameInput.getText(), lNameInput.getText(),
 				addressInput.getText(), mobileInput.getText(),
 				homeInput.getText());
@@ -374,7 +388,11 @@ public class CustomerPanel extends JPanel {
 		mobileInput.setText("");
 		homeInput.setText("");
 		JOptionPane.showMessageDialog(null, "You have editted customer "
-				+ comboBox.getSelectedItem());
+				+ comboCustomerID.getSelectedItem());
+		}else {
+			JOptionPane.showMessageDialog(null,
+					"You have to fill in all fields ");
+		}
 		saveDetails();
 		refreshCombo();
 	}

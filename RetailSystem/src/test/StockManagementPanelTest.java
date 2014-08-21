@@ -1,6 +1,7 @@
-package gui;
+package test;
 
 import static org.junit.Assert.*;
+import gui.StockManagementPanel;
 
 import java.util.ArrayList;
 

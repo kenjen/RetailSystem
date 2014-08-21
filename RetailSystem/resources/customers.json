@@ -7,5 +7,5 @@
 {"customerID":107,"customerFName":"sad","customerLName":"das","customerAddress":"sad","customerMobile":"das","customerHome":"","deleted":true}
 {"customerID":108,"customerFName":"gfd","customerLName":"gfd","customerAddress":"gdfg","customerMobile":"fdg","customerHome":"","deleted":true}
 {"customerID":109,"customerFName":"gfg","customerLName":"fdgd","customerAddress":"fgdg","customerMobile":"gffdg","customerHome":"","deleted":true}
-{"customerID":110,"customerFName":"khj","customerLName":"hjk","customerAddress":"jhk","customerMobile":"khk","customerHome":"","deleted":false}
-{"customerID":111,"customerFName":"gh","customerLName":"fgh","customerAddress":"fgh","customerMobile":"ghfghf","customerHome":"fgh","deleted":false}
+{"customerID":110,"customerFName":"khj","customerLName":"hjk","customerAddress":"jhk","customerMobile":"khk","customerHome":"","deleted":true}
+{"customerID":111,"customerFName":"fdsf","customerLName":"vvxc","customerAddress":"fsd","customerMobile":"fsdf","customerHome":"","deleted":false}

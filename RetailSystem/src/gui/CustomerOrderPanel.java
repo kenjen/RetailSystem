@@ -41,7 +41,7 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import tableModels.ProductTableModel;
 import data.Customer;
 import data.CustomerOrder;
-import data.JsonExample;
+import data.Json;
 import data.Product;
 import data.ProductToOrder;
 import data.StockOrder;
@@ -94,7 +94,7 @@ public class CustomerOrderPanel extends JPanel{
 		customerNames.add("");
 		
 		//concatenate customer names and add them to the combo box
-		for ( Customer customer: Shop.getCustomers()){
+		for (Customer customer: Shop.getCustomers()){
 			String name = customer.getCustomerFName()+" "+customer.getCustomerLName();
 			customerNames.add(name);
 		}		
@@ -549,6 +549,15 @@ public class CustomerOrderPanel extends JPanel{
 				}else{
 					CustomerOrder order = new CustomerOrder(selectedCustomer, GUIBackBone.getLoggedStaffMember(), productsToOrder);
 					order.setId(Shop.getCustomerOrders().get(Shop.getCustomerOrders().size()-1).getId()+1);
+					//check if a discount applies
+					if(order.getTotalGross() > 5000){
+						order.setTotalGross(order.getTotalGross()*0.9);
+						order.setTotalGross(order.getTotalNet()*0.9);
+					}else if(order.getTotalGross() > 2000){
+						order.setTotalGross(order.getTotalGross()*0.95);
+						order.setTotalGross(order.getTotalNet()*0.95);
+					}
+					
 					Shop.getCustomerOrders().add(order);
 					System.out.println("Order has been created\nOrder id:"+order.getId()+"\nOrder totalGross: "+order.getTotalGross()+"\nOrder totalNet: "+order.getTotalNet() + order.getCustomer().getCustomerFName());
 					//update table model data to reflect changes
@@ -576,14 +585,14 @@ public class CustomerOrderPanel extends JPanel{
 					}
 					
 					//save orders to a persistent format
-					if(JsonExample.clearList("resources/customerOrders.json") && JsonExample.clearList("resources/products.json")){
+					if(Json.clearList("resources/customerOrders.json") && Json.clearList("resources/products.json")){
 						for(CustomerOrder co:Shop.getCustomerOrders()){
-							JsonExample.saveCustomerOrdersToFile(co);
+							Json.saveCustomerOrdersToFile(co);
 						}
 						
 						//save products to a persistent format
 						for(Product p:Shop.getProducts()){
-							JsonExample.saveProductToFile(p);
+							Json.saveProductToFile(p);
 						}
 					}else{
 						displayErrorMessage("Could not persist changes!", Color.red);
