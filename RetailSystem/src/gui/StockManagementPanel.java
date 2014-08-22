@@ -65,7 +65,6 @@ public class StockManagementPanel extends JSplitPane{
 	private JButton btnDisplayLowStock;
 	private JButton btnDisplayDeletedStock;
 	private JButton btnDisplayAllProducts;
-	private JButton btnRestoreDefaultProducts;
 	private JButton btnFlagForOrder;
 	private JButton btnDiscountProduct;
 	private JButton btnDeleteProduct;
@@ -159,20 +158,6 @@ public class StockManagementPanel extends JSplitPane{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				displayAllProducts(Shop.getProducts());
-			}
-		});
-		
-		
-		//Button to reset products to defaults
-		btnRestoreDefaultProducts = new JButton("Restore Defaults");
-		panel.add(btnRestoreDefaultProducts, "cell 1 5, growx");
-		btnRestoreDefaultProducts.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				resetToDefaultValues(Shop.getProducts(), false);
-				saveDetails();
-				setupList();
-				refreshCombo(Shop.getProducts());
 			}
 		});
 		
@@ -481,11 +466,24 @@ public class StockManagementPanel extends JSplitPane{
 									if(comboSelectSupplier.getSelectedIndex()>0){
 										for(Supplier supplier : Shop.getSuppliers()){
 											if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
-												Product product = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Double.parseDouble(textPrice.getText()), supplier, true, 20);
-												product.setLowStockOrder(Integer.parseInt(textThreshold.getText()));
-												clearProductDetails();
-												System.out.println("Product Created Succesfully");
-												return product;
+												boolean alreadyExists = false;
+												for(Product product : Shop.getProducts()){
+													if(product.getName().equalsIgnoreCase(textName.getText())){
+														System.out.println("Product already exists");
+														if(product.getSupplier().getSupplierId()==supplier.getSupplierId()){
+															alreadyExists = true;
+															System.out.println("Supplier the same so product not added");
+															break;
+														}
+													}
+												}
+												if(alreadyExists==false){
+													Product productToAdd = new Product(textName.getText(), textCategory.getText(), Integer.parseInt(textQuantity.getText()), Double.parseDouble(textPrice.getText()), supplier, true, 20);
+													productToAdd.setLowStockOrder(Integer.parseInt(textThreshold.getText()));
+													clearProductDetails();
+													System.out.println("Product Created Succesfully");
+													return productToAdd;
+												}
 											}
 										}
 									}else{
@@ -711,50 +709,6 @@ public class StockManagementPanel extends JSplitPane{
 			counter++;
 		}
 		return counter;
-	}
-	
-	
-	//resets the product list to original hard coded values
-	public void resetToDefaultValues(ArrayList<Product> products, boolean testing){
-		int selectedOption = 0;
-		if(testing){
-			selectedOption = JOptionPane.YES_OPTION;
-		}else{
-			selectedOption = JOptionPane.showConfirmDialog(null, 
-					"Are you sure you wish to restore product defaults?", 
-					"Warning", 
-					JOptionPane.YES_NO_OPTION,
-					JOptionPane.WARNING_MESSAGE); 
-		}
-		if (selectedOption == JOptionPane.YES_OPTION) {
-			products.clear();
-			Product.setNextId(0);
-			Product p1;
-			Product p2;
-			Product p3;
-			Product p4;
-			Product p5;
-			
-			//used for junit tests
-			if(testing){
-				p1 = new Product("Pear", "Food", 70, 0.23, null, true, 80);
-				p2 = new Product("Coat", "Clothing", 50, 29.99, null, true, 10);
-				p3 = new Product("Trousers", "Clothing", 80, 40.0, null, true, 15);
-				p4 = new Product("Ham", "Food", 120, 4.50, null, true, 60);
-				p5 = new Product("Broom", "Hygene", 20, 12.0, null, true, 3);
-			}else{
-				p1 = new Product("Pear", "Food", 70, 0.23, Shop.getSuppliers().get(0), true, 80);
-				p2 = new Product("Coat", "Clothing", 50, 29.99, Shop.getSuppliers().get(1), true, 10);
-				p3 = new Product("Trousers", "Clothing", 80, 40.0, Shop.getSuppliers().get(1), true, 15);
-				p4 = new Product("Ham", "Food", 120, 4.50, Shop.getSuppliers().get(0), true, 60);
-				p5 = new Product("Broom", "Hygene", 20, 12.0, Shop.getSuppliers().get(2), true, 3);
-			}
-			products.add(p1);
-			products.add(p2);
-			products.add(p3);
-			products.add(p4);
-			products.add(p5);
-		}
 	}
 	
 	
