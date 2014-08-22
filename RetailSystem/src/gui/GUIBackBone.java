@@ -105,6 +105,8 @@ public class GUIBackBone extends JFrame {
 					} else {
 						tabbedPane.setSelectedIndex(previousTabIndex);
 					}
+				}else if(tabbedPane.getSelectedIndex() == 1){
+					panelCustomerOrders.repopulateAll();
 				}
 				previousTabIndex = tabbedPane.getSelectedIndex();
 			}
@@ -185,12 +187,7 @@ public class GUIBackBone extends JFrame {
 		panelStockOrder.displayOrderTable(0);
 		panelStockOrder.displayProductsTable("", "");
 		panelStockOrder.repaint();
-		panelCustomerOrders.displayOrderTable(false, 0);
-		panelCustomerOrders.displayProductsTable("");
-		panelCustomerOrders.populateCustomerNames();
-
 		panelCustomer.saveDetails();
-
 		panelSupplier.saveDetails();
 		panelStockOrder.saveDetails();
 
