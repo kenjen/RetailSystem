@@ -2,12 +2,14 @@
 {"customerID":102,"customerFName":"Jim","customerLName":"McDonald","customerAddress":"6 High Street","customerMobile":"0877603240","customerHome":"017839295","deleted":false}
 {"customerID":103,"customerFName":"Carl","customerLName":"Lenny","customerAddress":"54 Shelbyville Drive","customerMobile":"0867839022","customerHome":"014039202","deleted":false}
 {"customerID":104,"customerFName":"Leonard","customerLName":"Cooper","customerAddress":"16 Pasadena Avenue","customerMobile":"0850393939","customerHome":"018280304","deleted":false}
-{"customerID":105,"customerFName":"Roy","customerLName":"Moses","customerAddress":"3 Rehnham Way","customerMobile":"0872349299","customerHome":"013202033","deleted":false}
+{"customerID":105,"customerFName":"Roy","customerLName":"Moses","customerAddress":"3 Rehnham Way","customerMobile":"0872349299","customerHome":"013202033","deleted":true}
 {"customerID":106,"customerFName":"ds","customerLName":"fsd","customerAddress":"df","customerMobile":"fds","customerHome":"","deleted":true}
 {"customerID":107,"customerFName":"sad","customerLName":"das","customerAddress":"sad","customerMobile":"das","customerHome":"","deleted":true}
 {"customerID":108,"customerFName":"gfd","customerLName":"gfd","customerAddress":"gdfg","customerMobile":"fdg","customerHome":"","deleted":true}
 {"customerID":109,"customerFName":"gfg","customerLName":"fdgd","customerAddress":"fgdg","customerMobile":"gffdg","customerHome":"","deleted":true}
 {"customerID":110,"customerFName":"khj","customerLName":"hjk","customerAddress":"jhk","customerMobile":"khk","customerHome":"","deleted":true}
 {"customerID":111,"customerFName":"fdsf","customerLName":"vvxc","customerAddress":"fsd","customerMobile":"fsdf","customerHome":"","deleted":false}
-{"customerID":112,"customerFName":"Zdeno","customerLName":"Csaprda","customerAddress":"aaa","customerMobile":"0852452215","customerHome":"0851465845","deleted":false}
-{"customerID":113,"customerFName":"Alexis","customerLName":"Kane","customerAddress":"sdfsfdg","customerMobile":"123","customerHome":"123","deleted":false}
+{"customerID":112,"customerFName":"Zdenko","customerLName":"Csaprda","customerAddress":"aaa","customerMobile":"0852452215","customerHome":"0851465845","deleted":false}
+{"customerID":113,"customerFName":"Alexis","customerLName":"Kane","customerAddress":"sdfsfdg","customerMobile":"123","customerHome":"123","deleted":true}
+{"customerID":114,"customerFName":"george","customerLName":"sponge","customerAddress":"adfsfd","customerMobile":"54","customerHome":"54","deleted":true}
+{"customerID":115,"customerFName":"Geordi","customerLName":"McDonald","customerAddress":"6 High Street","customerMobile":"0877603240","customerHome":"017839295","deleted":false}

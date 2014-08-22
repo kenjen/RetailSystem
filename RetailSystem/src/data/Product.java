@@ -18,6 +18,7 @@ public class Product {
 	private int lowStockOrder;
 	private String category;
 	private boolean flaggedForOrder = false;
+	private final double MARKUP = 1.5;
 	
 	private ArrayList<Product> products = new ArrayList<Product>();
 	
@@ -36,7 +37,7 @@ public class Product {
 		this.lowStockOrder = lowStockOrder;
 		nextId++;
 		this.id = nextId;
-		this.markupPrice=price*1.20;
+		this.markupPrice=price*MARKUP;
 	}
 	
 	public String getName(){
@@ -69,6 +70,7 @@ public class Product {
 	
 	public void setPrice(double price){
 		this.price = price;
+		this.markupPrice = price * MARKUP;
 	}
 	
 	public boolean upDateProducts(){
