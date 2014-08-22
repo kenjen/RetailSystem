@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -15,14 +14,15 @@ import java.awt.event.MouseListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.InputMismatchException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -54,7 +54,7 @@ public class CustomerOrderPanel extends JPanel{
 	private JLabel lblFindInvoice = new JLabel("Find Invoice");
 	private JButton btnOrder = new JButton("Submit Order");
 	private JButton btnDisplayOrdersForSelectedCustomer = new JButton("Customer Orders");
-	private JButton btnUpdateOrderCompletion = new JButton("Update order");
+	//private JButton btnUpdateOrderCompletion = new JButton("Update order");
 	private JButton btnDisplayAllOrders = new JButton("All orders");
 	private JButton btnAddToOrder = new JButton ("Add to order");
 	private JButton btnViewCurrentOrder = new JButton ("Current Order");
@@ -105,7 +105,7 @@ public class CustomerOrderPanel extends JPanel{
 		btnOrder.addActionListener(new ButtonOrderHandler());
 		btnDisplayAllOrders.addActionListener(new ButtonDisplayOrdersForAllCustomersHandler());
 		btnDisplayOrdersForSelectedCustomer.addActionListener(new ButtonDisplayOrdersForSelectedCustomersHandler());
-		btnUpdateOrderCompletion.addActionListener(new UpdateOrdersHandler());
+		//btnUpdateOrderCompletion.addActionListener(new UpdateOrdersHandler());
 		btnAddToOrder.addActionListener(new BtnAddToOrderActionListener());
 		txtInvoiceIDSearch.addKeyListener(new TxtInvoiceIDSearchKeyListener());
 		
@@ -154,7 +154,7 @@ public class CustomerOrderPanel extends JPanel{
 		oneCellPanel.setLayout(new MigLayout());
 		oneCellPanel.add(btnDisplayAllOrders, "wrap, growx, aligny top");
 		oneCellPanel.add(btnDisplayOrdersForSelectedCustomer, "wrap, growx, aligny top");
-		oneCellPanel.add(btnUpdateOrderCompletion, "wrap, growx, aligny top");
+		//oneCellPanel.add(btnUpdateOrderCompletion, "wrap, growx, aligny top");
 		add(oneCellPanel, "aligny top");
 		
 	}//end constructor
@@ -316,7 +316,7 @@ public class CustomerOrderPanel extends JPanel{
 				tableAvailableProducts.changeSelection(row, 7, false, false);
 			}
 		});
-		
+		//tableAvailableProducts.setComponentPopupMenu(new OrderTableJPopupMenu());
 		scrollPane.getViewport().add(tableAvailableProducts);
 		scrollPane.repaint();
 		
@@ -503,8 +503,118 @@ public class CustomerOrderPanel extends JPanel{
 		return false;
 	}
 	
+
+		public void updateOrders() {
+			//find all orders that have "completed" value changed to true
+			Object[][] orders = null;
+			if(CustomerOrderPanel.this.getOrdersArray() != null){
+				orders = CustomerOrderPanel.this.getOrdersArray();
+				int counter = 0;
+				boolean found = false;
+				boolean foundInvalidOperation = false;
+				for(Object[] x:orders){
+					if((boolean) x[6] == true && Shop.getCustomerOrders().get(counter).isComplete() == false){
+						changeOrderCompletion((int)x[0], true);
+						found = true;
+					}else if((boolean) x[6] == false && Shop.getCustomerOrders().get(counter).isComplete() == true){
+						foundInvalidOperation = true;
+					}
+					counter ++;
+				}
+				if(found){
+					AbstractTableModel model = (AbstractTableModel) tableOrders.getModel();
+					model.fireTableDataChanged();
+					
+					//save orders to a persistent format
+					if(Json.clearList("resources/customerOrders.json")){
+						for(CustomerOrder co:Shop.getCustomerOrders()){
+							Json.saveCustomerOrdersToFile(co);
+						}
+					}else{
+						displayErrorMessage("Could not persist changes!", Color.red);
+					}
+					
+					//update previousCustomerOrderTable with the new order.
+					if(typeOfOrder.equals("All")){
+						displayOrderTable(false,0);
+						typeOfOrder = "All";
+					}else{
+						displayOrderTable(true,0);
+						typeOfOrder = "Customer";
+					}
+					displayErrorMessage("Order(s) has(have) been updated successfully.", Color.BLUE);
+				}else if(foundInvalidOperation){
+					if(typeOfOrder.equals("All")){
+						displayOrderTable(false,0);
+						typeOfOrder = "All";
+					}else{
+						displayOrderTable(true,0);
+						typeOfOrder = "Customer";
+					}
+					displayErrorMessage("You cannot change the status of already completed orders!", Color.red);
+				}else{
+					displayErrorMessage("Nothing to update", Color.red);
+				}
+			}else{
+				displayErrorMessage("Nothing to update", Color.red);
+			}
+			
+		}//end actionPerformed
+		public void changeOrderCompletion(int orderId, boolean isComplete){
+			for(CustomerOrder x:Shop.getCustomerOrders()){
+				if(x.getId() == orderId){
+					x.setComplete(isComplete);
+				}
+			}
+		}
 	
 	
+	public class OrderTableJPopupMenu extends JPopupMenu{
+		JMenuItem menuItemUpdate = new JMenuItem("Set To Complete");
+		JMenuItem menuItemShow = new JMenuItem("Show Order");
+		public OrderTableJPopupMenu(){
+			add(menuItemShow);
+			add(menuItemUpdate);
+			menuItemUpdate.addMouseListener(new MouseAdapter(){
+				public void mousePressed(MouseEvent e){
+					int row = tableOrders.getSelectedRow();
+					ProductTableModel model = (ProductTableModel) tableOrders.getModel();
+					model.setValueAt(true, row, 6);
+					model.fireTableDataChanged();
+					updateOrders();
+				}
+			});
+			menuItemShow.addMouseListener(new MouseAdapter(){
+				public void mousePressed(MouseEvent e){
+					int row = tableOrders.getSelectedRow();
+			         
+			         int id = (int) arrayOrders[row][0];
+			         String customer = (String) arrayOrders[row][1];
+			         String staff = (String) arrayOrders[row][2];
+			         String date = (String) arrayOrders[row][3];
+			         String totalNet = (String) arrayOrders[row][4];
+			         String totalGross = (String) arrayOrders[row][5];
+			         
+			         String htmlText = "<html><head><style>th {color:#305EE3;font-variant:small-caps;}</style></head>";
+			         htmlText += "<h2>Order details:</h2><table border='1'><tr><th>ID</th><th>Customer</th><th>Staff</th><th>Creation Date</th><th>Total Net</ht<th>Total Gross</th></tr>";
+			         htmlText += "<tr><td>"+id+"</td></td>"+customer+"</td><td>"+ staff+"</td><td>"+date+"</td><td>"+totalNet+"</td><td>"+totalGross+"</td></tr>";
+		        
+			         CustomerOrder orderClicked = null;
+			         for(CustomerOrder order:Shop.getCustomerOrders()){
+			        	 if(order.getId() == id){
+			        		 orderClicked = order;
+			        	 }
+			         }
+				         htmlText += "</table><br><h2>Products:</h2><table border='1'><tr><th>ID</th><th>Name</th><th>Supplier</th><th>Category</th><th>Price</th><th>Amount</th><th>Total</th></tr>";	        	 
+			         for(ProductToOrder prod:orderClicked.getProducts()){
+			        	 htmlText += prod.toHtmlString();
+			         }
+			         htmlText += "</table></html>";
+			         new PopupDialog(htmlText);
+				}
+			});
+		}
+	}
 	
 //----------------------------------------------------------LISTENERS-----------------------------------------------------------//
 	
@@ -827,69 +937,6 @@ public class CustomerOrderPanel extends JPanel{
 		
 	}//end inner class ButtonDisplayOrdersForAllCustomersHandler
 	
-	/**
-	 *This Button handler updates the table data and CustomerOrder object of all orders that have been assigned to "Completed"
-	 */
-	public class UpdateOrdersHandler implements ActionListener{
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			//find all orders that have "completed" value changed to true
-			Object[][] orders = null;
-			if(CustomerOrderPanel.this.getOrdersArray() != null){
-				orders = CustomerOrderPanel.this.getOrdersArray();
-				int counter = 0;
-				boolean found = false;
-				boolean foundInvalidOperation = false;
-				for(Object[] x:orders){
-					if((boolean) x[6] == true && Shop.getCustomerOrders().get(counter).isComplete() == false){
-						changeOrderCompletion((int)x[0], true);
-						found = true;
-					}else if((boolean) x[6] == false && Shop.getCustomerOrders().get(counter).isComplete() == true){
-						foundInvalidOperation = true;
-					}
-					counter ++;
-				}
-				if(found){
-					AbstractTableModel model = (AbstractTableModel) tableOrders.getModel();
-					model.fireTableDataChanged();
-					
-					//update previousCustomerOrderTable with the new order.
-					if(typeOfOrder.equals("All")){
-						displayOrderTable(false,0);
-						typeOfOrder = "All";
-					}else{
-						displayOrderTable(true,0);
-						typeOfOrder = "Customer";
-					}
-					displayErrorMessage("Order(s) has(have) been updated successfully.", Color.BLUE);
-				}else if(foundInvalidOperation){
-					if(typeOfOrder.equals("All")){
-						displayOrderTable(false,0);
-						typeOfOrder = "All";
-					}else{
-						displayOrderTable(true,0);
-						typeOfOrder = "Customer";
-					}
-					displayErrorMessage("You cannot change the status of already completed orders!", Color.red);
-				}else{
-					displayErrorMessage("Nothing to update", Color.red);
-				}
-			}else{
-				displayErrorMessage("Nothing to update", Color.red);
-			}
-			
-		}//end actionPerformed
-		public void changeOrderCompletion(int orderId, boolean isComplete){
-			for(CustomerOrder x:Shop.getCustomerOrders()){
-				if(x.getId() == orderId){
-					x.setComplete(isComplete);
-				}
-			}
-		}
-		
-	}//end inner class UpdateOrdersHandler
-	
 	public class DoubleClickMouseHandler implements MouseListener{
 
 		@Override
@@ -933,7 +980,19 @@ public class CustomerOrderPanel extends JPanel{
 		}
 
 		@Override
-		public void mousePressed(MouseEvent arg0) {
+		//selects the row at right click
+		public void mousePressed(MouseEvent e){
+			if(e.isPopupTrigger()){
+				JTable source = (JTable)e.getSource();
+                int row = source.rowAtPoint( e.getPoint() );
+                int column = source.columnAtPoint( e.getPoint() );
+
+                if (! source.isRowSelected(row)){
+                    source.changeSelection(row, column, false, false);
+                }
+                OrderTableJPopupMenu m = new OrderTableJPopupMenu();
+                m.show(e.getComponent(), e.getX(), e.getY());
+			}
 		}
 
 		@Override
