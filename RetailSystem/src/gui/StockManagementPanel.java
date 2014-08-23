@@ -6,6 +6,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -15,11 +17,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
+import tableModels.ProductTableModel;
 import net.miginfocom.swing.MigLayout;
 import data.Json;
 import data.Product;
@@ -33,11 +39,16 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 
 public class StockManagementPanel extends JSplitPane{
 	
 	private DefaultListModel<String> listModel = new DefaultListModel<String>();
 	private JList<String> list;
+	
+	private JTable table;
+	private ProductTableModel productTableModel;
+	private Object[][] arrayTableProducts;
 	
 	private JTextField txtId;
 	private JTextField txtName;
@@ -70,6 +81,8 @@ public class StockManagementPanel extends JSplitPane{
 	private JButton btnDeleteProduct;
 	private JButton btnRestoreProduct;
 	
+	private JScrollPane scrollPane;
+	
 	private NumberFormat formatter;
 	
 	
@@ -80,8 +93,9 @@ public class StockManagementPanel extends JSplitPane{
 		formatter = NumberFormat.getCurrencyInstance();
 		
 		//Add scroll pane to left size with list of products
-		JScrollPane scrollPane = new JScrollPane(list);
-		//this.setDividerLocation(300);
+		//JScrollPane scrollPane = new JScrollPane(list);
+		scrollPane = new JScrollPane(table);
+		this.setDividerLocation(300);
 		setLeftComponent(scrollPane);
 		
 		
@@ -117,13 +131,14 @@ public class StockManagementPanel extends JSplitPane{
 		});
 		
 		
-		//display all products button
+		//display products button
 		btnDisplayProducts = new JButton("Display Stock");
 		panel.add(btnDisplayProducts, "cell 1 1, growx");
 		btnDisplayProducts.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				setupList();
+				//setupList();
+				displayProductsTable("");
 				refreshCombo(Shop.getProducts());
 			}
 		});
@@ -146,7 +161,8 @@ public class StockManagementPanel extends JSplitPane{
 		btnDisplayDeletedStock.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				displayDeletedStock(Shop.getProducts());
+				//displayDeletedStock(Shop.getProducts());
+				displayProductsTable("DELETED");//TODO
 			}
 		});
 				
@@ -170,7 +186,7 @@ public class StockManagementPanel extends JSplitPane{
 		txtFlaggedForOrder.setVisible(false);
 		txtFlaggedForOrder.setHorizontalAlignment(SwingConstants.CENTER);
 		txtFlaggedForOrder.setText("FLAGGED FOR ORDER");
-		panel.add(txtFlaggedForOrder, "cell 4 4 3 1,growx");
+		panel.add(txtFlaggedForOrder, "cell 3 4 3 1,growx");
 		txtFlaggedForOrder.setColumns(10);
 		
 		
@@ -426,7 +442,100 @@ public class StockManagementPanel extends JSplitPane{
 				refreshCombo(Shop.getProducts());
 			}
 		});
+		
+		displayProductsTable("");
+		scrollPane.getViewport().add(table);
 	}
+	
+	
+	public void displayProductsTable(String productName){
+		/*if(productName != ""){
+		//get products that contain that name
+			ArrayList<Product> productsArrayList = new ArrayList<Product>();
+			for(Product product:Shop.getProducts()){
+				if(product.getName().equalsIgnoreCase(productName)){
+					productsArrayList.add(product);
+				}
+			}
+			arrayTableProducts = new Object[productsArrayList.size()][4];
+			int counter = 0;
+			for (Product product : productsArrayList) {
+				
+				arrayTableProducts[counter][0] = product.getId();
+				arrayTableProducts[counter][1] = product.getName();
+				arrayTableProducts[counter][2] = product.getQuantity();
+				arrayTableProducts[counter][3] = product.getLowStockOrder();
+				counter++;
+			}
+		}else*/
+		if(productName.equals("DELETED")){
+			//display table for deleted products
+			arrayTableProducts = new Object[Shop.getProducts().size()][4];
+			int counter = 0;
+			for (Product product : Shop.getProducts()) {
+				if(product.isDeleted()){
+					arrayTableProducts[counter][0] = product.getId();
+					arrayTableProducts[counter][1] = product.getName();
+					arrayTableProducts[counter][2] = product.getQuantity();
+					arrayTableProducts[counter][3] = product.getLowStockOrder();
+					counter++;
+				}
+			}
+		}else if(productName.equals("EVERYTHING")){
+			//display table for deleted products
+			arrayTableProducts = new Object[Shop.getProducts().size()][4];
+			int counter = 0;
+			for (Product product : Shop.getProducts()) {
+				arrayTableProducts[counter][0] = product.getId();
+				arrayTableProducts[counter][1] = product.getName();
+				arrayTableProducts[counter][2] = product.getQuantity();
+				arrayTableProducts[counter][3] = product.getLowStockOrder();
+				counter++;
+			}
+		}else{
+			//display table for all products not deleted
+			arrayTableProducts = new Object[Shop.getProducts().size()][4];
+			int counter = 0;
+			for (Product product : Shop.getProducts()) {
+				if(!product.isDeleted()){
+					arrayTableProducts[counter][0] = product.getId();
+					arrayTableProducts[counter][1] = product.getName();
+					arrayTableProducts[counter][2] = product.getQuantity();
+					arrayTableProducts[counter][3] = product.getLowStockOrder();
+					counter++;
+				}
+			}
+		}
+
+		String columnNames[] = { "Id", "Name", "Quantity", "Threshold" };
+		ProductTableModel productsTableModel = new ProductTableModel(arrayTableProducts, columnNames);
+		table = new JTable(productsTableModel);
+		table.setAutoCreateRowSorter(true);
+		table.getColumnModel().getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
+
+					public void valueChanged(ListSelectionEvent e) {
+						int row = table.getSelectedRow();
+						table.requestFocus();
+						table.changeSelection(row, 1, false, false);
+					}
+
+				});	
+		
+		table.addMouseListener(new MouseAdapter(){
+			public void mouseClicked(MouseEvent e) {
+			      if (e.getClickCount() == 2) {
+			    	  JTable target = (JTable)e.getSource();
+			    	  int row = target.getSelectedRow();
+			    	  int id = (int) target.getValueAt(row, 0);
+			    	  loadProductDetails(id, Shop.getProducts());
+			      }
+			}
+			
+		});
+		
+		scrollPane.getViewport().add(table);
+	}//end displayProductsTable
 	
 	
 	//Clears the right pane of any product details
@@ -855,17 +964,6 @@ public class StockManagementPanel extends JSplitPane{
 			}
 		}
 	}
-	
-	
-	/*
-	 * 
-	private JTextField textName;
-	private JTextField textCategory;
-	private JTextField textQuantity;
-	private JTextField textThreshold;
-	private JTextField textPrice;
-	private JTextField textDiscountedPrice;
-	*/
 	
 	public String getDisplayedName(){
 		return textName.getText();
