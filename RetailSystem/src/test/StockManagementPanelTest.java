@@ -138,10 +138,10 @@ public class StockManagementPanelTest {
 		boolean first = products.get(0).isFlaggedForOrder();
 		panel.flagForOrder(1, products);
 		boolean second = products.get(0).isFlaggedForOrder();
-		assertNotEquals(first, second);
+		assertEquals(!first, second);
 		panel.flagForOrder(1, products);
 		first = products.get(0).isFlaggedForOrder();
-		assertNotEquals(first, second);
+		assertEquals(!first, second);
 		assertTrue(second);
 	}
 
