@@ -442,7 +442,7 @@ public class SupplierPanel extends JSplitPane{
 								
 							}
 						}
-				}
+					}
 				}
 					
 			}
