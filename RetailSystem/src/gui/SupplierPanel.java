@@ -452,5 +452,4 @@ public class SupplierPanel extends JSplitPane{
 			}
 			System.out.println("Finished saving suppliers");
 		}
-	
 }
