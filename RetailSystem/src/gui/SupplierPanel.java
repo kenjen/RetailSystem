@@ -111,7 +111,7 @@ public class SupplierPanel extends JSplitPane{
 				showSuppliers();
 			}
 		});
-		buttonPanel.add(showS, "cell 3 8, growx");
+		buttonPanel.add(showS, "cell 3 6, growx");
 		
 		add.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -128,7 +128,7 @@ public class SupplierPanel extends JSplitPane{
 				edited.setEnabled(false);	
 			}
 		});
-		buttonPanel.add(edited, "flowx,cell 2 6");
+		buttonPanel.add(edited, "flowx,cell 1 7");
 	
 		 //Create the items for the right click popup menu.
         JMenuItem showProducts = new JMenuItem("Show Products ");
@@ -187,25 +187,34 @@ public class SupplierPanel extends JSplitPane{
 		buttonPanel.add(search, "flowx,cell 2 1 ");
 		final JTextField searchField = new JTextField (20); 
 		JButton searchSupplier = new JButton ("GO");
-		
 		buttonPanel.add(searchField, "flowx,cell 3 1 ");
 		buttonPanel.add(searchSupplier, "flowx,cell 4 1");
+		// add action listener to button
 		searchSupplier.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				boolean foundIt = true;
 				if((searchField.getText().isEmpty()==false)){
 					// create method to look for a supplier by name
 					for(Supplier supplier:suppliers){
-					
+						// check if name entered matches existent supplier name
 						if(searchField.getText().equalsIgnoreCase(supplier.getSupplierName())){
+							if(supplier.isSupplierDeleted()==false){
 							JOptionPane.showMessageDialog(null, "Found it! Supplier id is: "+ supplier.getSupplierId());
 							foundIt = true;
 							searchField.setText("");
 							break;
+							}
+							else{
+								JOptionPane.showMessageDialog(null, "Supplier was deleted. The supplier's id was: "+ supplier.getSupplierId());
+								foundIt = true;
+								break;
+							}
+						
 						}
 						else{
 							foundIt = false;
 						}
+						
 					}
 					// show message if supplier is not found
 					if(foundIt == false){
@@ -226,7 +235,7 @@ public class SupplierPanel extends JSplitPane{
 				showDeletedSuppliers();
 			}
 		});
-		buttonPanel.add(showDeleted, "cell 3 11, growx");
+		buttonPanel.add(showDeleted, "cell 3 7, growx");
 		
 	}
 	
@@ -272,13 +281,13 @@ public class SupplierPanel extends JSplitPane{
 			", address: "+ supplier.getSupplierAddress());
 			}
 		}
-		saveDetails();
 	}
 	
 
 	public void populateSuppliers(){
 		for(Supplier supplier: Shop.getSuppliers()){
 			suppliers.add(supplier);
+			saveDetails();
 		}
 	}
 
@@ -326,8 +335,8 @@ public class SupplierPanel extends JSplitPane{
 			else{
 				JOptionPane.showMessageDialog(null, " You didn't select a supplier to remove!");
 					}
-			saveDetails();
-			}
+		saveDetails();
+		}
 		
 	}
 	
@@ -417,26 +426,25 @@ public class SupplierPanel extends JSplitPane{
 				
 				// get the supplier at the selected index
 				for(Supplier supplier:suppliers){
-					char[] charList = supplierFromList.toCharArray();
-					String id = "";
-					id = id + charList[4] + charList[5] + charList[6];
-					Supplier tempSupplier = suppliers.get(index);
-					int idS = tempSupplier.getSupplierId( );
-					String ids = Integer.toString(tempSupplier.getSupplierId());
 					
-						if(ids.equalsIgnoreCase(id)){
-							listModel.clear();
-							listModel.addElement("The products for Supplier id "+ tempSupplier.getSupplierId()+" are: ");
+						char[] charList = supplierFromList.toCharArray();
+						String id = "";
+						id = id + charList[4] + charList[5] + charList[6];
+						int idS = Integer.parseInt(id);
+							if(idS==supplier.getSupplierId()){
+								listModel.clear();
+								listModel.addElement("The products for Supplier id "+ supplier.getSupplierId()+" are: ");
 					
 						// call Shop class to display products for the selected supplier
-						for(Product product:Shop.getProducts()){	
-							if(product.getSupplier().getSupplierId() == idS){
-								listModel.addElement("\n"+ product.getName());
+								for(Product product:Shop.getProducts()){	
+									if(product.getSupplier().getSupplierId() == idS){
+										listModel.addElement("\n"+ product.getName());
 								
 							}
 						}
 				}
 				}
+					
 			}
 			// if no supplier is selected show warning message
 			else{
