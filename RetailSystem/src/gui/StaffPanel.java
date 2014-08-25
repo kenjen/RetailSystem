@@ -105,6 +105,9 @@ public class StaffPanel extends JPanel {
 		userNameField = new JTextField();
 		add(userNameField, "cell 3 5,growx");
 		userNameField.setColumns(10);
+		
+		JLabel lblTextGoesHere = new JLabel("text goes here");
+		add(lblTextGoesHere, "cell 5 5");
 
 		JLabel lblPassword = new JLabel("Password");
 		add(lblPassword, "cell 0 6,alignx trailing");

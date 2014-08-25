@@ -102,6 +102,7 @@ public class CustomerOrderPanel extends JPanel{
 			}
 		}		
 		
+		
 		comboSelectCustomer = new JComboBox(customerNames.toArray());
 		add(comboSelectCustomer);
 		//allow for auto-completion
@@ -925,7 +926,6 @@ public class CustomerOrderPanel extends JPanel{
 	      if (e.getClickCount() == 2) {
 		         JTable target = (JTable)e.getSource();
 		         int row = target.getSelectedRow();
-		         
 		         int id = (int) arrayOrders[row][0];
 		         String customer = (String) arrayOrders[row][1];
 		         String staff = (String) arrayOrders[row][2];
@@ -971,3 +971,4 @@ public class CustomerOrderPanel extends JPanel{
 	}
 	
 }//end class CustomerOrderPanel
+
