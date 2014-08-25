@@ -81,56 +81,10 @@ public class StockManagementPanelTest {
 	}
 
 	@Test
-	public void testDisplayAllProducts() {
-		assertEquals(1, panel.displayAllProducts(products));
-		Product p2 = new Product("name", "category",  30, 12.0, null, true, 20);
-		p2.setId(2);
-		products.add(p2);
-		Product p3 = new Product("name", "category",  30, 12.0, null, true, 20);
-		p3.setId(3);
-		products.add(p3);
-		assertEquals(3, panel.displayAllProducts(products));
-	}
-
-	@Test
 	public void testDiscountProduct() {
 		panel.setProductLoaded(true);
 		panel.discountProduct(1, products, true);
 		assertEquals(products.get(0).getDiscountedPercentage(), 33d, .001);
-	}
-
-	@Test
-	public void testDisplayDeletedStock() {
-		assertEquals(0, panel.displayDeletedStock(products));
-		Product p2 = new Product("name", "category",  30, 12.0, null, true, 20);
-		p2.setId(2);
-		products.add(p2);
-		Product p3 = new Product("name", "category",  30, 12.0, null, true, 20);
-		p3.setId(3);
-		products.add(p3);
-		assertEquals(0, panel.displayDeletedStock(products));
-		products.get(0).setDeleted(true);
-		assertEquals(1, panel.displayDeletedStock(products));
-		products.get(1).setDeleted(true);
-		products.get(2).setDeleted(true);
-		assertEquals(3, panel.displayDeletedStock(products));
-	}
-
-	@Test
-	public void testDisplayLowStock() {
-		assertEquals(0, panel.displayLowStock(products));
-		Product p2 = new Product("name", "category",  30, 12.0, null, true, 20);
-		p2.setId(2);
-		products.add(p2);
-		Product p3 = new Product("name", "category",  30, 12.0, null, true, 20);
-		p3.setId(3);
-		products.add(p3);
-		assertEquals(0, panel.displayLowStock(products));
-		products.get(0).setLowStockOrder(300);
-		assertEquals(1, panel.displayLowStock(products));
-		products.get(1).setLowStockOrder(300);
-		products.get(2).setLowStockOrder(300);
-		assertEquals(3, panel.displayLowStock(products));
 	}
 
 	@Test
@@ -157,32 +111,4 @@ public class StockManagementPanelTest {
 		assertEquals(panel.getDisplayedDiscountPercent(), products.get(0).getDiscountedPercentage() + "%");
 		assertEquals(panel.isFlaggedForOrderVisible(), products.get(0).isFlaggedForOrder());
 	}
-
-	@Test
-	public void testRefreshCombo() {
-		assertEquals(2, panel.refreshCombo(products));
-		Product p2 = new Product("name", "category",  30, 12.0, null, true, 20);
-		p2.setId(2);
-		products.add(p2);
-		Product p3 = new Product("name", "category",  30, 12.0, null, true, 20);
-		p3.setId(3);
-		products.add(p3);
-		assertEquals(4, panel.refreshCombo(products));
-	}
-
-	@Test
-	public void testResetToDefaultValues() {
-		assertEquals(1, products.size());
-		//panel.resetToDefaultValues(products, true);
-		assertEquals(5, products.size());
-	}
-
-	@Test
-	public void testRestoreProduct() {
-		p1.setDeleted(true);
-		assertTrue(products.get(0).isDeleted());
-		panel.restoreProduct(1, products);
-		assertFalse(products.get(0).isDeleted());
-	}
-
 }
