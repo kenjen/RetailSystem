@@ -12,7 +12,7 @@ public class Product {
 	private double price;
 	private double markupPrice;
 	private boolean deleted = false;
-	private boolean discounted;
+	private boolean discounted = false;;
 	private double discountedPercentage;
 	private int quantity;
 	private int lowStockOrder;
@@ -37,7 +37,11 @@ public class Product {
 		this.lowStockOrder = lowStockOrder;
 		nextId++;
 		this.id = nextId;
-		this.markupPrice=price*MARKUP;
+		if(this.discounted==false){
+			this.markupPrice=price*MARKUP;
+		}else{
+			this.markupPrice=price*MARKUP*(1-discountedPercentage/100);
+		}
 	}
 	
 	public String getName(){
@@ -70,7 +74,11 @@ public class Product {
 	
 	public void setPrice(double price){
 		this.price = price;
-		this.markupPrice = price * MARKUP;
+		if(this.discounted==false){
+			this.markupPrice=price*MARKUP;
+		}else{
+			this.markupPrice=price*MARKUP*(1-discountedPercentage/100);
+		}
 	}
 	
 	public boolean upDateProducts(){

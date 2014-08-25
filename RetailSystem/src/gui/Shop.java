@@ -1,14 +1,15 @@
 package gui;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.swing.JOptionPane;
-
 import data.Customer;
 import data.CustomerOrder;
+import data.Finance;
 import data.Json;
 import data.Product;
 import data.ProductToOrder;
@@ -24,9 +25,9 @@ public class Shop {
 	private static ArrayList<Product> products = new ArrayList<Product>();
 	private static ArrayList<StockOrder> stockOrders = new ArrayList<StockOrder>();
 	private static ArrayList<CustomerOrder> customerOrders = new ArrayList<CustomerOrder>();
-
-	// Initialize s of Type Supplier
-	Supplier s;
+	private static ArrayList<Finance> financialRecords = new ArrayList<Finance>();
+	static final Font TITLE_FONT = new Font("Calibri",Font.BOLD, 20);
+	static final Color TITLE_COLOR = Color.darkGray;
 
 	public static void main(String[] args) {
 		new Shop(true);
@@ -46,10 +47,15 @@ public class Shop {
 		populateCustomerOrders();
 		printCustomerOrderInvoice();
 		updateStockOrderDevilveryDates();
+		populateFinances();
 
 		// run login
 		Login login = new Login(staffMembers);
 		login.drawFrame();
+	}
+
+	private void populateFinances() {
+		financialRecords = Json.readFinanceFromFile();
 	}
 
 	public void populateCustomers() {
@@ -183,7 +189,7 @@ public void populateSuppliers(){
 
 	public void populateProducts() {
 		products = Json.readProductsFromFile();
-
+		
 		// if error occured during load, load default products
 		if (products == null) {
 			System.out.println("REACHED NULL LOOP");
@@ -197,7 +203,6 @@ public void populateSuppliers(){
 					suppliers.get(0), true, 60);
 			Product p5 = new Product("Broom", "Hygene", 20, 12.0,
 					suppliers.get(3), true, 3);
-
 			products = new ArrayList<Product>();
 			products.add(p1);
 			products.add(p2);
@@ -212,8 +217,7 @@ public void populateSuppliers(){
 
 	public void populateStockOrders() {
 		
-stockOrders = Json.readStockOrdersFromFile();
-
+		stockOrders = Json.readStockOrdersFromFile();
 		
 		if(stockOrders == null){
 		SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -340,6 +344,14 @@ stockOrders = Json.readStockOrdersFromFile();
 
 	public static void setCustomerOrders(ArrayList<CustomerOrder> customerOrders) {
 		Shop.customerOrders = customerOrders;
+	}
+
+	public static ArrayList<Finance> getFinancialRecords() {
+		return financialRecords;
+	}
+
+	public static void setFinancialRecords(ArrayList<Finance> financialRecords) {
+		Shop.financialRecords = financialRecords;
 	}
 
 }

@@ -14,7 +14,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import data.Product;
 import data.Staff;
+import data.Supplier;
 
 public class GUIBackBone extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -32,6 +34,7 @@ public class GUIBackBone extends JFrame {
 	private static Staff loggedStaffMember;
 	private int previousTabIndex = 0;
 	private JLabel lblLogout = new JLabel();
+	private boolean isProfitPanelLoaded = false;
 
 	public GUIBackBone(boolean isAdmin, Staff logStaff) {
 		JPanel logoutPanel = new JPanel();
@@ -46,7 +49,7 @@ public class GUIBackBone extends JFrame {
 			tabbedPane.addTab("Staff", panelStaff);
 			tabbedPane.addTab("Customer", panelCustomer);
 			tabbedPane.addTab("Supplier", panelSupplier);
-			//tabbedPane.addTab("Finance", panelProfit);
+			tabbedPane.addTab("Finance", panelProfit);
 			tabbedPane.addTab("", logoutPanel);
 			tabbedPane.setIconAt(0,
 					new ImageIcon(getClass().getResource("/CheckList.png")));
@@ -60,7 +63,9 @@ public class GUIBackBone extends JFrame {
 					new ImageIcon(getClass().getResource("/Customer.png")));
 			tabbedPane.setIconAt(5,
 					new ImageIcon(getClass().getResource("/Supplier.png")));
-			tabbedPane.setTabComponentAt(6, lblLogout);
+			tabbedPane.setIconAt(6,
+					new ImageIcon(getClass().getResource("/Finance.png")));
+			tabbedPane.setTabComponentAt(7, lblLogout);
 
 		} else {
 			loggedStaffMember = logStaff;
@@ -88,7 +93,7 @@ public class GUIBackBone extends JFrame {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				saveTabDetails(0);
-				if (tabbedPane.getSelectedIndex() == 6
+				if (tabbedPane.getSelectedIndex() == 7
 						|| (tabbedPane.getSelectedIndex() == 5 && GUIBackBone.loggedStaffMember
 								.isAdmin() == false)) {
 					System.out.println("selected index - "
@@ -101,10 +106,21 @@ public class GUIBackBone extends JFrame {
 						Login login = new Login(Shop.getStaffMembers());
 						login.drawFrame();
 						saveTabDetails(0);
+		
 						GUIBackBone.this.dispose();
 					} else {
 						tabbedPane.setSelectedIndex(previousTabIndex);
 					}
+				}else if(tabbedPane.getSelectedIndex() == 1){
+					panelCustomerOrders.repopulateAll();
+				}else if(tabbedPane.getSelectedIndex() == 2){
+					panelStockOrder.repopulateAll();
+				}else if(tabbedPane.getSelectedIndex() == 6){
+					if(!isProfitPanelLoaded){
+						panelProfit.createPanel();
+						isProfitPanelLoaded = true;
+					}
+					panelProfit.refreshChart();
 				}
 				previousTabIndex = tabbedPane.getSelectedIndex();
 			}
@@ -181,19 +197,9 @@ public class GUIBackBone extends JFrame {
 
 	public void saveTabDetails(int index) {
 		panelStockManagement.saveDetails();
-		panelStockManagement.setupList();
-		panelStockOrder.displayOrderTable(0);
-		panelStockOrder.displayProductsTable("", "");
-		panelStockOrder.repaint();
-		panelCustomerOrders.displayOrderTable(false, 0);
-		panelCustomerOrders.displayProductsTable("");
-		panelCustomerOrders.populateCustomerNames();
-
+		panelStockManagement.refreshTable();
 		panelCustomer.saveDetails();
-
 		panelSupplier.saveDetails();
-		panelStockOrder.saveDetails();
-
 	}
 
 	public static void setLoggedStaffMember(Staff loggedStaffMember) {

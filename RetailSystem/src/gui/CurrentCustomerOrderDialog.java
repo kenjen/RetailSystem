@@ -1,7 +1,5 @@
 package gui;
 
-import gui.CustomerOrderPanel.ButtonOrderHandler;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -11,21 +9,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-
-import data.ProductToOrder;
 import net.miginfocom.swing.MigLayout;
-import tableModels.ProductTableModel;
+import tableModels.UneditableTableModel;
 
 public class CurrentCustomerOrderDialog extends JDialog implements ActionListener  {
 	private static final long serialVersionUID = 1L;
@@ -35,7 +28,6 @@ public class CurrentCustomerOrderDialog extends JDialog implements ActionListene
 	private JPanel contentPanePanel = new JPanel();
 	private static ArrayList<Object[]> passedList;
 	private JButton btnClearOrder = new JButton("Clear Order");
-	private JButton btnRemoveSelected = new JButton ("Remove selected");
 	private Object[][] listData;
 	private JButton btnCancel = new JButton("No, Back");
 	private JButton btnOrder = new JButton("Yes, Submit");
@@ -78,13 +70,11 @@ public class CurrentCustomerOrderDialog extends JDialog implements ActionListene
 		contentPanePanel.add(scrollPane, "push, grow");
 		JPanel panel = new JPanel();
 		panel.setLayout(new MigLayout());
-		panel.add(btnRemoveSelected,"growx, wrap");
 		panel.add(btnClearOrder,"wrap, growx");
 		contentPanePanel.add(panel,"pushx,wrap,alignx left, aligny top");
 		contentPanePanel.add(btnOk,"pushx, alignx center");
 		btnOk.addActionListener(this);
 		btnClearOrder.addActionListener(this);
-		btnRemoveSelected.addActionListener(this);
 
 		setLayout(new GridBagLayout());
 		setContentPane(contentPanePanel);
@@ -103,28 +93,14 @@ public class CurrentCustomerOrderDialog extends JDialog implements ActionListene
 			choice = 0;
 			setVisible(false);
 		}else if(e.getSource().equals(btnClearOrder)){
-			String columnNames[] = { "Id", "Name", "Supplier", "Category", "Price",	"Discounted?", "Quantity", "Amount to Order", "Remove?"};
-			Object[][] objects = new Object[0][9];
-			ProductTableModel model = new ProductTableModel(objects, columnNames);
+			String columnNames[] = { "Id", "Name", "Supplier", "Category", "Price",	"Discounted?", "Quantity", "Amount to Order"};
+			Object[][] objects = new Object[0][8];
+			UneditableTableModel model = new UneditableTableModel(objects, columnNames);
 			table=new JTable(model);
 			scrollPane.getViewport().add(table);
 			scrollPane.repaint();
 			CustomerOrderPanel.setArrayCurrentOrder(new ArrayList<Object[]>());
-		}else if(e.getSource().equals(btnRemoveSelected)){
-			AbstractTableModel adstractModel = (AbstractTableModel) table.getModel();
-			if(adstractModel.getRowCount() != 0){
-				adstractModel.fireTableDataChanged();
-				
-				//loop through table data to find all element that have boolean set to true
-				ArrayList<Object[]> newList= new ArrayList<Object[]>();
-				for(Object[] object:listData){
-					if((boolean) object[8] == false){
-						newList.add(object);
-					}
-				}
-				StockOrderPanel.setArrayTemporaryOrder(newList);
-				createTable(newList);
-			}
+			table.setAutoCreateRowSorter(false);
 		}else if(e.getSource() .equals(btnOrder)){
 			choice=1;
 			setVisible(false);
@@ -135,10 +111,10 @@ public class CurrentCustomerOrderDialog extends JDialog implements ActionListene
 	
 	public void createTable(ArrayList<Object[]> list){
 		passedList=list;
-		String columnNames[] = { "Id", "Name", "Supplier", "Category", "Price",	"Discounted?", "Quantity", "Amount to Order", "Remove?"};
+		String columnNames[] = { "Id", "Name", "Supplier", "Category", "Price",	"Discounted?", "Quantity", "Amount to Order"};
 		//create from array list an array of objects
-		Object[][] objects = new Object[list.size()][8];
-		listData = new Object[list.size()][9];
+		Object[][] objects = new Object[list.size()][7];
+		listData = new Object[list.size()][8];
 		for(int i=0; i<list.size(); i++){
 			objects[i] = list.get(i);
 			listData[i][0] = objects[i][0];
@@ -149,47 +125,60 @@ public class CurrentCustomerOrderDialog extends JDialog implements ActionListene
 			listData[i][5] = objects[i][5];
 			listData[i][6] = objects[i][6];
 			listData[i][7] = objects[i][7];
-			listData[i][8] = false;
 			
 		}
 		
-		ProductTableModel model = new ProductTableModel(listData, columnNames);
+		UneditableTableModel model = new UneditableTableModel(listData, columnNames);
 		table = new JTable(model);
+		if(table.getRowCount() > 0)
 		table.setAutoCreateRowSorter(true);
-		table.getColumnModel().getSelectionModel()
-		.addListSelectionListener(new ListSelectionListener() {
-
-			public void valueChanged(ListSelectionEvent e) {
-				int row = table.getSelectedRow();
-				table.requestFocus();
-				table.changeSelection(row, 8, false, false);
-			}
-
-		});
 		table.addMouseListener(new MouseAdapter(){
-		public void mouseClicked(MouseEvent e) {
-		      if (e.getClickCount() == 2) {
-		         JTable target = (JTable)e.getSource();
-		         int row = target.getSelectedRow();
-		         int cell = 0;
-		         
-		         int choice = JOptionPane.showConfirmDialog(CurrentCustomerOrderDialog.this, "Are you sure you want to remove this row?","Remove?",JOptionPane.YES_NO_OPTION);
-		         if (choice==JOptionPane.YES_OPTION){
-			        ProductTableModel model = (ProductTableModel) target.getModel();
-			        //model.fireTableDataChanged();
-			        System.out.println(model.getRowCount());
-			        System.out.println(row);
-			        model.removeRow(row);
-			        table.repaint();
-			        Object[] object = passedList.get(row);
-			        passedList.remove(row);
-			        
-		         };
-		      }
-		}
+			//selects the row at right click
+			public void mousePressed(MouseEvent e){
+				if(e.isPopupTrigger()){
+					JTable source = (JTable)e.getSource();
+	                int row = source.rowAtPoint( e.getPoint() );
+	                int column = source.columnAtPoint( e.getPoint() );
+
+	                System.out.println("Selecting row in table");
+	                if (! source.isRowSelected(row)){
+	                    source.changeSelection(row, column, false, false);
+	                }
+	                JPopupMenu m = mouseMenu();
+	                m.show(e.getComponent(), e.getX(), e.getY());
+				}
+			}
 		});
+		
+		//table.setComponentPopupMenu(popup);
 		scrollPane.getViewport().add(table);
 		scrollPane.repaint();
+	}
+	
+	public JPopupMenu mouseMenu(){
+		JPopupMenu popup = new JPopupMenu();
+		JMenuItem removeSelected = new JMenuItem("Remove Selected");
+		popup.add(removeSelected);
+		removeSelected.addMouseListener(new MouseAdapter(){
+			public void mousePressed(MouseEvent e){
+				int row = table.getSelectedRow();
+				UneditableTableModel model = (UneditableTableModel) table.getModel();
+				if(model.getRowCount()>1){
+					model.removeRow(row);
+					model.fireTableDataChanged();
+				}else{
+					String columnNames[] = { "Id", "Name", "Supplier", "Category", "Price",	"Discounted?", "Quantity", "Amount to Order"};
+					Object[][] objects = new Object[0][8];
+					UneditableTableModel mod = new UneditableTableModel(objects, columnNames);
+					table=new JTable(mod);
+					scrollPane.getViewport().add(table);
+					scrollPane.repaint();
+					table.setAutoCreateRowSorter(false);
+				}
+		        passedList.remove(row);
+			}
+		});
+		return popup;
 	}
 
 }

@@ -1,14 +1,21 @@
 package gui;
 
 import java.awt.Color;
-import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -26,7 +33,9 @@ import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
+import tableModels.UneditableTableModel;
 import data.CustomerOrder;
 import data.Finance;
 import data.StockOrder;
@@ -34,21 +43,68 @@ import data.StockOrder;
 public class ProfitLossPanel extends JPanel{
 	private ArrayList<Finance> finances = new ArrayList<Finance>();
 	private static final long serialVersionUID = 1L;
+	private JLabel lblWrittenReport = new JLabel();
+	private double expenseCurrentYear;
+	private double expenseCurrentWeek;
+	private double expenseCurrentMonth;
+	private double expenseLastMonth;
+	private double expenseMonthBeforeLastMonth;
+	private double profitCurrentYear;
+	private double profitCurrentMonth;
+	private double profitCurrentWeek;
+	private double profitLastMonth;
+	private double profitMonthBeforeLastMonth;
+	private String strCurrentYear;
+	private String strCurrentMonth;
+	private String strCurrentWeek;
+	private String strLastMonth;
+	private String strMonthBeforeLastMonth;
+	private DecimalFormat df = new DecimalFormat("#.00");
+	private JButton btnAddExpense = new JButton("Add Extra Expense");
+	private ArrayList<Object[]> tableData = new ArrayList<Object[]>();
+	private UneditableTableModel tableModel; 
+	private JTable table = new JTable();
+	private JScrollPane scrollPane = new JScrollPane(table);
+	private CategoryDataset chartData;
+	private ChartPanel chartPanel;
+	private JFreeChart chart;
+	private DefaultCategoryDataset dataset;
+    // row keys...
+    private final String expense = "Expense";
+    private final String profit = "Profit";
+	
+    public ProfitLossPanel(){
+    	
+    }
+    
+	public void createPanel() {
+		setLayout(new MigLayout());
+		generateFinanceData();
+		loadChartData();
+		
+		// create and add the chart to a panel...
+	    createChart();
+	    add(chartPanel, "alignx right, pushx");
 
-	public ProfitLossPanel() {
-		setLayout(new GridBagLayout());
-		
-		//generate profit/loss report
-		for(CustomerOrder order:Shop.getCustomerOrders()){
-			finances.add(new Finance(order.getTotalNet(),order.getCreationDate(),"Customer Order",false));
-		}
-		for(StockOrder order:Shop.getStockOrders()){
-			finances.add(new Finance(order.getTotal(),order.getDate(),"Stock Order",true));
-		}
-		
-		final CategoryDataset chartData = createDataset1();
+	    // add the written finance report
+	    add(lblWrittenReport,"aligny top, alignx left, pushx ,wrap");
+	    lblWrittenReport.setText(generateHtmlString());
+	    
+	    //add the option to add expense
+	    JLabel lblExpenses = new JLabel("Recorded expenses:");
+	    lblExpenses.setFont(Shop.TITLE_FONT);
+	    lblExpenses.setForeground(Shop.TITLE_COLOR);
+	    add(lblExpenses,"split 2");
+	    add(btnAddExpense, "gapx 50, wrap");
+	    add(scrollPane,"span, grow, push");
+	    drawTable();
+	    btnAddExpense.addActionListener(new AddExpenseHandler());
+	    
+	}
+	
+	public void createChart() {
 	    // create the chart...
-	    final JFreeChart chart = ChartFactory.createBarChart(
+	   JFreeChart thisChart = ChartFactory.createBarChart(
 	        "Financial report",        // chart title
 	        "Period",               // domain axis label
 	        "Amount",                  // range axis label
@@ -60,113 +116,172 @@ public class ProfitLossPanel extends JPanel{
 	    );
 
 	    // NOW DO SOME OPTIONAL CUSTOMISATION OF THE CHART...
-	    chart.setBackgroundPaint(Color.white);
-//	    chart.getLegend().setAnchor(Legend.SOUTH);
+	   thisChart.setBackgroundPaint(Color.white);
 
 	    // get a reference to the plot for further customisation...
-	    final CategoryPlot plot = chart.getCategoryPlot();
+	    CategoryPlot plot = thisChart.getCategoryPlot();
 	    plot.setBackgroundPaint(new Color(0xEE, 0xEE, 0xFF));
 	    plot.setDomainAxisLocation(AxisLocation.BOTTOM_OR_RIGHT);
 
-	    final CategoryAxis domainAxis = plot.getDomainAxis();
+	    CategoryAxis domainAxis = plot.getDomainAxis();
 	    domainAxis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
-	    final ValueAxis axis2 = new NumberAxis("Secondary");
+	    ValueAxis axis2 = new NumberAxis("Secondary");
 	    plot.setRangeAxis(1, axis2);
 
-	    final LineAndShapeRenderer renderer2 = new LineAndShapeRenderer();
+	    LineAndShapeRenderer renderer2 = new LineAndShapeRenderer();
 	    renderer2.setToolTipGenerator(new StandardCategoryToolTipGenerator());
 	    plot.setRenderer(1, renderer2);
 	    plot.setDatasetRenderingOrder(DatasetRenderingOrder.REVERSE);
-	    // OPTIONAL CUSTOMISATION COMPLETED.
-
+	    
 	    // add the chart to a panel...
-	    final ChartPanel chartPanel = new ChartPanel(chart);
-	    //chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-	    add(chartPanel);
-
-
-		
+	    chartPanel = new ChartPanel(thisChart);
 	}
-	
-	/**
-	 * Creates a sample dataset.
-	 *
-	 * @return  The dataset.
-	 */
-	private CategoryDataset createDataset1() {
 
-	    // row keys...
-	    final String expense = "Expense";
-	    final String profit = "Profit";
+	//makes the table with previous miscelaneous expenses
+	public void drawTable() {
+		String columnNames[] = {"Id","Admin name","Date","Comments","Amount"};
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		tableData = new ArrayList<Object[]>();
+		for(Finance finance : Shop.getFinancialRecords()){
+			Object[] x = new Object[5];
+			x[0] = finance.getId();
+			x[1] = GUIBackBone.getLoggedStaffMember().getName()+", "+GUIBackBone.getLoggedStaffMember().getSurname();
+			x[2] = sdf.format(finance.getDate());
+			x[3] = finance.getDescription();
+			x[4] = finance.getAmount();
+			tableData.add(x);
+		}
+		tableModel = new UneditableTableModel(tableData.toArray(new Object[tableData.size()][]), columnNames);
+		table.setModel(tableModel);
+		scrollPane.getViewport().add(table);
+		scrollPane.repaint();
+		
+	}//end drawTable
 
-	    
-	    
-	    
-	    
-	    
-	    
+	//generates a String to be used as a HTML table
+	public String generateHtmlString() {
+	    String styleGreen = "background-color:\"green\"";
+	    String styleRed = "background-color:red";
+	    String htmlString = "<html><head>"
+	    		+ "<style>"
+	    		+ "table{background-color:white}"
+	    		+ "</style>"
+	    		+ "</head>"
+	    		+ "<body>"
+	    			+ "<table border='1'>"
+			    		+ "<tr>"
+				    		+ "<td rowspan='3'>"+strCurrentYear+"</td>"
+				    		+ "<td style='color:red'>EUR "+df.format(expenseCurrentYear)+"</td>"
+			    		+ "</tr>"
+			    		+ "<tr>"
+				    		+ "<td style='color:blue'>EUR "+df.format(profitCurrentYear)+"</td>"
+			    		+ "</tr>"
+			    		+ "<tr>";
+    		if(profitCurrentYear-expenseCurrentYear > 0){
+    			htmlString+="<td style='font-size:12px; border:1px solid black;"+styleGreen+"'>EUR "+df.format(profitCurrentYear-expenseCurrentYear)+"</td>";
+    		}else{
+    			htmlString+="<td style='font-size:12px; border:1px solid black;"+styleRed+"'>EUR "+df.format(profitCurrentYear-expenseCurrentYear)+"</td>";
+    		}
+			htmlString+= "</tr>"
+			    		+ "<tr>"
+				    		+ "<td rowspan='3'>"+strMonthBeforeLastMonth+"</td>"
+				    		+ "<td style='color:red'>EUR "+df.format(expenseMonthBeforeLastMonth)+"</td>"
+			    		+ "</tr>"
+			    		+ "<tr>"
+				    		+ "<td style='color:blue'>EUR "+df.format(profitMonthBeforeLastMonth)+"</td>"
+			    		+ "</tr>"
+			    		+ "<tr>";
+    		if(profitMonthBeforeLastMonth-expenseMonthBeforeLastMonth > 0){
+    			htmlString+="<td style='font-size:12px; border:1px solid black;"+styleGreen+"'>EUR "+df.format(profitMonthBeforeLastMonth-expenseMonthBeforeLastMonth)+"</td>";
+    		}else{
+    			htmlString+="<td style='font-size:12px; border:1px solid black;"+styleRed+"'>EUR "+df.format(profitMonthBeforeLastMonth-expenseMonthBeforeLastMonth)+"</td>";
+    		}
+    		htmlString+= "</tr>"
+			    		+ "</tr>"
+			    		+ "<tr>"
+				    		+ "<td rowspan='3'>"+strLastMonth+"</td>"
+				    		+ "<td style='color:red'>EUR "+df.format(expenseLastMonth)+"</td>"
+			    		+ "</tr>"
+			    		+ "<tr>"
+			    			+ "<td style='color:blue'>EUR "+df.format(profitLastMonth)+"</td>"
+			    		+ "</tr>"
+			    		+ "<tr>";
+			if(profitLastMonth-expenseLastMonth > 0){
+				htmlString+="<td style='font-size:12px; border:1px solid black;"+styleGreen+"'>EUR "+df.format(profitLastMonth-expenseLastMonth)+"</td>";
+			}else{
+				htmlString+="<td style='font-size:12px; border:1px solid black;"+styleRed+"'>EUR "+df.format(profitLastMonth-expenseLastMonth)+"</td>";
+			}
+			htmlString+= "</tr>"
+			    		+ "</tr>"
+			    		+ "<tr>"
+				    		+ "<td rowspan='3'>"+strCurrentMonth+"</td>"
+				    		+ "<td style='color:red'>EUR "+df.format(expenseCurrentMonth)+"</td>"
+			    		+ "</tr>"
+			    		+ "<tr>"
+				    		+ "<td style='color:blue'>EUR "+df.format(profitCurrentMonth)+"</td>"
+			    		+ "</tr>"
+			    		+ "<tr>";
+			if(profitCurrentMonth-expenseCurrentMonth > 0){
+				htmlString+="<td style='font-size:12px; border:1px solid black;"+styleGreen+"'>EUR "+df.format(profitCurrentMonth-expenseCurrentMonth)+"</td>";
+			}else{
+				htmlString+="<td style='font-size:12px; border:1px solid black;"+styleRed+"'>EUR "+df.format(profitCurrentMonth-expenseCurrentMonth)+"</td>";
+			}
+			htmlString+= "</tr>"
+			    		+ "</tr>"
+			    		+ "<tr>"
+				    		+ "<td rowspan='3'>"+strCurrentWeek+"</td>"
+				    		+ "<td style='color:red'>EUR "+df.format(expenseCurrentWeek)+"</td>"
+			    		+ "</tr>"
+			    		+ "<tr>"
+				    		+ "<td style='color:blue'>EUR "+df.format(profitCurrentWeek)+"</td>"
+			    		+ "</tr>"
+			    		+ "<tr>";
+			if(profitCurrentWeek-expenseCurrentWeek > 0){
+				htmlString+="<td style='font-size:12px; border:1px solid black;"+styleGreen+"'>EUR "+df.format(profitCurrentWeek-expenseCurrentWeek)+"</td>";
+			}else{
+				htmlString+="<td style='font-size:12px; border:1px solid black;"+styleRed+"'>EUR "+df.format(profitCurrentWeek-expenseCurrentWeek)+"</td>";
+			}
+			htmlString+= "</tr>"
+			    		+ "</tr>"
+		    		+ "</table>"
+	    		+ "</body>"
+	    		+ "</html>";
+		return htmlString;
+	}
 
-	    
-	    
-	    
-	    
-	    DateTime now = DateTime.now();
-	    DateTime lastMonthDateTime = DateTime.now().minusMonths(1);
-	    DateTime monthBeforeLastMonthDateTime = DateTime.now().minusMonths(2);
-	    
-	    
-	    
-	    
-	    // column keys...
-	    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-	    System.out.println("now = "+now.toString());
-	    System.out.println("last month = "+lastMonthDateTime.toString());
-	    System.out.println("last month-1 = "+monthBeforeLastMonthDateTime.toString());
-	    
-	    int currentYear = now.getYear();
-	    int currentMonth=now.getMonthOfYear();
-	    int lastMonth = lastMonthDateTime.getMonthOfYear();
-	    int monthBeforeLastMonth = monthBeforeLastMonthDateTime.getMonthOfYear();
-	    int currentWeek = now.getWeekyear();
-	    String strCurrentYear = String.valueOf(currentYear);
-	    String strCurrentMonth = getMonthName(currentMonth);
-	    String strCurrentWeek = "Current Week";
-	    String strLastMonth = getMonthName(lastMonth);
-	    String strMonthBeforeLastMonth = getMonthName(monthBeforeLastMonth);
-	    
-	    DateTime startDateOfThisMonth = now.withDayOfMonth(1);
-	    DateTime endDateOfThisMonth = now.plusMonths(1).minusDays(1);
-	    DateTime startDateOfLastMonth = now.minusMonths(1).withDayOfMonth(1);
-	    DateTime endDateOfLastMonth = now.withDayOfWeek(1).minusDays(1);
-	    DateTime startDateOfMonthBeforeLastMonth = now.minusMonths(2).withDayOfMonth(1);
-	    DateTime endDateOfMonthBwforeLastMonth = now.minusMonths(1).withDayOfWeek(1).minusDays(1);
-	    
+	//creates a dataset for the Chart
+	public void loadChartData() {
 
 	    // create the dataset...
-	    final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+	    dataset = new DefaultCategoryDataset();
+		dataset.addValue(expenseCurrentYear, expense, strCurrentYear);
+		dataset.addValue(expenseMonthBeforeLastMonth, expense, strMonthBeforeLastMonth);
+		dataset.addValue(expenseLastMonth, expense, strLastMonth);
+		dataset.addValue(expenseCurrentMonth, expense, strCurrentMonth);
+		dataset.addValue(expenseCurrentWeek, expense, strCurrentWeek);
 
-	    try {
-		dataset.addValue(calculateExpencesForSpecifiedPeriod(sdf.parse("01/01/"+strCurrentYear), sdf.parse("31/12/"+strCurrentYear)), expense, strCurrentYear);
-		dataset.addValue(calculateExpencesForSpecifiedPeriod(startDateOfMonthBeforeLastMonth.toDate(), endDateOfMonthBwforeLastMonth.toDate()), expense, strMonthBeforeLastMonth);
-		dataset.addValue(calculateExpencesForSpecifiedPeriod(startDateOfLastMonth.toDate(), endDateOfLastMonth.toDate()), expense, strLastMonth);
-		dataset.addValue(calculateExpencesForSpecifiedPeriod(startDateOfThisMonth.toDate(), endDateOfThisMonth.toDate()), expense, strCurrentMonth);
-	    //TODO
-		dataset.addValue(500, expense, strCurrentWeek);
-
-	    dataset.addValue(calculateProfitForSpecifiedPeriod(sdf.parse("01/01/"+strCurrentYear), sdf.parse("31/12/"+strCurrentYear)), profit, strCurrentYear);
-	    dataset.addValue(calculateProfitForSpecifiedPeriod(startDateOfMonthBeforeLastMonth.toDate(), endDateOfMonthBwforeLastMonth.toDate()), profit, strMonthBeforeLastMonth);
-	    dataset.addValue(calculateProfitForSpecifiedPeriod(startDateOfLastMonth.toDate(), endDateOfLastMonth.toDate()), profit, strLastMonth);
-	    dataset.addValue(calculateProfitForSpecifiedPeriod(startDateOfThisMonth.toDate(), endDateOfThisMonth.toDate()), profit, strCurrentMonth);
-	    //TODO
-	    dataset.addValue(300, profit, strCurrentWeek);
+	    dataset.addValue(profitCurrentYear, profit, strCurrentYear);
+	    dataset.addValue(profitMonthBeforeLastMonth, profit, strMonthBeforeLastMonth);
+	    dataset.addValue(profitLastMonth, profit, strLastMonth);
+	    dataset.addValue(profitCurrentMonth, profit, strCurrentMonth);
+	    dataset.addValue(profitCurrentWeek, profit, strCurrentWeek);
 	    
-	    } catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    
-	    return dataset;
+	    chartData = dataset;
 
+	}
+	
+	public void updateChartData(){
+		dataset.setValue(expenseCurrentYear, expense, strCurrentYear);
+		dataset.setValue(expenseMonthBeforeLastMonth, expense, strMonthBeforeLastMonth);
+		dataset.setValue(expenseLastMonth, expense, strLastMonth);
+		dataset.setValue(expenseCurrentMonth, expense, strCurrentMonth);
+		dataset.setValue(expenseCurrentWeek, expense, strCurrentWeek);
+
+	    dataset.setValue(profitCurrentYear, profit, strCurrentYear);
+	    dataset.setValue(profitMonthBeforeLastMonth, profit, strMonthBeforeLastMonth);
+	    dataset.setValue(profitLastMonth, profit, strLastMonth);
+	    dataset.setValue(profitCurrentMonth, profit, strCurrentMonth);
+	    dataset.setValue(profitCurrentWeek, profit, strCurrentWeek);
 	}
 	
 	//returns the month name based on integer input
@@ -202,6 +317,12 @@ public class ProfitLossPanel extends JPanel{
 		}
 	}
 	
+	public void refreshChart(){
+		generateFinanceData();
+		updateChartData();
+		lblWrittenReport.setText(generateHtmlString());
+	}
+	
 	//returns the profit for specified period
 	public double calculateProfitForSpecifiedPeriod(Date start, Date end){
 		double total = 0;
@@ -214,16 +335,107 @@ public class ProfitLossPanel extends JPanel{
 		
 	}
 	
-	//returns the expences for specified period
-		public double calculateExpencesForSpecifiedPeriod(Date start, Date end){
-			double total = 0;
-			for(Finance finance:finances){
-				if(finance.isExpense()==true && finance.getDate().before(end) && finance.getDate().after(start)){
-					total+=finance.getAmount();
-				}
+	//returns the expenses for specified period
+	public double calculateExpencesForSpecifiedPeriod(Date start, Date end){
+		double total = 0;
+		for(Finance finance:finances){
+			if(finance.isExpense()==true && finance.getDate().before(end) && finance.getDate().after(start)){
+				total+=finance.getAmount();
 			}
-			return total;
-			
 		}
+		return total;
+		
+	}
 
+	//Gather profit/loss data from Orders and miscellaneous expenses (Shop.getFinances())
+	public void generateFinanceData(){
+		finances = new ArrayList<Finance>();
+		for(CustomerOrder order:Shop.getCustomerOrders()){
+			finances.add(new Finance(order.getTotalNet(),order.getCreationDate(),"Customer Order",false));
+		}
+		for(StockOrder order:Shop.getStockOrders()){
+			finances.add(new Finance(order.getTotal(),order.getDate(),"Stock Order",true));
+		}
+		for(Finance finance:Shop.getFinancialRecords()){
+			finances.add(finance);
+		}
+		
+		//load the profit / expense values for different dates 
+		DateTime now = DateTime.now();
+	    DateTime lastMonthDateTime = DateTime.now().minusMonths(1);
+	    DateTime monthBeforeLastMonthDateTime = DateTime.now().minusMonths(2);
+	    
+	    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	    System.out.println("now = "+now.toString());
+	    System.out.println("last month = "+lastMonthDateTime.toString());
+	    System.out.println("last month-1 = "+monthBeforeLastMonthDateTime.toString());
+	    
+	    int currentYear = now.getYear();
+	    int currentMonth=now.getMonthOfYear();
+	    int lastMonth = lastMonthDateTime.getMonthOfYear();
+	    int monthBeforeLastMonth = monthBeforeLastMonthDateTime.getMonthOfYear();
+	    strCurrentYear = String.valueOf(currentYear);
+	    strCurrentMonth = getMonthName(currentMonth);
+	    strCurrentWeek = "Current Week";
+	    strLastMonth = getMonthName(lastMonth);
+	    strMonthBeforeLastMonth = getMonthName(monthBeforeLastMonth);
+	    
+	    DateTime startDateOfThisMonth = now.withDayOfMonth(1).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
+	    DateTime endDateOfThisMonth = now.plusMonths(1).withDayOfMonth(1).minusDays(1).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
+	    DateTime startDateOfLastMonth = now.minusMonths(1).withDayOfMonth(1).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
+	    DateTime endDateOfLastMonth = now.withDayOfMonth(1).minusDays(1).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
+	    DateTime startDateOfMonthBeforeLastMonth = now.minusMonths(2).withDayOfMonth(1).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
+	    DateTime endDateOfMonthBwforeLastMonth = now.minusMonths(1).withDayOfMonth(1).minusDays(1).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
+	    DateTime startDateOfThisWeek = now.dayOfWeek().withMinimumValue().withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
+	    DateTime endDateOfThisWeek = now.dayOfWeek().withMaximumValue().withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
+	    
+
+	    try {
+	    	expenseCurrentYear = calculateExpencesForSpecifiedPeriod(sdf.parse("01/01/"+strCurrentYear), sdf.parse("31/12/"+strCurrentYear));
+	    	expenseMonthBeforeLastMonth = calculateExpencesForSpecifiedPeriod(startDateOfMonthBeforeLastMonth.toDate(), endDateOfMonthBwforeLastMonth.toDate());
+			expenseLastMonth = calculateExpencesForSpecifiedPeriod(startDateOfLastMonth.toDate(), endDateOfLastMonth.toDate());
+	    	expenseCurrentMonth = calculateExpencesForSpecifiedPeriod(startDateOfThisMonth.toDate(), endDateOfThisMonth.toDate());
+	    	expenseCurrentWeek = calculateExpencesForSpecifiedPeriod(startDateOfThisWeek.toDate(), endDateOfThisWeek.toDate());
+	    	
+	    	profitCurrentYear = calculateProfitForSpecifiedPeriod(sdf.parse("01/01/"+strCurrentYear), sdf.parse("31/12/"+strCurrentYear));
+	    	profitMonthBeforeLastMonth = calculateProfitForSpecifiedPeriod(startDateOfMonthBeforeLastMonth.toDate(), endDateOfMonthBwforeLastMonth.toDate());
+	    	profitLastMonth = calculateProfitForSpecifiedPeriod(startDateOfLastMonth.toDate(), endDateOfLastMonth.toDate());
+	    	profitCurrentMonth = calculateProfitForSpecifiedPeriod(startDateOfThisMonth.toDate(), endDateOfThisMonth.toDate());
+	    	profitCurrentWeek = calculateProfitForSpecifiedPeriod(startDateOfThisWeek.toDate(), endDateOfThisWeek.toDate());
+	    }catch(ParseException ex){
+	    	ex.printStackTrace();
+	    }
+	}
+	
+	public ArrayList<Object[]> getTableData() {
+		return tableData;
+	}
+
+	public void setTableData(ArrayList<Object[]> tableData) {
+		this.tableData = tableData;
+	}
+
+	public JScrollPane getScrollPane() {
+		return scrollPane;
+	}
+
+	public void setScrollPane(JScrollPane scrollPane) {
+		this.scrollPane = scrollPane;
+	}
+
+	public JLabel getLblWrittenReport() {
+		return lblWrittenReport;
+	}
+
+	public void setLblWrittenReport(JLabel lblWrittenReport) {
+		this.lblWrittenReport = lblWrittenReport;
+	}
+
+	public class AddExpenseHandler implements ActionListener{
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new PopupDialog(ProfitLossPanel.this);
+			}
+		}
 }

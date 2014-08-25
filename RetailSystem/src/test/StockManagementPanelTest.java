@@ -138,10 +138,10 @@ public class StockManagementPanelTest {
 		boolean first = products.get(0).isFlaggedForOrder();
 		panel.flagForOrder(1, products);
 		boolean second = products.get(0).isFlaggedForOrder();
-		assertNotEquals(first, second);
+		assertEquals(!first, second);
 		panel.flagForOrder(1, products);
 		first = products.get(0).isFlaggedForOrder();
-		assertNotEquals(first, second);
+		assertEquals(!first, second);
 		assertTrue(second);
 	}
 
@@ -173,7 +173,7 @@ public class StockManagementPanelTest {
 	@Test
 	public void testResetToDefaultValues() {
 		assertEquals(1, products.size());
-		panel.resetToDefaultValues(products, true);
+		//panel.resetToDefaultValues(products, true);
 		assertEquals(5, products.size());
 	}
 

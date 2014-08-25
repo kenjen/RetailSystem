@@ -6,14 +6,17 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-public class ProductTableModel extends AbstractTableModel{
+public class TableModelWithLastColEditable extends AbstractTableModel{
 	private static final long serialVersionUID = 1L;
 	private String columnNames[];
 	private Object[][] data;
 	
-	public ProductTableModel(Object[][] objectPassed, String[] columnNamesPassed){
+	public TableModelWithLastColEditable(Object[][] objectPassed, String[] columnNamesPassed){
 		data = objectPassed;
 		columnNames = columnNamesPassed;
+	}
+	public TableModelWithLastColEditable(){
+		
 	}
 
 	@Override
@@ -63,7 +66,7 @@ public class ProductTableModel extends AbstractTableModel{
 			return false;
 		}
     }
-
+	
 	//allow saves ONLY on last column
     public void setValueAt(Object value, int row, int col) {
     	//if(col == columnNames.length-1){
@@ -83,5 +86,5 @@ public class ProductTableModel extends AbstractTableModel{
     		fireTableDataChanged();
     	}
     }
-	
+    
 }//end class ProductTableModel
