@@ -34,32 +34,19 @@ import data.Supplier;
 public class SupplierPanel extends JSplitPane{
 	// declaring instance variables
 	private Supplier supplier;
-	private static ArrayList<Supplier> suppliers = new ArrayList<Supplier>();
-	private static ArrayList<Product> products = new ArrayList<Product>();
-	private ArrayList<Supplier> deletedSuppliers = new ArrayList<Supplier>();
-	
 	private JLabel title;
 	private DefaultListModel listModel ;
 	private JList suppliersList;
 	private JLabel idLabel;
 	private JLabel nameLabel;
 	private JLabel addressLabel;
-//	private JTextField idField;
 	private JTextField nameField;
 	private JTextField addressField;
-	//private JTextField editIdField;
-//	private JTextField editNameField;
-//	private JTextField editAddressField;
-	//private static final String removeSupplier = "REMOVE Supplier";
-//	private JButton remove;
-//	private static final String editSupplier = "EDIT SUPPLIER DETAILS";
-//	private JButton edit;
-	private JPopupMenu rightClickMenu = new JPopupMenu();
+	private JPopupMenu rightClickMenu;
 
 
 	public SupplierPanel() {
-		// call method to populate the suppliers list
-		populateSuppliers();
+		
 		// create list type
 		createList();
 		  
@@ -131,6 +118,7 @@ public class SupplierPanel extends JSplitPane{
 		buttonPanel.add(edited, "flowx,cell 1 7");
 	
 		 //Create the items for the right click popup menu.
+		rightClickMenu = new JPopupMenu();
         JMenuItem showProducts = new JMenuItem("Show Products ");
         JMenuItem editDetails = new JMenuItem("Edit Supplier");
         JMenuItem removeSupplier = new JMenuItem("Remove Supplier");
@@ -151,7 +139,7 @@ public class SupplierPanel extends JSplitPane{
 			
         		// select supplier
         		if (index != -1) {
-        			for(Supplier supplier:suppliers){
+        			for(Supplier supplier:Shop.getSuppliers()){
         				// get index and id of selected supplier
         				String supplierFromList = (String) suppliersList.getSelectedValue();
         				char[] charList = supplierFromList.toCharArray();
@@ -195,7 +183,7 @@ public class SupplierPanel extends JSplitPane{
 				boolean foundIt = true;
 				if((searchField.getText().isEmpty()==false)){
 					// create method to look for a supplier by name
-					for(Supplier supplier:suppliers){
+					for(Supplier supplier:Shop.getSuppliers()){
 						// check if name entered matches existent supplier name
 						if(searchField.getText().equalsIgnoreCase(supplier.getSupplierName())){
 							if(supplier.isSupplierDeleted()==false){
@@ -255,7 +243,14 @@ public class SupplierPanel extends JSplitPane{
 	// inner class 
 	class PopupListener extends MouseAdapter {
 	    public void mousePressed(MouseEvent e) {
-	    	rightClickPopup(e);
+	    	// show right click menu at mouse point
+	    	if(e.isMetaDown()){
+	    		suppliersList.setSelectedIndex(suppliersList.locationToIndex(e.getPoint()));
+	    		System.out.println("right click pressed");
+	    		rightClickPopup(e);
+	    	}else{
+	    		System.out.println("left pressed");
+	    	}
 	    }
 
 	    public void mouseReleased(MouseEvent e) {
@@ -275,7 +270,7 @@ public class SupplierPanel extends JSplitPane{
 	public void showSuppliers(){
 		listModel.clear();
 		// show suppliers list on GUI
-		for(Supplier supplier:suppliers){
+		for(Supplier supplier:Shop.getSuppliers()){
 			if(supplier.isSupplierDeleted()== false){
 			listModel.addElement("Id: "+supplier.getSupplierId()+", name: " + supplier.getSupplierName()+
 			", address: "+ supplier.getSupplierAddress());
@@ -283,21 +278,13 @@ public class SupplierPanel extends JSplitPane{
 		}
 	}
 	
-
-	public void populateSuppliers(){
-		for(Supplier supplier: Shop.getSuppliers()){
-			suppliers.add(supplier);
-			saveDetails();
-		}
-	}
-
 	// create new supplier
 	public void createSupplier(){
 		if((nameField.getText().isEmpty()==false)&&(addressField.getText().isEmpty()==false)){
 			
 			Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
-			suppliers.add(newSupplier);
-			Json.saveSupplierToFile(newSupplier);
+			Shop.getSuppliers().add(newSupplier);
+			
 			listModel.addElement("Id: "+newSupplier.getSupplierId()+", name: " + newSupplier.getSupplierName()+
 					", address: "+ newSupplier.getSupplierAddress());
 			nameField.setText("");
@@ -306,7 +293,7 @@ public class SupplierPanel extends JSplitPane{
 		else{
 			JOptionPane.showMessageDialog(null, " Enter details for new supplier");
 		}
-		
+		saveDetails();
 	}
 
 	// inner class to delete supplier from GUI list and set it as deleted in the Arraylist
@@ -321,7 +308,7 @@ public class SupplierPanel extends JSplitPane{
 				String id = "";
 				id = id + charList[4] + charList[5] + charList[6];
 				Supplier deleted = null;
-				for(Supplier supplier:suppliers){
+				for(Supplier supplier:Shop.getSuppliers()){
 					//deleted = suppliers.get(index);
 						if(supplier.getSupplierId() == Integer.parseInt(id)){
 							deleted = supplier;
@@ -350,7 +337,7 @@ public class SupplierPanel extends JSplitPane{
 				// select supplier
 			if (index != -1) {
 					
-					for(Supplier supplier:suppliers){
+					for(Supplier supplier:Shop.getSuppliers()){
 						// get index and id of selected supplier
 						String supplierFromList = (String) suppliersList.getSelectedValue();
 						char[] charList = supplierFromList.toCharArray();
@@ -378,7 +365,7 @@ public class SupplierPanel extends JSplitPane{
 	public void addEditedSupplier(){
 		Supplier tempSupplier = null;
 		if((nameField.getText().isEmpty()==false)&&(addressField.getText().isEmpty()==false)){
-		for(Supplier supplier:suppliers){
+		for(Supplier supplier:Shop.getSuppliers()){
 			// get index and id of selected supplier
 			int index = suppliersList.getSelectedIndex();
 			String supplierFromList = (String) suppliersList.getSelectedValue();
@@ -388,17 +375,17 @@ public class SupplierPanel extends JSplitPane{
 			System.out.println(id);
 			String ids = Integer.toString(supplier.getSupplierId());
 			// get the edited details from the GUI textfield
-			if(id.equals(ids)){
-				// replace old details with new details using index of selected supplier
-				supplier.setSupplierName(nameField.getText());
-				supplier.setSupplierAddress(addressField.getText());
+				if(id.equals(ids)){
+					// replace old details with new details using index of selected supplier
+					supplier.setSupplierName(nameField.getText());
+					supplier.setSupplierAddress(addressField.getText());
 				
-				Object newElement = "Id: "+ ids +", name: " + nameField.getText()+
-					", address: "+ addressField.getText();
-				listModel.setElementAt(newElement, index);
+					Object newElement = "Id: "+ ids +", name: " + nameField.getText()+
+							", address: "+ addressField.getText();
+					listModel.setElementAt(newElement, index);
 
-				nameField.setText("");
-				addressField.setText("");
+					nameField.setText("");
+					addressField.setText("");
 				}
 			}
 		}	
@@ -411,12 +398,13 @@ public class SupplierPanel extends JSplitPane{
 	// display deleted suppliers
 	public void showDeletedSuppliers(){
 		listModel.clear();
-			for(Supplier supplier:suppliers){
-			if(supplier.isSupplierDeleted()==true){
-			listModel.addElement( "Deleted supplier: "+"  Id: "+supplier.getSupplierId( )+", name: " + supplier.getSupplierName()+
-					", address: "+ supplier.getSupplierAddress());
+		listModel.addElement("Deleted suppliers");
+			for(Supplier supplier:Shop.getSuppliers()){
+				if(supplier.isSupplierDeleted()==true){
+					listModel.addElement( "Id: "+supplier.getSupplierId( )+", name: " + supplier.getSupplierName()+
+							", address: "+ supplier.getSupplierAddress());
+				}
 			}
-		}
 	}
 	// display products for each supplier
 		public void showProducts(){
@@ -425,27 +413,47 @@ public class SupplierPanel extends JSplitPane{
 			if (index != -1) {
 				
 				// get the supplier at the selected index
-				for(Supplier supplier:suppliers){
-					
+				for(Supplier supplier:Shop.getSuppliers()){
 						char[] charList = supplierFromList.toCharArray();
 						String id = "";
 						id = id + charList[4] + charList[5] + charList[6];
 						int idS = Integer.parseInt(id);
 							if(idS==supplier.getSupplierId()){
-								listModel.clear();
-								listModel.addElement("The products for Supplier id "+ supplier.getSupplierId()+" are: ");
+								if(supplier.isSupplierDeleted()==false){
+									listModel.clear();
+									listModel.addElement("The products for Supplier id "+ supplier.getSupplierId()+" are: ");
 					
-						// call Shop class to display products for the selected supplier
-								for(Product product:Shop.getProducts()){	
-									if(product.getSupplier().getSupplierId() == idS){
-										listModel.addElement("\n"+ product.getName());
-								
+										// call Shop class to display products for the selected supplier
+									for(Product product:Shop.getProducts()){	
+										if((product.getSupplier().getSupplierId() == idS)&& product.getName().isEmpty()==false){
+											listModel.addElement("\n"+ product.getName());
+										}
+										else{
+											listModel.addElement("There are no products from this supplier");
+											break;
+										}
+									}
+								}
+								else if(supplier.isSupplierDeleted()==true){
+						
+									listModel.clear();
+									listModel.addElement("The supplier was deleted.");
+									listModel.addElement("The products from Supplier id "+ supplier.getSupplierId()+" are: ");
+					
+										// call Shop class to display products for the selected supplier
+									for(Product product:Shop.getProducts()){	
+										if((product.getSupplier().getSupplierId() == idS)&& product.getName().isEmpty()==false){
+											listModel.addElement("\n"+ product.getName());
+										}
+										else{
+											listModel.addElement("There are no products from this supplier");
+											break;
+										}
+									}
+								}
 							}
-						}
 					}
 				}
-					
-			}
 			// if no supplier is selected show warning message
 			else{
 				JOptionPane.showMessageDialog(null, "Please select a supplier from the list  ");
