@@ -192,6 +192,8 @@ public class StockOrderPanel extends JPanel {
 		});
 
 		lblProductList = new JLabel("Supplier's Product list:");
+		lblProductList.setFont(Shop.TITLE_FONT);
+		lblProductList.setForeground(Shop.TITLE_COLOR);
 		add(lblProductList, "wrap");
 //--------------------//
 //---Products table---//
@@ -210,6 +212,8 @@ public class StockOrderPanel extends JPanel {
 		btnAddToOrder.addActionListener(new ButtonTemporaryOrderHandler());
 		btnOrder.addActionListener(new ButtonOrderHandler());
 		JLabel lblOrders = new JLabel("Orders:");
+		lblOrders.setFont(Shop.TITLE_FONT);
+		lblOrders.setForeground(Shop.TITLE_COLOR);
 		add(lblError, "pushx ,alignx center, wrap");
 		add(lblOrders, "split 3");
 		lblError.setVisible(false);
