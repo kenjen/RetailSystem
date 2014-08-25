@@ -30,6 +30,13 @@ public class Json {
 						.readValue(in.nextLine(), Product.class);
 				System.out.println(product.toString());
 				Shop.getProducts().add(product);
+				//repopulate the supplier for this product as the supplier might be different than the one saved
+				for(Supplier s:Shop.getSuppliers()){
+					if(s.getSupplierId() == product.getSupplier().getSupplierId()){
+						product.setSupplier(s);
+						break;
+					}
+				}
 			}
 			return Shop.getProducts();
 		} catch (EOFException eof){

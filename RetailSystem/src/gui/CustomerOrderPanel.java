@@ -35,7 +35,8 @@ import net.miginfocom.swing.MigLayout;
 
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
-import tableModels.ProductTableModel;
+import tableModels.TableModelWithLastColEditable;
+import tableModels.UneditableTableModel;
 import data.Customer;
 import data.CustomerOrder;
 import data.Json;
@@ -52,9 +53,9 @@ public class CustomerOrderPanel extends JPanel{
 	private JLabel lblPreviousCustomerOrder = new JLabel("Previous Orders:");
 	private JLabel lblError = new JLabel("");
 	private JLabel lblFindInvoice = new JLabel("Find Invoice");
+	private JLabel lblProductList = new JLabel("Product list:");
 	private JButton btnOrder = new JButton("Submit Order");
-	private JButton btnDisplayOrdersForSelectedCustomer = new JButton("Customer Orders");
-	//private JButton btnUpdateOrderCompletion = new JButton("Update order");
+	//private JButton btnDisplayOrdersForSelectedCustomer = new JButton("Customer Orders");
 	private JButton btnDisplayAllOrders = new JButton("All orders");
 	private JButton btnAddToOrder = new JButton ("Add to order");
 	private JButton btnViewCurrentOrder = new JButton ("Current Order");
@@ -68,15 +69,13 @@ public class CustomerOrderPanel extends JPanel{
 	private static ArrayList<String> arrayCustomerNames;
 	private static ArrayList<String> arrayProductNames;
 	private static ArrayList<Integer> invoiceIDData = new ArrayList<Integer>();
-	private ProductTableModel tableModelForOrdersTable;
+	private TableModelWithLastColEditable tableModelForOrdersTable;
 	private JTable tableAvailableProducts;
 	private JTable tableOrders;
 	private JScrollPane scrollPane;
 	private JScrollPane scrollPaneForOrdersTable;
 	private Timer timer;
-	private String typeOfOrder = "All";
 	private JTextField txtInvoiceIDSearch = new JTextField("",5);
-	private boolean isActiveCustomerOrderTablePopulated;
 	
 	/**
 	 * Adds all the GUI components on the panel
@@ -104,8 +103,6 @@ public class CustomerOrderPanel extends JPanel{
 		btnAllProducts.addActionListener(new ButtonActionListener());
 		btnOrder.addActionListener(new ButtonOrderHandler());
 		btnDisplayAllOrders.addActionListener(new ButtonDisplayOrdersForAllCustomersHandler());
-		btnDisplayOrdersForSelectedCustomer.addActionListener(new ButtonDisplayOrdersForSelectedCustomersHandler());
-		//btnUpdateOrderCompletion.addActionListener(new UpdateOrdersHandler());
 		btnAddToOrder.addActionListener(new BtnAddToOrderActionListener());
 		txtInvoiceIDSearch.addKeyListener(new TxtInvoiceIDSearchKeyListener());
 		
@@ -113,7 +110,6 @@ public class CustomerOrderPanel extends JPanel{
 		displayProductsTable("");
 		scrollPaneForOrdersTable = new JScrollPane();
 		displayOrderTable(false, 0);
-		typeOfOrder = "All";
 		
 		lblError.setVisible(false);
 		lblError.setForeground(Color.red);
@@ -130,14 +126,14 @@ public class CustomerOrderPanel extends JPanel{
 		
 		//adding everything to the panel
 		setLayout(new MigLayout());
-		add(new JLabel("Customer:"), "split 7");
+		add(new JLabel("Customer:"), "split 4");
 		add(comboSelectCustomer);
 		add(lblActiveCustomerText, "gapx 20px");
-		add(lblActiveCustomer);
-		add(new JLabel("Product search:"), "gapx 50");
+		add(lblActiveCustomer,"wrap");
+		add(lblProductList, "split 4, growx,pushx");
+		add(new JLabel("Product search:"));
 		add(comboSearchForProducts);
-		add(btnAllProducts, "wrap, gapx 20");
-		add(new JLabel("Product list:"), "wrap");
+		add(btnAllProducts, "wrap");
 		add(scrollPane, "span 5, grow, push");
 		JPanel panelx = new JPanel();
 		panelx.setLayout(new MigLayout());
@@ -146,16 +142,16 @@ public class CustomerOrderPanel extends JPanel{
 		panelx.add(btnOrder,"growx, pushx");
 		add(panelx, "aligny top, alignx left, wrap, growx");
 		add(lblError,"cell 0 3, wrap, pushx, alignx center");
-		add(lblPreviousCustomerOrder, "split 3");
-		add(lblFindInvoice,"gapx 50");
-		add(txtInvoiceIDSearch,"wrap");
+		add(lblPreviousCustomerOrder, "split 4, pushx, growx");
+		add(lblFindInvoice,"alignx right");
+		add(txtInvoiceIDSearch);
+		add(btnDisplayAllOrders, "wrap");
 		add(scrollPaneForOrdersTable, "span 5 3, grow, push");
-		JPanel oneCellPanel = new JPanel();
-		oneCellPanel.setLayout(new MigLayout());
-		oneCellPanel.add(btnDisplayAllOrders, "wrap, growx, aligny top");
-		oneCellPanel.add(btnDisplayOrdersForSelectedCustomer, "wrap, growx, aligny top");
-		//oneCellPanel.add(btnUpdateOrderCompletion, "wrap, growx, aligny top");
-		add(oneCellPanel, "aligny top");
+		
+		lblPreviousCustomerOrder.setFont(Shop.TITLE_FONT);
+		lblPreviousCustomerOrder.setForeground(Shop.TITLE_COLOR);
+		lblProductList.setFont(Shop.TITLE_FONT);
+		lblProductList.setForeground(Shop.TITLE_COLOR);
 		
 	}//end constructor
 	
@@ -257,7 +253,6 @@ public class CustomerOrderPanel extends JPanel{
 				for(Product prod:Shop.getProducts()){
 					if(prod.getName().equalsIgnoreCase(productName) && prod.isAvailable()==true && prod.isDeleted() == false){
 						size ++;
-						System.out.println("Found "+ size +" "+prod.getName());
 					}
 				}
 				availableProductsArray = new Object[size][8];
@@ -266,7 +261,6 @@ public class CustomerOrderPanel extends JPanel{
 				DecimalFormat df = new DecimalFormat("#.00");
 				for(Product product:Shop.getProducts()){
 					if(product.isAvailable()==true && product.isDeleted()==false && product.getName().equalsIgnoreCase(productName)){
-						System.out.println("populating Product table, found this product: "+product.getName());
 						availableProductsArray[counter][0] = product.getId();
 						availableProductsArray[counter][1] = product.getName();
 						availableProductsArray[counter][2] = product.getSupplier().getSupplierName();
@@ -280,7 +274,7 @@ public class CustomerOrderPanel extends JPanel{
 				}
 			}
 		String columnNames[] = {"Id","Name","Supplier","Category","Price","Discounted?","Quantity","Amount to Order"};
-		ProductTableModel productsTableModel = new ProductTableModel(availableProductsArray, columnNames);
+		TableModelWithLastColEditable productsTableModel = new TableModelWithLastColEditable(availableProductsArray, columnNames);
 		tableAvailableProducts = new JTable(productsTableModel);
 		tableAvailableProducts.setAutoCreateRowSorter(true);
 		tableAvailableProducts.setRowSelectionAllowed(true);
@@ -348,7 +342,7 @@ public class CustomerOrderPanel extends JPanel{
 					break;
 				}
 			}
-			tableModelForOrdersTable = new ProductTableModel(arrayOrders, columnNames1);
+			tableModelForOrdersTable = new UneditableTableModel(arrayOrders, columnNames1);
 			tableOrders = new JTable(tableModelForOrdersTable);
 			tableOrders.setAutoCreateRowSorter(true);
 			
@@ -365,7 +359,7 @@ public class CustomerOrderPanel extends JPanel{
 				arrayOrders[i][5] = df.format(currentCustomerOrders.get(i).getTotalGross());
 				arrayOrders[i][6] = currentCustomerOrders.get(i).isComplete();
 			}
-			tableModelForOrdersTable = new ProductTableModel(arrayOrders, columnNames1);
+			tableModelForOrdersTable = new UneditableTableModel(arrayOrders, columnNames1);
 			tableOrders = new JTable(tableModelForOrdersTable);
 			tableOrders.setAutoCreateRowSorter(true);
 			
@@ -386,7 +380,7 @@ public class CustomerOrderPanel extends JPanel{
 					arrayOrders[j][6] = thisCustomerOrders.get(j).isComplete();
 					counter++;
 			}
-			tableModelForOrdersTable = new ProductTableModel(arrayOrders, columnNames1);
+			tableModelForOrdersTable = new UneditableTableModel(arrayOrders, columnNames1);
 			tableOrders = new JTable(tableModelForOrdersTable);
 			tableOrders.setAutoCreateRowSorter(true);
 			//Handle double clicking on table to display details of the double-clicked row's order
@@ -504,66 +498,73 @@ public class CustomerOrderPanel extends JPanel{
 	}
 	
 
-		public void updateOrders() {
+		public void updateOrders(int row, int orderID) {
 			//find all orders that have "completed" value changed to true
-			Object[][] orders = null;
-			if(CustomerOrderPanel.this.getOrdersArray() != null){
-				orders = CustomerOrderPanel.this.getOrdersArray();
-				int counter = 0;
-				boolean found = false;
-				boolean foundInvalidOperation = false;
-				for(Object[] x:orders){
-					if((boolean) x[6] == true && Shop.getCustomerOrders().get(counter).isComplete() == false){
-						changeOrderCompletion((int)x[0], true);
-						found = true;
-					}else if((boolean) x[6] == false && Shop.getCustomerOrders().get(counter).isComplete() == true){
-						foundInvalidOperation = true;
-					}
-					counter ++;
-				}
-				if(found){
-					AbstractTableModel model = (AbstractTableModel) tableOrders.getModel();
-					model.fireTableDataChanged();
-					
-					//save orders to a persistent format
-					if(Json.clearList("resources/customerOrders.json")){
-						for(CustomerOrder co:Shop.getCustomerOrders()){
-							Json.saveCustomerOrdersToFile(co);
-						}
-					}else{
-						displayErrorMessage("Could not persist changes!", Color.red);
-					}
-					
-					//update previousCustomerOrderTable with the new order.
-					if(typeOfOrder.equals("All")){
-						displayOrderTable(false,0);
-						typeOfOrder = "All";
-					}else{
-						displayOrderTable(true,0);
-						typeOfOrder = "Customer";
-					}
-					displayErrorMessage("Order(s) has(have) been updated successfully.", Color.BLUE);
-				}else if(foundInvalidOperation){
-					if(typeOfOrder.equals("All")){
-						displayOrderTable(false,0);
-						typeOfOrder = "All";
-					}else{
-						displayOrderTable(true,0);
-						typeOfOrder = "Customer";
-					}
-					displayErrorMessage("You cannot change the status of already completed orders!", Color.red);
-				}else{
-					displayErrorMessage("Nothing to update", Color.red);
-				}
-			}else{
-				displayErrorMessage("Nothing to update", Color.red);
-			}
+		
+			boolean isOrderCompleted = changeOrderCompletionStatus(orderID);
+			
+			saveOrderStatusToFile(isOrderCompleted);
+			updateOrderStatusInTable(isOrderCompleted, row);
 			
 		}//end actionPerformed
-		public void changeOrderCompletion(int orderId, boolean isComplete){
+		
+		private boolean changeOrderCompletionStatus(int orderID) {
+			//Logger.debug("[>>]Populating orders...");
+			Object[][] orders = CustomerOrderPanel.this.getOrdersArray();
+			
+				if(Shop.getCustomerOrders().get(getOrderIndex(orderID)).isComplete() == false){
+					//Logger.debug("Row to update found. Row #"+row+" Updating ...");
+					setOrderStatusToCompleted(orderID);
+					displayErrorMessage("Order status has been updated.", Color.BLUE);
+					return true;
+				}else{
+					displayErrorMessage("Order already completed. Nothing to update.", Color.RED);
+					return false;
+				}
+		}
+		
+		private int getOrderIndex(int orderID){
+			for(int i=0; i< Shop.getCustomerOrders().size();i++){
+				if(Shop.getCustomerOrders().get(i).getId()==orderID){
+					return i;
+				}
+			}
+			return -1;
+		}
+		
+		private void saveOrderStatusToFile(boolean isOrderCompleted) {
+			if(isOrderCompleted == true){
+
+				if(Json.clearList("resources/customerOrders.json")){
+					
+					for(CustomerOrder co:Shop.getCustomerOrders()){
+						Json.saveCustomerOrdersToFile(co);
+						}
+					
+				}else{
+					displayErrorMessage("Could not persist changes!", Color.red);	
+				}
+			}
+		}
+		
+		private void updateOrderStatusInTable(boolean isOrderCompleted, int row) {
+			if(isOrderCompleted == true){
+				AbstractTableModel model = (AbstractTableModel) tableOrders.getModel();
+				model.setValueAt(true,row, 6);
+				model.fireTableDataChanged();
+			}
+			
+		}
+
+		
+
+		
+
+		public void setOrderStatusToCompleted(int orderId){
 			for(CustomerOrder x:Shop.getCustomerOrders()){
 				if(x.getId() == orderId){
-					x.setComplete(isComplete);
+					x.setComplete(true);
+					break;
 				}
 			}
 		}
@@ -578,10 +579,10 @@ public class CustomerOrderPanel extends JPanel{
 			menuItemUpdate.addMouseListener(new MouseAdapter(){
 				public void mousePressed(MouseEvent e){
 					int row = tableOrders.getSelectedRow();
-					ProductTableModel model = (ProductTableModel) tableOrders.getModel();
+					TableModelWithLastColEditable model = (TableModelWithLastColEditable) tableOrders.getModel();
 					model.setValueAt(true, row, 6);
 					model.fireTableDataChanged();
-					updateOrders();
+					updateOrders(row, (int) model.getValueAt(row, 0));
 				}
 			});
 			menuItemShow.addMouseListener(new MouseAdapter(){
@@ -620,31 +621,13 @@ public class CustomerOrderPanel extends JPanel{
 	
 	public class ComboBoxItemListener implements ItemListener{
 		@Override
-		public void itemStateChanged(ItemEvent e) {
-			if(e.getStateChange() == ItemEvent.SELECTED){
-				if(e.getSource() == comboSelectCustomer){
-					Customer customer = getCustomerFromConcatenatedName(e.getItem().toString());
-					if(customer != null){
-						selectedCustomer = customer;
-						lblActiveCustomer.setText(selectedCustomer.getCustomerFName()+" "+selectedCustomer.getCustomerLName());
-						lblActiveCustomer.setForeground(Color.blue);
-					}else{
-						lblActiveCustomer.setText("none");
-						lblActiveCustomer.setForeground(Color.red);
-						//displayErrorMessage("No such customer in the list", Color.red);
-					}
-				}else if(e.getSource() == comboSearchForProducts){
-					String product = e.getItem().toString();
-					if(product != ""){
-						for(Product prod:Shop.getProducts()){
-							if(prod.getName().equalsIgnoreCase(product) && prod.isDeleted() == false){
-								displayProductsTable(product);
-								break;
-							}
-						}
-					}else{
-						displayProductsTable("");
-					}
+		public void itemStateChanged(ItemEvent event) {
+			if(event.getStateChange() == ItemEvent.SELECTED){
+				if(event.getSource() == comboSelectCustomer){
+					setSelectedCustomer();
+					displayTableForSelectedCustomerOnly();
+				}else if(event.getSource() == comboSearchForProducts){
+					displayTableForSelectedProductOnly();
 				}
 			}
 		}
@@ -654,24 +637,11 @@ public class CustomerOrderPanel extends JPanel{
 		@Override
 		public void keyPressed(KeyEvent event) {
 			if(event.getKeyCode() == KeyEvent.VK_ENTER){
-				if(event.getSource() == CustomerOrderPanel.comboSelectCustomer){
-					String concatenatedName = comboSelectCustomer.getSelectedItem().toString();
-					if(getCustomerFromConcatenatedName(concatenatedName) != null){
-						selectedCustomer = getCustomerFromConcatenatedName(concatenatedName);
-						lblActiveCustomer.setText(selectedCustomer.getCustomerFName()+" "+selectedCustomer.getCustomerLName());
-						lblActiveCustomer.setForeground(Color.blue);
-					}else{
-						lblActiveCustomer.setText("none");
-						lblActiveCustomer.setForeground(Color.red);
-						displayErrorMessage("No such customer in the list", Color.red);
-					}
-				}else if(event.getSource() == comboSearchForProducts){
-					String product = comboSearchForProducts.getSelectedItem().toString();
-					if(product != ""){
-						displayProductsTable(product);
-					}else{
-						displayProductsTable("");
-					}
+				if(event.getSource() == comboSelectCustomer.getEditor().getEditorComponent()){
+					setSelectedCustomer();
+					displayTableForSelectedCustomerOnly();
+				}else if(event.getSource() == comboSearchForProducts.getEditor().getEditorComponent()){
+					displayTableForSelectedProductOnly();
 				}
 			}
 		}
@@ -681,6 +651,49 @@ public class CustomerOrderPanel extends JPanel{
 
 		@Override
 		public void keyTyped(KeyEvent arg0) {}
+	}
+	
+	public void setSelectedCustomer(){
+		Customer customer = getCustomerFromConcatenatedName(comboSelectCustomer.getSelectedItem().toString());
+		if(customer != null){
+			selectedCustomer = customer;
+			lblActiveCustomer.setText(selectedCustomer.getCustomerFName()+" "+selectedCustomer.getCustomerLName());
+			lblActiveCustomer.setForeground(Color.blue);
+		}else{
+			lblActiveCustomer.setText("none");
+			lblActiveCustomer.setForeground(Color.red);
+		}
+	}
+	
+	//display orders for selected customer only
+	public void displayTableForSelectedCustomerOnly(){
+		if(selectedCustomer != null){
+			boolean foundCustomerInCustomerOrders = false;
+			for(CustomerOrder order : Shop.getCustomerOrders()){
+				if(order.getCustomer().getCustomerID() == selectedCustomer.getCustomerID()){
+					displayOrderTable(true,0);
+					foundCustomerInCustomerOrders = true;
+					break;
+				}
+			}
+			if(foundCustomerInCustomerOrders ==false){
+				displayOrderTable(false,0);
+			}
+		}
+	}
+	
+	public void displayTableForSelectedProductOnly(){
+		String product = comboSearchForProducts.getSelectedItem().toString();
+		if(product != ""){
+			for(Product prod:Shop.getProducts()){
+				if(prod.getName().equalsIgnoreCase(product) && prod.isDeleted() == false){
+					displayProductsTable(product);
+					break;
+				}
+			}
+		}else{
+			displayProductsTable("");
+		}
 	}
 	
 	public class TxtInvoiceIDSearchKeyListener implements KeyListener{
@@ -868,7 +881,6 @@ public class CustomerOrderPanel extends JPanel{
 					
 					//update previousCustomerOrderTable with the new order.
 					displayOrderTable(false, 0);
-					typeOfOrder = "All";
 					
 					//update products table just in case a product has been sold out
 					displayProductsTable("");
@@ -899,40 +911,13 @@ public class CustomerOrderPanel extends JPanel{
 	}//end inner class ButtonOrderHandler
 	
 	/**
-	 *This button handler verifies if there are orders for selected customer. If so, a method is called to redraw the table with 
-	 *a new table model data. Otherwise a blank table model is created to imitate empty table
-	 */
-	public class ButtonDisplayOrdersForSelectedCustomersHandler implements ActionListener{
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if(selectedCustomer != null && getSelectedCustomerOrders() != null){
-				isActiveCustomerOrderTablePopulated = true;
-				displayOrderTable(true,0);
-				typeOfOrder = "Customer";
-			}else{
-				String columnNames1[] = {"Id","Customer","Staff","Date","Total Net","Total Gross","Completed?"};
-				
-				tableModelForOrdersTable = new ProductTableModel(arrayOrders, columnNames1);
-				tableOrders = new JTable(tableModelForOrdersTable);
-				tableOrders.addMouseListener(new DoubleClickMouseHandler());
-				scrollPaneForOrdersTable.getViewport().add(tableOrders);
-				displayErrorMessage("No previous orders found for selected customer", Color.red);
-			}
-		}//end actionPerformed
-		
-	}//end inner class ButtonDisplayOrdersForSelectedCustomersHandler
-	
-	/**
 	 *This Button handler calls the method to display all orders in the table.
 	 */
 	public class ButtonDisplayOrdersForAllCustomersHandler implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			isActiveCustomerOrderTablePopulated = false;
 			displayOrderTable(false,0);
-			typeOfOrder = "All";
 		}//end actionPerformed
 		
 	}//end inner class ButtonDisplayOrdersForAllCustomersHandler
