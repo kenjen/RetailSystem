@@ -42,6 +42,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
+import javax.swing.JCheckBox;
+
 public class StaffPanel extends JPanel {
 
 	/**
@@ -59,8 +61,7 @@ public class StaffPanel extends JPanel {
 	private ArrayList<String> staffMembers;
 
 	public StaffPanel() {
-		setLayout(new MigLayout("", "[][][][grow][grow][][][][][][][][]",
-				"[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
+		setLayout(new MigLayout("", "[][][][grow][][grow][][][][][][][][]", "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
 		staffMembers = new ArrayList<String>();
 		staffComboBox = new JComboBox(staffMembers.toArray());
 
@@ -84,6 +85,9 @@ public class StaffPanel extends JPanel {
 		nameField = new JTextField();
 		add(nameField, "cell 3 2,growx");
 		nameField.setColumns(10);
+		
+		final JCheckBox chckbxEditDelete = new JCheckBox("Edit/Delete");
+		add(chckbxEditDelete, "cell 4 2");
 
 		JLabel lblSurname = new JLabel("Surname");
 		add(lblSurname, "cell 0 3,alignx trailing");
@@ -91,6 +95,9 @@ public class StaffPanel extends JPanel {
 		surNameField = new JTextField();
 		add(surNameField, "cell 3 3,growx");
 		surNameField.setColumns(10);
+		
+		JCheckBox chckbxAdmin = new JCheckBox("Admin Access");
+		add(chckbxAdmin, "cell 4 3");
 
 		JLabel lblNewLabel_1 = new JLabel("Salary");
 		add(lblNewLabel_1, "cell 0 4,alignx trailing");
@@ -118,7 +125,7 @@ public class StaffPanel extends JPanel {
 
 		// Get the Values from each textField and save them to their respective slots in the StaffMenbers Array
 		// Add a new Staff Member with these values Reset the form
-		JButton btnAddStaff = new JButton("Add Staff Member");
+		final JButton btnAddStaff = new JButton("Add Staff Member");
 		btnAddStaff.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
@@ -239,8 +246,9 @@ public class StaffPanel extends JPanel {
 			}
 		});
 
-		JButton btnRemove = new JButton("Remove");
-		add(btnRemove, "cell 5 28");
+		final JButton btnRemove = new JButton("Remove");
+		add(btnRemove, "cell 6 28");
+		btnRemove.setEnabled(false);
 
 		// Remove Selected Item from ComboBox
 		btnRemove.addActionListener(new ActionListener() {
@@ -254,18 +262,19 @@ public class StaffPanel extends JPanel {
 		});
 
 		// Edit Details
-		JButton btnEditdetails = new JButton("EditDetails");
-		add(btnEditdetails, "cell 6 28");
+		final JButton btnEditdetails = new JButton("EditDetails");
+		add(btnEditdetails, "cell 7 28");
+		btnEditdetails.setEnabled(false);
 
 		btnEditdetails.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				for (Staff s1 : Shop.getStaffMembers()) {
+				/*for (Staff s1 : Shop.getStaffMembers()) {
 					if (s1.getUsername().equals(userNameField.getText())) {
 						JOptionPane.showMessageDialog(null,"Error: UserName Already Exists!!!");
 						return;
 					}
-				}
+				}*/
 				try {
 					// variables for parsing
 					double salaryD = Double.parseDouble(salaryField.getText());
@@ -297,6 +306,27 @@ public class StaffPanel extends JPanel {
 					staffComboBox.repaint();
 				} catch (NumberFormatException er) {
 					JOptionPane.showMessageDialog(null,"All TextFields Must Be Filled And Salary Should Be Of Type Double eg: 10.23 !!!");
+				}
+			}
+		});
+		
+		
+		chckbxEditDelete.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				// TODO Auto-generated method stub
+				if (chckbxEditDelete.isSelected()) {
+					btnAddStaff.setEnabled(false);;
+					userNameField.setEditable(false);
+					btnEditdetails.setEnabled(true);
+					btnRemove.setEnabled(true);
+				}
+				else{
+					btnAddStaff.setEnabled(true);
+					userNameField.setEditable(true);
+					btnEditdetails.setEnabled(false);
+					btnRemove.setEnabled(false);
 				}
 			}
 		});

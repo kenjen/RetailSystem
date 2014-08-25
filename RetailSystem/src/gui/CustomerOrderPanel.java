@@ -772,7 +772,14 @@ public class CustomerOrderPanel extends JPanel{
 						if(id == (int)o[0]){
 							foundIdInCurrentOrder = true;
 							//check whether the total amount for this product exceeds the product's quantity
-							if((int)o[7]+amount > quantity){
+							int quantityOfProduct = 0;
+							for(Product product: Shop.getProducts()){
+								if((int)o[0] == product.getId()){
+									quantityOfProduct = product.getQuantity();
+								break;
+								}
+							}
+							if((int)o[7]+amount > quantityOfProduct){
 								JOptionPane.showMessageDialog(CustomerOrderPanel.this, "The total amount for "+(String)o[1]+" would exceed the available quantity: "+quantity+"\nCheck the Current Order");
 								return;
 							}

@@ -79,10 +79,10 @@ public class CustomerPanel extends JPanel {
 
 		// COMBOBOX POPULATION
 		ArrayList<Integer> num = new ArrayList<Integer>();
-		
+
 		for (Customer customer : Shop.getCustomers()) {
-			if(customer.isDeleted()==false){
-			num.add(customer.getCustomerID());
+			if (customer.isDeleted() == false) {
+				num.add(customer.getCustomerID());
 			}
 		}
 		Integer[] ids = new Integer[num.size()];
@@ -173,7 +173,7 @@ public class CustomerPanel extends JPanel {
 				 * addressInput.setText(""); mobileInput.setText("");
 				 * homeInput.setText("");
 				 */
-				
+
 				saveDetails();
 				refreshCombo();
 			}
@@ -183,12 +183,12 @@ public class CustomerPanel extends JPanel {
 				String fname = fNameInput.getText();
 				String lname = lNameInput.getText();
 				comboCustomerID.removeItem(comboCustomerID.getSelectedItem());
-				JOptionPane.showMessageDialog(null, "You have deleted "
-						+ fname + " " + lname);
-				//saveDetails();
-				//refreshCombo();
+				JOptionPane.showMessageDialog(null, "You have deleted " + fname
+						+ " " + lname);
+				// saveDetails();
+				// refreshCombo();
 			}
-	
+
 		});
 
 		// SEARCH BY SURNAME
@@ -203,9 +203,10 @@ public class CustomerPanel extends JPanel {
 		surnames.add("");
 
 		for (Customer customer : Shop.getCustomers()) {
-			if(customer.isDeleted()==false){
-			String name = customer.getCustomerLName();
-			surnames.add(name);
+			if (customer.isDeleted() == false) {
+				String name = customer.getCustomerFName() + " "
+						+ customer.getCustomerLName();
+				surnames.add(name);
 			}
 		}
 
@@ -312,11 +313,19 @@ public class CustomerPanel extends JPanel {
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				String surname = comboSelectCustomer.getSelectedItem()
 						.toString();
-				if (getCustomerbyID(surname) != null) {
-					selectedCustomer = getCustomerbyID(surname);
-					comboCustomerID.setSelectedItem(selectedCustomer.getCustomerID());
-				} else {
-					System.out.println("ERROR");
+
+				for (Customer customer : Shop.getCustomers()) {
+					String fullname = customer.getCustomerFName() + " "
+							+ customer.getCustomerLName();
+					if (fullname.equalsIgnoreCase(surname)) {
+						// selectedCustomer = customer.getCustomerID();
+
+						comboCustomerID.setSelectedItem(customer
+								.getCustomerID());
+
+					} else {
+						System.out.println("ERROR");
+					}
 				}
 			}
 		}
@@ -354,10 +363,13 @@ public class CustomerPanel extends JPanel {
 						+ customer.getCustomerLName() + " "
 						+ customer.getCustomerAddress());
 			}
-			JOptionPane.showMessageDialog(null, "You have added a customer!");
+			JOptionPane.showMessageDialog(
+					null,
+					"You have added " + c1.getCustomerFName() + " "
+							+ c1.getCustomerLName());
 			comboCustomerID.addItem(c1.getCustomerID());
-			
-			//refreshCombo();
+
+			// refreshCombo();
 			fNameInput.setText("");
 			lNameInput.setText("");
 			addressInput.setText("");
@@ -377,19 +389,19 @@ public class CustomerPanel extends JPanel {
 				&& addressInput.getText().length() > 0
 				&& (mobileInput.getText().length() > 0 || homeInput.getText()
 						.length() > 0)) {
-		Shop.editCustomer((Integer) comboCustomerID.getSelectedItem(),
-				fNameInput.getText(), lNameInput.getText(),
-				addressInput.getText(), mobileInput.getText(),
-				homeInput.getText());
+			Shop.editCustomer((Integer) comboCustomerID.getSelectedItem(),
+					fNameInput.getText(), lNameInput.getText(),
+					addressInput.getText(), mobileInput.getText(),
+					homeInput.getText());
 
-		fNameInput.setText("");
-		lNameInput.setText("");
-		addressInput.setText("");
-		mobileInput.setText("");
-		homeInput.setText("");
-		JOptionPane.showMessageDialog(null, "You have editted customer "
-				+ comboCustomerID.getSelectedItem());
-		}else {
+			fNameInput.setText("");
+			lNameInput.setText("");
+			addressInput.setText("");
+			mobileInput.setText("");
+			homeInput.setText("");
+			JOptionPane.showMessageDialog(null, "You have editted customer "
+					+ comboCustomerID.getSelectedItem());
+		} else {
 			JOptionPane.showMessageDialog(null,
 					"You have to fill in all fields ");
 		}
@@ -404,19 +416,16 @@ public class CustomerPanel extends JPanel {
 
 		for (Customer customer : Shop.getCustomers()) {
 			if (!customer.isDeleted()) {
-			String name = customer.getCustomerLName();
-			surnames.add(name);
+				String name = customer.getCustomerLName();
+				surnames.add(name);
 			}
-			
-		}
-			comboSelectCustomer.removeAllItems();
-			for (String current : surnames){
-				comboSelectCustomer.addItem(current);
-			}
-		
-		
-	}
-	
 
+		}
+		comboSelectCustomer.removeAllItems();
+		for (String current : surnames) {
+			comboSelectCustomer.addItem(current);
+		}
+
+	}
 
 }
