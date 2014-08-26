@@ -337,26 +337,19 @@ public class SupplierPanel extends JSplitPane{
 	// create new supplier
 	public void createSupplier(){
 		if((nameField.getText().isEmpty()==false)&&(addressField.getText().isEmpty()==false)){
-			for( Supplier supplier:Shop.getSuppliers()){
-				if((!nameField.getText().equalsIgnoreCase(supplier.getSupplierName()))&&(!addressField.getText().equalsIgnoreCase(supplier.getSupplierAddress()))){
-				// add new supplier to gUI list
-					showSuppliers();
-					nameField.setText("");
-					addressField.setText("");
-				}
-				
-				else {
-					JOptionPane.showMessageDialog(null, " The supplier entered already exists");
-				}
-			}
+			
+			Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
+			Shop.getSuppliers().add(newSupplier);
+			showSuppliers();
+				nameField.setText("");
+				addressField.setText("");
 		}
 		else{
 			JOptionPane.showMessageDialog(null, " Enter details for new supplier");
-			
-		}	
+		}
 		saveDetails();
+		
 	}
-
 	// inner class to delete supplier from GUI list and set it as deleted in the Arraylist
 	class Remove implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
