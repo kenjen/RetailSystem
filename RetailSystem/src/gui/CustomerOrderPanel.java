@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -148,6 +149,7 @@ public class CustomerOrderPanel extends JPanel{
 		add(txtInvoiceIDSearch);
 		add(btnDisplayAllOrders, "wrap");
 		add(scrollPaneForOrdersTable, "span 5 3, grow, push");
+		add(new JLabel(new ImageIcon("resources/Shopping.png")), "aligny bottom");
 		
 		lblPreviousCustomerOrder.setFont(Shop.TITLE_FONT);
 		lblPreviousCustomerOrder.setForeground(Shop.TITLE_COLOR);
@@ -974,7 +976,7 @@ public class CustomerOrderPanel extends JPanel{
 		@Override
 		//selects the row at right click
 		public void mousePressed(MouseEvent e){
-			if(e.isPopupTrigger()){
+			if(e.isMetaDown()){
 				JTable source = (JTable)e.getSource();
                 int row = source.rowAtPoint( e.getPoint() );
                 int column = source.columnAtPoint( e.getPoint() );

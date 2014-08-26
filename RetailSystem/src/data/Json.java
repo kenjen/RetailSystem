@@ -184,6 +184,12 @@ public class Json {
 				StockOrder stockOrder = mapper
 						.readValue(in.nextLine(), 	StockOrder.class);
 				System.out.println(stockOrder.toString());
+				//repopulate Stock Orders with Staff members
+				for(Staff staff:Shop.getStaffMembers()){
+					if(staff.getId() == stockOrder.getStaff().getId()){
+						stockOrder.setStaff(staff);
+					}
+				}
 				Shop.getStockOrders().add(stockOrder);
 			}
 			return Shop.getStockOrders();
@@ -329,6 +335,17 @@ public class Json {
 				CustomerOrder custOrder = mapper
 						.readValue(in.nextLine(), CustomerOrder.class);
 				System.out.println(custOrder.toString());
+				//repopulate Customer order's customers and staff members in case they have been edited
+				for(Staff staff:Shop.getStaffMembers()){
+					if (staff.getId() == custOrder.getStaff().getId()){
+						custOrder.setStaff(staff);
+					}
+				}
+				for(Customer customer:Shop.getCustomers()){
+					if(customer.getCustomerID() == custOrder.getCustomer().getCustomerID()){
+						custOrder.setCustomer(customer);
+					}
+				}
 				Shop.getCustomerOrders().add(custOrder);
 			}
 			return Shop.getCustomerOrders();

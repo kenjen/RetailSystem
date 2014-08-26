@@ -356,8 +356,11 @@ public class ProfitLossPanel extends JPanel{
 		for(StockOrder order:Shop.getStockOrders()){
 			finances.add(new Finance(order.getTotal(),order.getDate(),"Stock Order",true));
 		}
+		int counter = 0;
 		for(Finance finance:Shop.getFinancialRecords()){
 			finances.add(finance);
+			finance.setId(counter);
+			counter ++;
 		}
 		
 		//load the profit / expense values for different dates 

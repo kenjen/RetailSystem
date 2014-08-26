@@ -460,6 +460,7 @@ public class SupplierPanel extends JSplitPane{
 					
 										// call Shop class to display products for the selected supplier
 									for(Product product:Shop.getProducts()){	
+										System.out.println("product.getSupplier().getSupplierId()= "+product.getSupplier().getSupplierId()+" idS = "+idS);
 										if((product.getSupplier().getSupplierId() == idS)&& product.getName().isEmpty()==false){
 											listModel.addElement("\n"+ product.getName());
 										}

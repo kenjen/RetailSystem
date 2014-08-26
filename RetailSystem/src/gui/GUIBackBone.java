@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -173,7 +174,7 @@ public class GUIBackBone extends JFrame {
 		});
 
 		setContentPane(tabbedPane);
-		setSize(1024, 768);
+		setSize(1200, 768);
 		setLocationRelativeTo(null);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

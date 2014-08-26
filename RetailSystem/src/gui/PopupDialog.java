@@ -125,6 +125,7 @@ public class PopupDialog extends JDialog implements ActionListener {
 			
 			Finance finance = new Finance(amount,selectedDate, description,true);
 			Shop.getFinancialRecords().add(finance);
+			finance.setId(Shop.getFinancialRecords().size()-1);
 			
 			//save the new changes to file as well
 			if(Json.clearList("resources/finance.json")){

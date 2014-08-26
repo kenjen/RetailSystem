@@ -1,7 +1,5 @@
 package gui;
 
-import gui.CustomerOrderPanel.OrderTableJPopupMenu;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -20,6 +18,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.InputMismatchException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -40,8 +39,6 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import tableModels.TableModelWithLastColEditable;
-import data.Customer;
-import data.CustomerOrder;
 import data.Json;
 import data.Product;
 import data.ProductToOrder;
@@ -215,24 +212,21 @@ public class StockOrderPanel extends JPanel {
 		lblOrders.setFont(Shop.TITLE_FONT);
 		lblOrders.setForeground(Shop.TITLE_COLOR);
 		add(lblError, "pushx ,alignx center, wrap");
-		add(lblOrders, "split 3");
+		add(lblOrders, "split 4, growx, pushx");
 		lblError.setVisible(false);
 		lblError.setFont(new Font("Serif",Font.BOLD,15));
 		
-		add(lblFindInvoice,"gapx 50");
-		add(txtInvoiceIDSearch,"wrap");
+		add(lblFindInvoice);
+		add(txtInvoiceIDSearch);
+		add(btnDisplayAllInvoices,"wrap");
 //-----------------//
 //---ORDER TABLE---//
 //-----------------//
 		scrollPaneOrders = new JScrollPane();
 		add(scrollPaneOrders, "push,grow,span 3");
+		add(new JLabel(new ImageIcon("resources/Fork.png")), "aligny bottom");
 		displayOrderTable(0);
 		
-		JPanel panelx = new JPanel();
-		panelx.setLayout(new MigLayout());
-		//panelx.add(btnUpdateOrderCompletion,"growx, wrap");
-		panelx.add(btnDisplayAllInvoices,"growx");
-		add(panelx,"alignx left, aligny top");
 		
 		btnDisplayCurrentOrder.addActionListener(new ActionListener() {
 			
@@ -468,7 +462,7 @@ public class StockOrderPanel extends JPanel {
 			}
 			//selects the row at right click
 			public void mousePressed(MouseEvent e){
-				if(e.isPopupTrigger()){
+				if(e.isMetaDown()){
 					JTable source = (JTable)e.getSource();
 	                int row = source.rowAtPoint( e.getPoint() );
 	                int column = source.columnAtPoint( e.getPoint() );

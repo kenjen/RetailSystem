@@ -1,1 +1,5 @@
-{"id":47,"date":1406555822741,"description":"Staff Wages","amount":2400.0,"expense":true}
+{"id":0,"date":1406555822741,"description":"Staff Wages","amount":2400.0,"expense":true}
+{"id":1,"date":1409060529517,"description":"Breakage","amount":15.6,"expense":true}
+{"id":2,"date":1409060578335,"description":"Birthday party expenses","amount":120.0,"expense":true}
+{"id":3,"date":1409060781737,"description":"New Door","amount":1000.0,"expense":true}
+{"id":4,"date":1408974497233,"description":"Breakage","amount":10.0,"expense":true}

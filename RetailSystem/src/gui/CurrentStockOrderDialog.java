@@ -108,7 +108,7 @@ public class CurrentStockOrderDialog extends JDialog implements ActionListener  
 		table.addMouseListener(new MouseAdapter(){
 			//selects the row at right click
 			public void mousePressed(MouseEvent e){
-				if(e.isPopupTrigger()){
+				if(e.isMetaDown()){
 					JTable source = (JTable)e.getSource();
 	                int row = source.rowAtPoint( e.getPoint() );
 	                int column = source.columnAtPoint( e.getPoint() );
