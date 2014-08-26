@@ -79,7 +79,7 @@ public class CustomerPanel extends JPanel {
 
 		// COMBOBOX POPULATION
 		ArrayList<Integer> num = new ArrayList<Integer>();
-
+		num.add(null);
 		for (Customer customer : Shop.getCustomers()) {
 			if (customer.isDeleted() == false) {
 				num.add(customer.getCustomerID());
@@ -394,13 +394,14 @@ public class CustomerPanel extends JPanel {
 					addressInput.getText(), mobileInput.getText(),
 					homeInput.getText());
 
-			fNameInput.setText("");
-			lNameInput.setText("");
-			addressInput.setText("");
-			mobileInput.setText("");
-			homeInput.setText("");
+			// fNameInput.setText("");
+			// lNameInput.setText("");
+			// addressInput.setText("");
+			// mobileInput.setText("");
+			// homeInput.setText("");
 			JOptionPane.showMessageDialog(null, "You have editted customer "
-					+ comboCustomerID.getSelectedItem());
+					+ fNameInput.getText() + " " + lNameInput.getText());
+			// comboCustomerID.setSelectedIndex(0);
 		} else {
 			JOptionPane.showMessageDialog(null,
 					"You have to fill in all fields ");
