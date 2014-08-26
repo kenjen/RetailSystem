@@ -50,6 +50,7 @@ public class SupplierPanel extends JSplitPane{
 
 		// create list type
 		createList();
+		showSuppliers();
 
 		// create a split pane with a scroll pane in it and a Jpanel
 
@@ -100,6 +101,7 @@ public class SupplierPanel extends JSplitPane{
 		JMenuItem editDetails = new JMenuItem("Edit Supplier");
 		final JMenuItem removeSupplier = new JMenuItem("Remove Supplier");
 		final JMenuItem restore = new JMenuItem("Restore deleted supplier");
+		restore.setEnabled(false);
 
 		// add action listener to display suppliers button
 		showS.addActionListener(new ActionListener(){
@@ -216,11 +218,14 @@ public class SupplierPanel extends JSplitPane{
 		// create GUI panel search field and button for looking for a supplier by name
 
 		JLabel search = new JLabel(" Search for a supplier by name");
-		buttonPanel.add(search, "flowx,cell 2 1 ");
+		JLabel  sens = new JLabel("* case sensitive field ");
+		sens.setFont(new Font("Tahoma", Font.ITALIC, 11));
+		buttonPanel.add(search, "flowx,cell 0 9 ");
+		buttonPanel.add(sens, "flowx,cell 1 10 ");
 		final JTextField searchField = new JTextField (20); 
 		JButton searchSupplier = new JButton ("GO");
-		buttonPanel.add(searchField, "flowx,cell 3 1 ");
-		buttonPanel.add(searchSupplier, "flowx,cell 4 1");
+		buttonPanel.add(searchField, "flowx,cell 1 9 ");
+		buttonPanel.add(searchSupplier, "flowx,cell 2 9");
 		
 		// add action listener to search button
 		searchSupplier.addActionListener(new ActionListener(){
@@ -240,7 +245,7 @@ public class SupplierPanel extends JSplitPane{
 									if(item.toString().contains(searchField.getText())){
 										suppliersList.setSelectedValue(item,true);
 										foundIt = true;
-									
+										searchField.setText("");
 									}
 								}
 							}
@@ -253,7 +258,7 @@ public class SupplierPanel extends JSplitPane{
 									if(item.toString().contains(searchField.getText())){
 										suppliersList.setSelectedValue(item,true);
 										foundIt = true;
-									
+										searchField.setText("");
 									}
 								}
 							}
@@ -266,7 +271,7 @@ public class SupplierPanel extends JSplitPane{
 					// show message if supplier is not found
 					if(foundIt == false){
 						JOptionPane.showMessageDialog(null, "Didn't find supplier");
-					
+						searchField.setText("");
 					}
 				}
 				else{
@@ -495,11 +500,13 @@ public class SupplierPanel extends JSplitPane{
 						for(Product product:Shop.getProducts()){	
 							if((product.getSupplier().getSupplierId() == idS)&& product.getName().isEmpty()==false){
 								listModel.addElement("\n"+ product.getName());
+								
 							}
-							else{
+							else if((product.getSupplier().getSupplierId() == idS)&&product.getName().isEmpty()==false){
 								listModel.addElement("There are no products from this supplier");
-								break;
+								
 							}
+							//break;
 						}
 					}
 					else if(supplier.isSupplierDeleted()==true){
@@ -512,10 +519,11 @@ public class SupplierPanel extends JSplitPane{
 						for(Product product:Shop.getProducts()){	
 							if((product.getSupplier().getSupplierId() == idS)&& product.getName().isEmpty()==false){
 								listModel.addElement("\n"+ product.getName());
+								
 							}
-							else{
+							else if ((product.getSupplier().getSupplierId() == idS)&& product.getName().isEmpty()==true){
 								listModel.addElement("There are no products from this supplier");
-								break;
+								
 							}
 						}
 					}
