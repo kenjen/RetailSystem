@@ -10,7 +10,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -32,7 +31,6 @@ import net.miginfocom.swing.MigLayout;
 
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
-import tableModels.TableModelWithLastColEditable;
 import tableModels.UneditableTableModel;
 import data.Json;
 import data.Product;
@@ -40,53 +38,45 @@ import data.Supplier;
 
 public class StockManagementPanel extends JSplitPane{
 	
-	private JTable table;
-	private TableModelWithLastColEditable productTableModel;
 	private Object[][] arrayTableProducts;
-	
-	private JTextField txtSearchByName;
-	private JTextField txtId;
-	private JTextField txtName;
-	private JTextField txtCategory;
-	private JTextField txtQuantity;
-	private JTextField txtThreshold;
-	private JTextField txtPrice;
-	private JTextField txtDiscountedAmount;
-	private JTextField txtDiscountedPrice;
-	private JTextField txtSupplier;
-	private JTextField textSearchByName;
-	private JTextField textId;
-	private JTextField textName;
-	private JTextField textCategory;
-	private JTextField textQuantity;
-	private JTextField textThreshold;
-	private JTextField textPrice;
-	private JTextField textDiscountedPrice;
-	private JComboBox<String> comboSelectSupplier;
-	//private static JComboBox<String> comboSelectId;
-
-	private boolean productLoaded = false;
-
-	private JTextField txtFlaggedForOrder;
-	private JTextField txtNotification;
 	private JButton btnCreateNewProduct;
-	private JButton btnDisplayProducts;
+	private JButton btnDeleteProduct;
+	private JButton btnDiscountProduct;
+	private JButton btnDisplayAllProducts;
 	private JButton btnDisplayLowStock;
 	private JButton btnDisplayDeletedStock;
-	private JButton btnDisplayAllProducts;
+	private JButton btnDisplayProducts;
 	private JButton btnFlagForOrder;
-	private JButton btnDiscountProduct;
-	private JButton btnDeleteProduct;
 	private JButton btnRestoreProduct;
-	
-	private JScrollPane scrollPane;
-	private JPopupMenu menu;
+	private JComboBox<String> comboSelectSupplier;
 	private int currentTableView = 1;
-	
+	private JPopupMenu menu;
 	private Timer notificationTimer;
+	private boolean productLoaded = false;
+	private JScrollPane scrollPane;
+	private JTable table;
+	private JTextField textCategory;
+	private JTextField textDiscountedPrice;
+	private JTextField textId;
+	private JTextField textName;
+	private JTextField textPrice;
+	private JTextField textQuantity;
+	private JTextField textSearchByName;
+	private JTextField textThreshold;
+	private JTextField txtCategory;
+	private JTextField txtDiscountedAmount;
+	private JTextField txtDiscountedPrice;
+	private JTextField txtFlaggedForOrder;
+	private JTextField txtId;
+	private JTextField txtName;
+	private JTextField txtNotification;
+	private JTextField txtPrice;
+	private JTextField txtQuantity;
+	private JTextField txtSearchByName;
+	private JTextField txtSupplier;
+	private JTextField txtThreshold;
 	
 	
-
 	public StockManagementPanel() {
 		
 		
@@ -102,7 +92,6 @@ public class StockManagementPanel extends JSplitPane{
 		
 		
 		//Add scroll pane to left size with list of products
-		//JScrollPane scrollPane = new JScrollPane(list);
 		scrollPane = new JScrollPane(table);
 		this.setDividerLocation(300);
 		setLeftComponent(scrollPane);
@@ -144,7 +133,6 @@ public class StockManagementPanel extends JSplitPane{
 		btnDisplayProducts.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				//setupList();
 				currentTableView = 1;
 				displayProductsTable("");
 			}
@@ -185,36 +173,6 @@ public class StockManagementPanel extends JSplitPane{
 				displayProductsTable("EVERYTHING");
 			}
 		});
-		
-		
-		/*//drop down menu  to enter id of product
-		ArrayList<Integer> idValues = new ArrayList<Integer>();
-		idValues.add(0);
-		for (Product product : Shop.getProducts()){
-			int id = product.getId();
-			idValues.add(id);
-		}
-		comboSelectId = new JComboBox(idValues.toArray());
-		refreshCombo(Shop.getProducts());
-		panel.add(comboSelectId, "cell 3 1, alignx right");
-		comboSelectId.setEditable(true);
-		AutoCompleteDecorator.decorate(comboSelectId);
-		
-		
-		//Button to load a products details
-		JButton btnIdConfirm = new JButton("Load Details");
-		panel.add(btnIdConfirm, "cell 5 1, alignx left");
-		btnIdConfirm.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				int id = 0;
-				try{
-					id = (int) comboSelectId.getSelectedItem();
-				}catch(ClassCastException e){
-					id = Integer.parseInt((String) comboSelectId.getSelectedItem());
-				}
-				loadProductDetails(id, Shop.getProducts());
-			}
-		});*/
 		
 		
 		//search products by name entry
@@ -464,11 +422,9 @@ public class StockManagementPanel extends JSplitPane{
 				Product product = createNewProduct(false);
 				if(product!=null){
 					Shop.getProducts().add(product);
+					refreshTable();
 				}
 				saveDetails();
-				//refreshCombo(Shop.getProducts());
-				//comboSelectId.setSelectedItem(product.getId());
-					
 			}
 		});
 		
@@ -508,7 +464,6 @@ public class StockManagementPanel extends JSplitPane{
 				deleteProduct(id, Shop.getProducts(), false);
 				clearProductDetails();
 				saveDetails();
-				//refreshCombo(Shop.getProducts());
 			}
 		});
 		
@@ -554,7 +509,6 @@ public class StockManagementPanel extends JSplitPane{
 					notificationTimer.start();
 				}
 				saveDetails();
-				//refreshCombo(Shop.getProducts());
 			}
 		});
 		
@@ -563,147 +517,8 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
-	public void displayProductsTable(String productName){
-		if(productName.equals("DELETED")){
-			//display table for deleted products
-			int counter = 0;
-			for (Product product : Shop.getProducts()) {
-				if(product.isDeleted()){
-					counter++;
-				}
-			}
-			arrayTableProducts = new Object[counter][4];
-			counter = 0;
-			for (Product product : Shop.getProducts()) {
-				if(product.isDeleted()){
-					arrayTableProducts[counter][0] = product.getId();
-					arrayTableProducts[counter][1] = product.getName();
-					arrayTableProducts[counter][2] = product.getQuantity();
-					arrayTableProducts[counter][3] = product.getLowStockOrder();
-					counter++;
-				}
-			}
-		}else if(productName.equals("EVERYTHING")){
-			//display table for deleted products
-			arrayTableProducts = new Object[Shop.getProducts().size()][4];
-			int counter = 0;
-			for (Product product : Shop.getProducts()) {
-				arrayTableProducts[counter][0] = product.getId();
-				arrayTableProducts[counter][1] = product.getName();
-				arrayTableProducts[counter][2] = product.getQuantity();
-				arrayTableProducts[counter][3] = product.getLowStockOrder();
-				counter++;
-			}
-		}else if(productName.equals("LOWSTOCK")){
-			//display table for products with stock levels below threshold
-			int counter = 0;
-			for (Product product : Shop.getProducts()) {
-				if(!product.isDeleted() && product.getLowStockOrder()>=product.getQuantity()){
-					counter++;
-				}
-			}
-			arrayTableProducts = new Object[counter][4];
-			counter = 0;
-			for (Product product : Shop.getProducts()) {
-				if(!product.isDeleted() && product.getLowStockOrder()>=product.getQuantity()){
-					arrayTableProducts[counter][0] = product.getId();
-					arrayTableProducts[counter][1] = product.getName();
-					arrayTableProducts[counter][2] = product.getQuantity();
-					arrayTableProducts[counter][3] = product.getLowStockOrder();
-					counter++;
-				}
-			}
-		}else{
-			//display table for all products not deleted
-			int counter = 0;
-			for (Product product : Shop.getProducts()) {
-				if(!product.isDeleted()){
-					counter++;
-				}
-			}
-			arrayTableProducts = new Object[counter][4];
-			counter = 0;
-			for (Product product : Shop.getProducts()) {
-				if(!product.isDeleted()){
-					arrayTableProducts[counter][0] = product.getId();
-					arrayTableProducts[counter][1] = product.getName();
-					arrayTableProducts[counter][2] = product.getQuantity();
-					arrayTableProducts[counter][3] = product.getLowStockOrder();
-					counter++;
-				}
-			}
-		}
-
-		String columnNames[] = { "Id", "Name", "Quantity", "Threshold" };
-		TableModelWithLastColEditable productsTableModel = new UneditableTableModel(arrayTableProducts, columnNames);
-		table = new JTable(productsTableModel);
-		table.setAutoCreateRowSorter(true);
-		table.getColumnModel().getSelectionModel().addListSelectionListener(
-				new ListSelectionListener() {
-
-					public void valueChanged(ListSelectionEvent e) {
-						int row = table.getSelectedRow();
-						table.requestFocus();
-						table.changeSelection(row, 1, false, false);
-					}
-
-				});	
-		
-		/*table.addMouseListener(new MouseAdapter(){
-			public void mouseClicked(MouseEvent e) {
-			      
-			}
-			
-		});*/
-		
-		table.addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mouseReleased(MouseEvent e) {
-		        int r = table.rowAtPoint(e.getPoint());
-		        if (r >= 0 && r < table.getRowCount()) {
-		            table.setRowSelectionInterval(r, r);
-		        } else {
-		            table.clearSelection();
-		        }
-
-		        int rowindex = table.getSelectedRow();
-		        if (rowindex < 0)
-		            return;
-		        if (e.isPopupTrigger() && e.getComponent() instanceof JTable ) {
-		            menu.show(e.getComponent(), e.getX(), e.getY());
-		        }else if (e.getClickCount() == 2) {
-		        	int row = table.getSelectedRow();
-		        	int id = (int) table.getValueAt(row, 0);
-		        	loadProductDetails(id, Shop.getProducts());
-		        }
-		    }
-		});
-		
-		scrollPane.getViewport().add(table);
-	}
-	
-	
-	//Check name and supplier against products
-	public boolean productAndSupplierAlreadyExist(int id, String productName, String supplierName, ArrayList<Product> products, ArrayList<Supplier> suppliers){
-		for(Product product : products){
-			if(product.getName().equalsIgnoreCase(productName)){
-				if(product.getId()!=id){
-					for(Supplier supplier : suppliers){
-						if(product.getSupplier()==supplier && supplier.getSupplierName().equalsIgnoreCase(supplierName)){
-							return true;
-						}
-					}
-				}
-			}
-		}
-		
-		return false;
-	}
-	
-	
 	//Clears the right pane of any product details
 	public void clearProductDetails(){
-		//comboSelectId.setSelectedIndex(0);
 		textId.setText("");
 		textName.setText("");
 		textCategory.setText("");
@@ -909,9 +724,122 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
+	public void displayProductsTable(String productName){
+		if(productName.equals("DELETED")){
+			//display table for deleted products
+			int counter = 0;
+			for (Product product : Shop.getProducts()) {
+				if(product.isDeleted()){
+					counter++;
+				}
+			}
+			arrayTableProducts = new Object[counter][4];
+			counter = 0;
+			for (Product product : Shop.getProducts()) {
+				if(product.isDeleted()){
+					arrayTableProducts[counter][0] = product.getId();
+					arrayTableProducts[counter][1] = product.getName();
+					arrayTableProducts[counter][2] = product.getQuantity();
+					arrayTableProducts[counter][3] = product.getLowStockOrder();
+					counter++;
+				}
+			}
+		}else if(productName.equals("EVERYTHING")){
+			//display table for products incl. deleted products
+			arrayTableProducts = new Object[Shop.getProducts().size()][4];
+			int counter = 0;
+			for (Product product : Shop.getProducts()) {
+				arrayTableProducts[counter][0] = product.getId();
+				arrayTableProducts[counter][1] = product.getName();
+				arrayTableProducts[counter][2] = product.getQuantity();
+				arrayTableProducts[counter][3] = product.getLowStockOrder();
+				counter++;
+			}
+		}else if(productName.equals("LOWSTOCK")){
+			//display table for products with stock levels below threshold
+			int counter = 0;
+			for (Product product : Shop.getProducts()) {
+				if(!product.isDeleted() && product.getLowStockOrder()>=product.getQuantity()){
+					counter++;
+				}
+			}
+			arrayTableProducts = new Object[counter][4];
+			counter = 0;
+			for (Product product : Shop.getProducts()) {
+				if(!product.isDeleted() && product.getLowStockOrder()>=product.getQuantity()){
+					arrayTableProducts[counter][0] = product.getId();
+					arrayTableProducts[counter][1] = product.getName();
+					arrayTableProducts[counter][2] = product.getQuantity();
+					arrayTableProducts[counter][3] = product.getLowStockOrder();
+					counter++;
+				}
+			}
+		}else{
+			//display table for all products not deleted
+			int counter = 0;
+			for (Product product : Shop.getProducts()) {
+				if(!product.isDeleted()){
+					counter++;
+				}
+			}
+			arrayTableProducts = new Object[counter][4];
+			counter = 0;
+			for (Product product : Shop.getProducts()) {
+				if(!product.isDeleted()){
+					arrayTableProducts[counter][0] = product.getId();
+					arrayTableProducts[counter][1] = product.getName();
+					arrayTableProducts[counter][2] = product.getQuantity();
+					arrayTableProducts[counter][3] = product.getLowStockOrder();
+					counter++;
+				}
+			}
+		}
+	
+		String columnNames[] = { "Id", "Name", "Quantity", "Threshold" };
+		UneditableTableModel productsTableModel = new UneditableTableModel(arrayTableProducts, columnNames);
+		table = new JTable(productsTableModel);
+		table.setAutoCreateRowSorter(true);
+		table.getColumnModel().getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
+	
+					public void valueChanged(ListSelectionEvent e) {
+						int row = table.getSelectedRow();
+						table.requestFocus();
+						table.changeSelection(row, 1, false, false);
+					}
+	
+				});	
+		
+		
+		table.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseReleased(MouseEvent e) {
+		        int r = table.rowAtPoint(e.getPoint());
+		        if (r >= 0 && r < table.getRowCount()) {
+		            table.setRowSelectionInterval(r, r);
+		        } else {
+		            table.clearSelection();
+		        }
+	
+		        int rowindex = table.getSelectedRow();
+		        if (rowindex < 0)
+		            return;
+		        if (e.isPopupTrigger() && e.getComponent() instanceof JTable ) {
+		            menu.show(e.getComponent(), e.getX(), e.getY());
+		        }else if (e.getClickCount() == 2) {
+		        	int row = table.getSelectedRow();
+		        	int id = (int) table.getValueAt(row, 0);
+		        	loadProductDetails(id, Shop.getProducts());
+		        }
+		    }
+		});
+		
+		scrollPane.getViewport().add(table);
+	}
+
+
 	public void flagForOrder(int id, ArrayList<Product> products){
 		if(productLoaded){
-			//int id = Integer.parseInt((String) comboSelectId.getSelectedItem());
 			for(Product product : products){
 				if(product.getId() == id){
 					if(product.isFlaggedForOrder()){
@@ -927,6 +855,46 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
+	public String getDisplayedName(){
+		return textName.getText();
+	}
+
+
+	public String getDisplayedCategory(){
+		return textCategory.getText();
+	}
+
+
+	public String getDisplayedQuantity(){
+		return textQuantity.getText();
+	}
+
+
+	public String getDisplayedThreshold(){
+		return textThreshold.getText();
+	}
+
+
+	public String getDisplayedPrice(){
+		return textPrice.getText();
+	}
+
+
+	public String getDisplayedDiscountPrice(){
+		return textDiscountedPrice.getText();
+	}
+
+
+	public String getDisplayedDiscountPercent(){
+		return txtDiscountedAmount.getText();
+	}
+
+	
+	public boolean isFlaggedForOrderVisible(){
+		return txtFlaggedForOrder.isVisible();
+	}
+
+
 	public void loadProductDetails(int id, ArrayList<Product> products){
 		Product tempProduct = null;
 		boolean productExists = false;
@@ -945,7 +913,6 @@ public class StockManagementPanel extends JSplitPane{
 			txtNotification.setVisible(true);
 			notificationTimer.start();
 		}else{
-			//comboSelectId.setSelectedItem(id);
 			textId.setText(""+id);
 			textName.setText(tempProduct.getName());
 			textCategory.setText(tempProduct.getCategory());
@@ -1011,27 +978,24 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
-	//refresh combo box
-	/*public static int refreshCombo(ArrayList<Product> products){
-		ArrayList<Integer> idValues = new ArrayList<Integer>();
-		idValues.add(0);
-		for (Product product : products){
-			if(!product.isDeleted()){
-				int id = product.getId();
-				idValues.add(id);
+	//Check name and supplier against products
+	public boolean productAndSupplierAlreadyExist(int id, String productName, String supplierName, ArrayList<Product> products, ArrayList<Supplier> suppliers){
+		for(Product product : products){
+			if(product.getName().equalsIgnoreCase(productName)){
+				if(product.getId()!=id){
+					for(Supplier supplier : suppliers){
+						if(product.getSupplier()==supplier && supplier.getSupplierName().equalsIgnoreCase(supplierName)){
+							return true;
+						}
+					}
+				}
 			}
 		}
-		comboSelectId.removeAllItems();
-		int counter = 0;
-		for(Integer current : idValues){
-			String s = current.toString();
-			comboSelectId.addItem(s);
-			counter++;
-		}
-		return counter;
-	}*/
-	
-	
+		
+		return false;
+	}
+
+
 	public void refreshTable(){
 		if(currentTableView==1){
 			displayProductsTable("");
@@ -1045,13 +1009,31 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
-	public void restoreProduct(int id, ArrayList<Product> products){
+	public boolean restoreProduct(int id, ArrayList<Product> products){
 		for(Product product : products){
-			if(product.getId() == id && product.isDeleted()){
-				product.setDeleted(false);
+			if(product.getId() == id){
+				if(product.isDeleted()){
+					product.setDeleted(false);
+					refreshTable();
+					txtNotification.setText("Product Restored");
+					notificationTimer.stop();
+					txtNotification.setVisible(true);
+					notificationTimer.start();
+					return true;
+				}else{
+					txtNotification.setText("Product Is Already Available");
+					notificationTimer.stop();
+					txtNotification.setVisible(true);
+					notificationTimer.start();
+					return false;
+				}
 			}
 		}
-		refreshTable();
+		txtNotification.setText("No Product With Matching Id Found");
+		notificationTimer.stop();
+		txtNotification.setVisible(true);
+		notificationTimer.start();
+		return false;
 	}
 	
 	
@@ -1095,7 +1077,6 @@ public class StockManagementPanel extends JSplitPane{
 		boolean notValid = productAndSupplierAlreadyExist(Integer.parseInt(textId.getText()), textName.getText(), (String)comboSelectSupplier.getSelectedItem(), Shop.getProducts(), Shop.getSuppliers());
 		if(notValid){
 			System.out.println("Already Exists, Product Not Saved");
-			//txtNotification.setText(textName.getText() + " From "  + (String)comboSelectSupplier.getSelectedItem() + " Exists, Product Not Saved");
 			txtNotification.setText("Product With Same Supplier Already Exists");
 			notificationTimer.stop();
 			txtNotification.setVisible(true);
@@ -1123,7 +1104,7 @@ public class StockManagementPanel extends JSplitPane{
 				System.out.println("textId contains invaid string");
 			}
 			for(Product product : Shop.getProducts()){
-				if(product.getId() == id && !(product.isDeleted())){
+				if(product.getId() == id){
 					product.setCategory(textCategory.getText());
 				}
 			}
@@ -1150,7 +1131,7 @@ public class StockManagementPanel extends JSplitPane{
 				System.out.println("textId contains invaid string");
 			}
 			for(Product product : Shop.getProducts()){
-				if(product.getId() == id && !(product.isDeleted())){
+				if(product.getId() == id){
 					product.setName(textName.getText());
 				}
 			}
@@ -1171,7 +1152,7 @@ public class StockManagementPanel extends JSplitPane{
 			try{
 				price = Double.parseDouble(tempPrice);
 				for(Product product : Shop.getProducts()){
-					if(product.getId() == id && !(product.isDeleted())){
+					if(product.getId() == id){
 						String test = String.format("%.2f", price);
 						price = Double.parseDouble(test);
 						product.setPrice(price);
@@ -1195,7 +1176,7 @@ public class StockManagementPanel extends JSplitPane{
 			for(Supplier supplier : Shop.getSuppliers()){
 				if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
 					for(Product product : Shop.getProducts()){
-						if(product.getId() == id && !(product.isDeleted())){
+						if(product.getId() == id){
 							product.setSupplier(supplier);
 						}
 					}
@@ -1218,7 +1199,7 @@ public class StockManagementPanel extends JSplitPane{
 			try{
 				threshold = Integer.parseInt(tempThreshold);
 				for(Product product : Shop.getProducts()){
-					if(product.getId() == id && !(product.isDeleted())){
+					if(product.getId() == id){
 						product.setLowStockOrder(threshold);
 					}
 				}
@@ -1242,7 +1223,7 @@ public class StockManagementPanel extends JSplitPane{
 			try{
 				quantity = Integer.parseInt(tempQuantity);
 				for(Product product : Shop.getProducts()){
-					if(product.getId() == id && !(product.isDeleted())){
+					if(product.getId() == id){
 						product.setQuantity(quantity);
 					}
 				}
@@ -1253,74 +1234,36 @@ public class StockManagementPanel extends JSplitPane{
 	}
 	
 	
-	/*public void setupList(){
-		listModel.clear();
-		list = new JList(listModel);
-		for(Product product : Shop.getProducts()){
-			if(!product.isDeleted()){
-				listModel.addElement("Id=" + product.getId() + "   " + product.getQuantity() + "/" + product.getLowStockOrder() + " " + " Units    " + product.getName());
-			}
-		}
-	}*/
-	
-	public String getDisplayedName(){
-		return textName.getText();
-	}
-	
-	public String getDisplayedCategory(){
-		return textCategory.getText();
-	}
-	
-	public String getDisplayedQuantity(){
-		return textQuantity.getText();
-	}
-	
-	public String getDisplayedThreshold(){
-		return textThreshold.getText();
-	}
-	
-	public String getDisplayedPrice(){
-		return textPrice.getText();
-	}
-	
-	public String getDisplayedDiscountPrice(){
-		return textDiscountedPrice.getText();
+	public void setDisplayedCategory(String str){
+		textCategory.setText(str);
 	}
 
-	public String getDisplayedDiscountPercent(){
-		return txtDiscountedAmount.getText();
+
+	public void setDisplayedDiscountPercent(String str){
+		txtDiscountedAmount.setText(str);
 	}
-	
-	public boolean isFlaggedForOrderVisible(){
-		return txtFlaggedForOrder.isVisible();
+
+
+	public void setDisplayedDiscountPrice(String str){
+		textDiscountedPrice.setText(str);
 	}
-	
+
+
 	public void setDisplayedName(String str){
 		textName.setText(str);
 	}
 	
-	public void setDisplayedCategory(String str){
-		textCategory.setText(str);
+	public void setDisplayedPrice(String str){
+		textPrice.setText(str);
 	}
-	
+
+
 	public void setDisplayedQuantity(String str){
 		textQuantity.setText(str);
 	}
 	
 	public void setDisplayedThreshold(String str){
 		textThreshold.setText(str);
-	}
-	
-	public void setDisplayedPrice(String str){
-		textPrice.setText(str);
-	}
-	
-	public void setDisplayedDiscountPrice(String str){
-		textDiscountedPrice.setText(str);
-	}
-
-	public void setDisplayedDiscountPercent(String str){
-		txtDiscountedAmount.setText(str);
 	}
 	
 	public void setProductLoaded(boolean productLoaded) {

@@ -7,8 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.swing.JOptionPane;
-
 import data.Customer;
 import data.CustomerOrder;
 import data.Finance;
@@ -49,10 +47,15 @@ public class Shop {
 		populateCustomerOrders();
 		printCustomerOrderInvoice();
 		updateStockOrderDevilveryDates();
+		populateFinances();
 
 		// run login
 		Login login = new Login(staffMembers);
 		login.drawFrame();
+	}
+
+	private void populateFinances() {
+		financialRecords = Json.readFinanceFromFile();
 	}
 
 	public void populateCustomers() {

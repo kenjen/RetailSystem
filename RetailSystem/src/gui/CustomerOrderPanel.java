@@ -82,6 +82,7 @@ public class CustomerOrderPanel extends JPanel{
 	 */
 	public CustomerOrderPanel() {
 		
+
 		comboSelectCustomer = new JComboBox<String>();
 		populateCustomerNames();
 		comboSelectCustomer.setEditable(true);
@@ -936,7 +937,6 @@ public class CustomerOrderPanel extends JPanel{
 	      if (e.getClickCount() == 2) {
 		         JTable target = (JTable)e.getSource();
 		         int row = target.getSelectedRow();
-		         
 		         int id = (int) arrayOrders[row][0];
 		         String customer = (String) arrayOrders[row][1];
 		         String staff = (String) arrayOrders[row][2];
@@ -994,3 +994,4 @@ public class CustomerOrderPanel extends JPanel{
 	}
 	
 }//end class CustomerOrderPanel
+

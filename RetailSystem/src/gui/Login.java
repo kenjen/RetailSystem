@@ -38,6 +38,7 @@ public class Login extends JFrame {
 	public Login(ArrayList<Staff> members){
 		listOfMemebers = members;
 	}
+	
 		
 	/**
 	 * Create the frame.

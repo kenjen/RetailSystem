@@ -346,4 +346,60 @@ public class Json {
 		return null;
 	}
 	
+	/**
+	 * Returns the whole list of Finance stored in /resources/finance.json
+	 * @return
+	 */
+	public static ArrayList<Finance> readFinanceFromFile() {
+		Scanner in=null;
+		try {
+			//if this is the first time to read from the file then create it
+			try{
+				new FileReader("resources/finance.json");
+			}catch(FileNotFoundException fnfe){
+				new FileWriter(new File("resources/finance.json"));
+			}
+			
+			
+			in = new Scanner(new FileReader("resources/finance.json"));
+			ObjectMapper mapper = new ObjectMapper();
+			while (in.hasNextLine()) {
+				Finance finance = mapper
+						.readValue(in.nextLine(), Finance.class);
+				System.out.println(finance.toString());
+				Shop.getFinancialRecords().add(finance);
+			}
+			return Shop.getFinancialRecords();
+		} catch (EOFException eof){
+			eof.printStackTrace();
+			return null;
+		}
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			in.close();
+		}
+		return null;
+	}
+	
+	/**
+	 * Saves the customer order in resources/customerOrder.json as a Json object
+	 * @param product
+	 */
+	public static void saveFinanceToFile(Finance finance) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			String result = mapper.writeValueAsString(finance) + "\n";
+			FileWriter writer = new FileWriter("resources/finance.json",true);
+			writer.write(result);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 }

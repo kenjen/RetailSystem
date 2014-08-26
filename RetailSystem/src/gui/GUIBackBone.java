@@ -34,6 +34,7 @@ public class GUIBackBone extends JFrame {
 	private static Staff loggedStaffMember;
 	private int previousTabIndex = 0;
 	private JLabel lblLogout = new JLabel();
+	private boolean isProfitPanelLoaded = false;
 
 	public GUIBackBone(boolean isAdmin, Staff logStaff) {
 		JPanel logoutPanel = new JPanel();
@@ -105,6 +106,7 @@ public class GUIBackBone extends JFrame {
 						Login login = new Login(Shop.getStaffMembers());
 						login.drawFrame();
 						saveTabDetails(0);
+		
 						GUIBackBone.this.dispose();
 					} else {
 						tabbedPane.setSelectedIndex(previousTabIndex);
@@ -113,6 +115,12 @@ public class GUIBackBone extends JFrame {
 					panelCustomerOrders.repopulateAll();
 				}else if(tabbedPane.getSelectedIndex() == 2){
 					panelStockOrder.repopulateAll();
+				}else if(tabbedPane.getSelectedIndex() == 6){
+					if(!isProfitPanelLoaded){
+						panelProfit.createPanel();
+						isProfitPanelLoaded = true;
+					}
+					panelProfit.refreshChart();
 				}
 				previousTabIndex = tabbedPane.getSelectedIndex();
 			}
@@ -190,13 +198,8 @@ public class GUIBackBone extends JFrame {
 	public void saveTabDetails(int index) {
 		panelStockManagement.saveDetails();
 		panelStockManagement.refreshTable();
-		//panelStockOrder.displayOrderTable(0);
-		//panelStockOrder.displayProductsTable("", "");
-		//panelStockOrder.repaint();
 		panelCustomer.saveDetails();
 		panelSupplier.saveDetails();
-		//panelStockOrder.saveDetails();
-
 	}
 
 	public static void setLoggedStaffMember(Staff loggedStaffMember) {

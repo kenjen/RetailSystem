@@ -24,6 +24,7 @@ import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilDateModel;
 import tableModels.UneditableTableModel;
 import data.Finance;
+import data.Json;
 
 public class PopupDialog extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -125,6 +126,13 @@ public class PopupDialog extends JDialog implements ActionListener {
 			Finance finance = new Finance(amount,selectedDate, description,true);
 			Shop.getFinancialRecords().add(finance);
 			
+			//save the new changes to file as well
+			if(Json.clearList("resources/finance.json")){
+				for(Finance f : Shop.getFinancialRecords()){
+					Json.saveFinanceToFile(f);
+				}
+			}
+			
 			Object[] object = new Object[5];
 			object[0] = finance.getId();
 			object[1] = GUIBackBone.getLoggedStaffMember().getName()+", "+GUIBackBone.getLoggedStaffMember().getSurname();
@@ -136,10 +144,7 @@ public class PopupDialog extends JDialog implements ActionListener {
 			UneditableTableModel model = new UneditableTableModel(this.panel.getTableData().toArray(new Object[Shop.getFinancialRecords().size()][]), columnNames);
 			JTable table = new JTable(model);
 			this.panel.getScrollPane().getViewport().add(table);
-			this.panel.generateFinanceData();
-			this.panel.loadChartData();
-			this.panel.createChart();
-			this.panel.getLblWrittenReport().setText(this.panel.generateHtmlString());
+			this.panel.refreshChart();
 			this.setVisible(false);	
 		}
 	}
