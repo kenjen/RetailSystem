@@ -240,7 +240,7 @@ public class SupplierPanel extends JSplitPane{
 									if(item.toString().contains(searchField.getText())){
 										suppliersList.setSelectedValue(item,true);
 										foundIt = true;
-									//	searchField.setText("");
+									
 									}
 								}
 							}
@@ -253,7 +253,7 @@ public class SupplierPanel extends JSplitPane{
 									if(item.toString().contains(searchField.getText())){
 										suppliersList.setSelectedValue(item,true);
 										foundIt = true;
-									//	searchField.setText("");
+									
 									}
 								}
 							}
@@ -266,7 +266,7 @@ public class SupplierPanel extends JSplitPane{
 					// show message if supplier is not found
 					if(foundIt == false){
 						JOptionPane.showMessageDialog(null, "Didn't find supplier");
-					//	searchField.setText("");
+					
 					}
 				}
 				else{
@@ -339,22 +339,33 @@ public class SupplierPanel extends JSplitPane{
 
 	// create new supplier
 	public void createSupplier(){
+		boolean isValid = true;
+		// check if there are details entered for the new supplier
 		if((nameField.getText().isEmpty()==false)&&(addressField.getText().isEmpty()==false)){
-			
-			
-					Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
-					Shop.getSuppliers().add(newSupplier);
-					showSuppliers();
-					nameField.setText("");
-					addressField.setText("");
-					
-			
-			
+			for(Supplier supplier:Shop.getSuppliers()){
+				// check if another supplier with the same details exists
+				if((!nameField.getText().equalsIgnoreCase(supplier.getSupplierName()))&& (!addressField.getText().equalsIgnoreCase(supplier.getSupplierAddress()))){
+					isValid = true;
+				}
+				else {
+					isValid = false;
+					JOptionPane.showMessageDialog(null, " The supplier entered exists");
+				}
+			}
+			// if a supplier with the same details doesn't exist add the new supplier to the list
+			if(isValid==true){
+				Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
+				Shop.getSuppliers().add(newSupplier);
+				showSuppliers();
+				nameField.setText("");
+				addressField.setText("");
+				saveDetails();
+			}
 		}
 		else{
 			JOptionPane.showMessageDialog(null, " Enter details for new supplier");
 		}
-		//saveDetails();
+		
 		
 	}
 	// inner class to delete supplier from GUI list and set it as deleted in the Arraylist
@@ -364,16 +375,19 @@ public class SupplierPanel extends JSplitPane{
 			// get index and id for selected supplier
 			int index = suppliersList.getSelectedIndex();
 			if (index != -1) {
+				// get the id corresponding characters from the GUI list
 				String supplierFromList = (String) suppliersList.getSelectedValue();
 				char[] charList = supplierFromList.toCharArray();
 				String id = "";
 				id = id + charList[4] + charList[5] + charList[6];
+				// create object to store the selected supplier
 				Supplier deleted = null;
 				for(Supplier supplier:Shop.getSuppliers()){
 					if(supplier.getSupplierId() == Integer.parseInt(id)){
 						deleted = supplier;
 					}
 				}
+				// delete supplier from GUI list and set him as deleted in the arraylist
 				if(deleted!= null){
 					listModel.remove(index);
 					deleted.setSupplierDeleted(true);
@@ -394,7 +408,7 @@ public class SupplierPanel extends JSplitPane{
 			// select supplier
 			if (index != -1) {
 				for(Supplier supplier:Shop.getSuppliers()){
-					// get index and id of selected supplier
+					// store in a string the id corresponding characters of selected supplier from the GUI list
 					String supplierFromList = (String) suppliersList.getSelectedValue();
 					char[] charList = supplierFromList.toCharArray();
 					String id = "";
@@ -420,7 +434,7 @@ public class SupplierPanel extends JSplitPane{
 	public void addEditedSupplier(){
 		if((nameField.getText().isEmpty()==false)&&(addressField.getText().isEmpty()==false)){
 			for(Supplier supplier:Shop.getSuppliers()){
-				// get index and id of selected supplier
+				// store in a string the id corresponding characters of selected supplier from the GUI list
 				int index = suppliersList.getSelectedIndex();
 				String supplierFromList = (String) suppliersList.getSelectedValue();
 				char[] charList = supplierFromList.toCharArray();
@@ -465,12 +479,13 @@ public class SupplierPanel extends JSplitPane{
 		int index = suppliersList.getSelectedIndex();
 		String supplierFromList = (String) suppliersList.getSelectedValue();
 		if (index != -1) {
-			// get the supplier at the selected index
 			for(Supplier supplier:Shop.getSuppliers()){
+				// store in a string the id corresponding characters of selected supplier from the GUI list
 				char[] charList = supplierFromList.toCharArray();
 				String id = "";
 				id = id + charList[4] + charList[5] + charList[6];
 				int idS = Integer.parseInt(id);
+				// get the selected supplier's id to find him in the arraylist 
 				if(idS==supplier.getSupplierId()){
 					if(supplier.isSupplierDeleted()==false){
 						listModel.clear();
