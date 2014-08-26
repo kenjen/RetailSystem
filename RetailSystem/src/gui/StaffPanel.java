@@ -96,7 +96,7 @@ public class StaffPanel extends JPanel {
 		add(surNameField, "cell 3 3,growx");
 		surNameField.setColumns(10);
 		
-		JCheckBox chckbxAdmin = new JCheckBox("Admin Access");
+		final JCheckBox chckbxAdmin = new JCheckBox("Admin Access");
 		add(chckbxAdmin, "cell 4 3");
 
 		JLabel lblNewLabel_1 = new JLabel("Salary");
@@ -151,6 +151,9 @@ public class StaffPanel extends JPanel {
 						Staff s = new Staff(nameField.getText(), surNameField
 								.getText(), salaryD, userNameField.getText(),
 								passwordField.getText());
+						if(chckbxAdmin.isSelected()){
+							s.setAdmin(true);
+						}
 
 						// Access the Shop class and the staffMembers Array
 						ArrayList<Staff> staffMembers = Shop.getStaffMembers();
@@ -236,6 +239,7 @@ public class StaffPanel extends JPanel {
 
 						userNameField.setText(selectedStaff.getUsername());
 						passwordField.setText(selectedStaff.getPassword());
+						chckbxAdmin.setSelected(selectedStaff.isAdmin());
 					}
 
 				}
@@ -290,7 +294,9 @@ public class StaffPanel extends JPanel {
 					Shop.EditDetails(nameField.getText(),
 							surNameField.getText(), salaryD,
 							userNameField.getText(), passwordField.getText(),
-							id);
+							id, chckbxAdmin.isSelected());
+					
+					
 
 					saveDetails();
 

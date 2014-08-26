@@ -119,7 +119,7 @@ public class Shop {
 	}
 
 	public static void EditDetails(String name, String surname, double salary,
-			String username, String password, int id) {
+			String username, String password, int id, boolean administrator) {
 		for (Staff staff : staffMembers) {
 			//if the id of the staffmember matches the id passed in
 			//set the values according to whats in the textFields
@@ -133,6 +133,7 @@ public class Shop {
 				staff.setSalary(salary);
 				staff.setUsername(username);
 				staff.setPassword(password);
+				staff.setAdmin(administrator);
 				System.out.println("Edit Details loop");
 			}
 		}

@@ -79,7 +79,6 @@ public class CustomerPanel extends JPanel {
 
 		// COMBOBOX POPULATION
 		ArrayList<Integer> num = new ArrayList<Integer>();
-
 		for (Customer customer : Shop.getCustomers()) {
 			if (customer.isDeleted() == false) {
 				num.add(customer.getCustomerID());
