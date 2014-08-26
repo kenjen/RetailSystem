@@ -59,6 +59,8 @@ public class StaffPanel extends JPanel {
 	private Staff activeMember;
 	private JComboBox staffComboBox;
 	private ArrayList<String> staffMembers;
+	
+	private int id = 0;
 
 	public StaffPanel() {
 		setLayout(new MigLayout("", "[][][][grow][][grow][][][][][][][][]", "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
@@ -128,6 +130,9 @@ public class StaffPanel extends JPanel {
 		final JButton btnAddStaff = new JButton("Add Staff Member");
 		btnAddStaff.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
+				// Access the Shop class and the staffMembers Array
+				ArrayList<Staff> staffMembers = Shop.getStaffMembers();
 
 				for (Staff s1 : Shop.getStaffMembers()) {
 					if (s1.getUsername().equals(userNameField.getText())) {
@@ -155,11 +160,13 @@ public class StaffPanel extends JPanel {
 								.getText(), salaryD, userNameField.getText(),
 								passwordField.getText());
 						if(chckbxAdmin.isSelected()){
-							s.setAdmin(true);
-						}
+							s.setAdmin(true);	
+					}
+					
+						
+				
+						
 
-						// Access the Shop class and the staffMembers Array
-						ArrayList<Staff> staffMembers = Shop.getStaffMembers();
 
 						// Loop through Staff members match username entered to all
 						// Usernames in the list. dont allow to add new staff if their username matches any in the list
@@ -182,6 +189,7 @@ public class StaffPanel extends JPanel {
 						resetTextFields();
 
 						System.out.println("New Staff Member Added");
+						System.out.println("Add Staff ID " + s.getId());
 
 						saveDetails();
 					} catch (NumberFormatException e) {
@@ -193,6 +201,7 @@ public class StaffPanel extends JPanel {
 					JOptionPane.showMessageDialog(null,
 							"You must fill in all details");
 				}
+				
 			}
 		});
 
@@ -292,6 +301,8 @@ public class StaffPanel extends JPanel {
 							id = staff.getId();
 						}
 					}
+					
+					System.out.println("ID Selected" + id);
 
 					System.out.println("Cannot Change userName");
 					Shop.EditDetails(nameField.getText(),
@@ -299,7 +310,7 @@ public class StaffPanel extends JPanel {
 							userNameField.getText(), passwordField.getText(),
 							id, chckbxAdmin.isSelected());
 					
-					
+					System.out.println("Selected Item" + staffComboBox.getSelectedItem());
 
 					saveDetails();
 
