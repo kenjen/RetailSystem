@@ -98,14 +98,16 @@ public class SupplierPanel extends JSplitPane{
 		rightClickMenu = new JPopupMenu();
 		JMenuItem showProducts = new JMenuItem("Show Products ");
 		JMenuItem editDetails = new JMenuItem("Edit Supplier");
-		JMenuItem removeSupplier = new JMenuItem("Remove Supplier");
+		final JMenuItem removeSupplier = new JMenuItem("Remove Supplier");
 		final JMenuItem restore = new JMenuItem("Restore deleted supplier");
 
 		// add action listener to display suppliers button
 		showS.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				showSuppliers();
+				removeSupplier.setEnabled(true);
 				restore.setEnabled(false);
+				showSuppliers();
+				
 			}
 		});
 		buttonPanel.add(showS, "cell 3 6, growx");
@@ -280,6 +282,7 @@ public class SupplierPanel extends JSplitPane{
 		showDeleted.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				restore.setEnabled(true);
+				removeSupplier.setEnabled(false);
 				showDeletedSuppliers();
 			}
 		});
@@ -338,16 +341,20 @@ public class SupplierPanel extends JSplitPane{
 	public void createSupplier(){
 		if((nameField.getText().isEmpty()==false)&&(addressField.getText().isEmpty()==false)){
 			
-			Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
-			Shop.getSuppliers().add(newSupplier);
-			showSuppliers();
-				nameField.setText("");
-				addressField.setText("");
+			
+					Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
+					Shop.getSuppliers().add(newSupplier);
+					showSuppliers();
+					nameField.setText("");
+					addressField.setText("");
+					
+			
+			
 		}
 		else{
 			JOptionPane.showMessageDialog(null, " Enter details for new supplier");
 		}
-		saveDetails();
+		//saveDetails();
 		
 	}
 	// inner class to delete supplier from GUI list and set it as deleted in the Arraylist
