@@ -9,6 +9,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
@@ -63,7 +64,7 @@ public class StaffPanel extends JPanel {
 	private int id = 0;
 
 	public StaffPanel() {
-		setLayout(new MigLayout("", "[][][][grow][][grow][][][][][][][][]", "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
+		setLayout(new MigLayout("", "[][][][grow][][grow][][][][][][][][]", "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
 		staffMembers = new ArrayList<String>();
 		staffComboBox = new JComboBox(staffMembers.toArray());
 
@@ -124,6 +125,7 @@ public class StaffPanel extends JPanel {
 		passwordField = new JPasswordField();
 		add(passwordField, "cell 3 6,growx");
 		passwordField.setColumns(10);
+		
 
 		// Get the Values from each textField and save them to their respective slots in the StaffMenbers Array
 		// Add a new Staff Member with these values Reset the form
@@ -258,9 +260,13 @@ public class StaffPanel extends JPanel {
 
 			}
 		});
+		
+		// add photo to left panel
+		JLabel supplierImage = new JLabel(new ImageIcon("resources/Working_Together.jpg"));
+		add(supplierImage, "flowx,cell 0 23");
 
 		final JButton btnRemove = new JButton("Remove");
-		add(btnRemove, "cell 6 28");
+		add(btnRemove, "cell 6 30");
 		btnRemove.setEnabled(false);
 
 		// Remove Selected Item from ComboBox
@@ -276,7 +282,7 @@ public class StaffPanel extends JPanel {
 
 		// Edit Details
 		final JButton btnEditdetails = new JButton("EditDetails");
-		add(btnEditdetails, "cell 7 28");
+		add(btnEditdetails, "cell 7 30");
 		btnEditdetails.setEnabled(false);
 
 		btnEditdetails.addActionListener(new ActionListener() {
