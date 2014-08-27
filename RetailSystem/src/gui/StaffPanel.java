@@ -61,13 +61,13 @@ public class StaffPanel extends JPanel {
 	private JComboBox staffComboBox;
 	private ArrayList<String> staffMembers;
 	
-	private int id = 0;
+	private int id;
 
 	public StaffPanel() {
 		setLayout(new MigLayout("", "[][][][grow][][grow][][][][][][][][]", "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
 		staffMembers = new ArrayList<String>();
 		staffComboBox = new JComboBox(staffMembers.toArray());
-
+		staffComboBox.addItem("");
 		for (Staff s : Shop.getStaffMembers()) {
 			String name = s.getName() + " " + s.getSurname();
 			staffMembers.add(name);
@@ -75,6 +75,9 @@ public class StaffPanel extends JPanel {
 				staffComboBox.addItem(s.getUsername());
 			}
 		}
+		
+		//disable staffComboBox 
+		staffComboBox.setEnabled(false);
 
 		saveDetails();
 
@@ -185,6 +188,9 @@ public class StaffPanel extends JPanel {
 							if (staff.isDeleted() == false) {
 								staffComboBox.addItem(staff.getUsername());
 								// staffComboBox.addItem(s.getName());
+								
+								//Add null to ComboBox
+								staffComboBox.addItem("");
 							}
 						}
 
@@ -344,12 +350,15 @@ public class StaffPanel extends JPanel {
 					userNameField.setEditable(false);
 					btnEditdetails.setEnabled(true);
 					btnRemove.setEnabled(true);
+					staffComboBox.setEnabled(true);
 				}
 				else{
 					btnAddStaff.setEnabled(true);
 					userNameField.setEditable(true);
 					btnEditdetails.setEnabled(false);
 					btnRemove.setEnabled(false);
+					staffComboBox.setEnabled(false);
+					resetTextFields();
 				}
 			}
 		});
