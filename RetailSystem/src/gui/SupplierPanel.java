@@ -55,7 +55,7 @@ public class SupplierPanel extends JSplitPane{
 		// create a split pane with a scroll pane in it and a Jpanel
 
 		// set the right component to the scrollpane
-		setDividerLocation(550);
+		setDividerLocation(650);
 		JScrollPane listScroller = new JScrollPane(suppliersList);
 		setRightComponent(listScroller);
 		listScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -91,6 +91,7 @@ public class SupplierPanel extends JSplitPane{
 		 * restore a deleted supplier.
 		 */
 		JButton showS = new JButton("Show Suppliers");
+		JButton showDeleted = new JButton("Show deleted suppliers");
 		final JButton edited = new JButton("SUBMIT CHANGES");
 		edited.setEnabled(false);
 		final JButton add = new JButton("ADD NEW supplier");
@@ -115,7 +116,7 @@ public class SupplierPanel extends JSplitPane{
 				
 			}
 		});
-		buttonPanel.add(showS, "cell 3 6, growx");
+		buttonPanel.add(showS, "cell 3 1, growx");
 
 		// add action listener to add suppliers button
 		add.addActionListener(new ActionListener(){
@@ -142,7 +143,11 @@ public class SupplierPanel extends JSplitPane{
 				addressField.setText("");
 			}
 		});
-		buttonPanel.add(cancel, "growx,cell 1 8");
+		buttonPanel.add(cancel, "flowx,cell 1 8");
+
+		// add listener to suppliers list to bring up popup menu
+		MouseListener popupListener = new PopupListener();
+		suppliersList.addMouseListener(popupListener);
 
 
 		/* add action listener to the submenu items
@@ -226,11 +231,7 @@ public class SupplierPanel extends JSplitPane{
 		});
 		rightClickMenu.add(restore);
 
-		//Add listener to suppliers list to bring up popup menu
-		MouseListener popupListener = new PopupListener();
-		suppliersList.addMouseListener(popupListener);
-
-
+		
 		// create GUI panel search field and button for looking for a supplier by name
 
 		JLabel search = new JLabel(" Search for a supplier by name");
@@ -304,7 +305,7 @@ public class SupplierPanel extends JSplitPane{
 		searchSupplier.addActionListener(listener);
 
 		// display deleted suppliers
-		JButton showDeleted = new JButton("Show deleted suppliers");
+		
 		showDeleted.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				editDetails.setEnabled(true);
@@ -314,10 +315,15 @@ public class SupplierPanel extends JSplitPane{
 				showDeletedSuppliers();
 			}
 		});
-		buttonPanel.add(showDeleted, "cell 3 7, growx");
-	}
+		buttonPanel.add(showDeleted, "cell 3 2, growx");
+		
+		// add photo to left panel
+		JLabel supplierImage = new JLabel(new ImageIcon("resources/supplier photo.jpg"));
+		buttonPanel.add(supplierImage, "cell 1 14, flowx");
 
-
+}
+	
+	
 	// Methods
 
 	// setup list 
