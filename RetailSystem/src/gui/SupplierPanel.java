@@ -6,9 +6,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.*;
-import net.miginfocom.swing.MigLayout;
 
+import javax.swing.*;
+
+import net.miginfocom.swing.MigLayout;
 import data.Json;
 import data.Product;
 import data.Supplier;
@@ -57,9 +58,9 @@ public class SupplierPanel extends JSplitPane{
 		setPreferredSize(new Dimension(320, 350));
 
 		// create title
-		JLabel titleLabel = new JLabel("SUPPLIERS");
-		titleLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
-		buttonPanel.add(titleLabel, "cell 0 0");
+	//	JLabel titleLabel = new JLabel("SUPPLIERS");
+	//	titleLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
+	//	buttonPanel.add(titleLabel, "cell 0 0");
 
 		// create labels and textfields for user input
 		nameLabel = new JLabel(" Name");
@@ -103,7 +104,7 @@ public class SupplierPanel extends JSplitPane{
 				
 			}
 		});
-		buttonPanel.add(showS, "cell 3 1, growx");
+		buttonPanel.add(showS, "cell 3 4, growx");
 
 		// add action listener to add suppliers button
 		add.addActionListener(new ActionListener(){
@@ -302,12 +303,11 @@ public class SupplierPanel extends JSplitPane{
 				showDeletedSuppliers();
 			}
 		});
-		buttonPanel.add(showDeleted, "cell 3 2, growx");
+		buttonPanel.add(showDeleted, "cell 3 5, growx");
 		
 		// add photo to left panel
 		JLabel supplierImage = new JLabel(new ImageIcon("resources/supplier photo.jpg"));
-		buttonPanel.add(supplierImage, "cell 1 14, flowx");
-
+		buttonPanel.add(supplierImage, "cell 0 14, flowx");
 }
 	
 	
