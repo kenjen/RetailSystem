@@ -48,6 +48,7 @@ public class StockManagementPanel extends JSplitPane{
 	private JButton btnDisplayProducts;
 	private JButton btnFlagForOrder;
 	private JButton btnRestoreProduct;
+	private JButton btnSaveAll;
 	private JComboBox<String> comboSelectSupplier;
 	private int currentTableView = 1;
 	private JPopupMenu menu;
@@ -318,7 +319,7 @@ public class StockManagementPanel extends JSplitPane{
 		
 		//product threshold fields
 		txtThreshold = new JTextField();
-		txtThreshold.setText("Threshold");
+		txtThreshold.setText("Order Threshold");
 		txtThreshold.setEditable(false);
 		txtThreshold.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(txtThreshold, "cell 3 12,growx");
@@ -403,7 +404,7 @@ public class StockManagementPanel extends JSplitPane{
 		AutoCompleteDecorator.decorate(comboSelectSupplier);
 		
 		
-		JButton btnSaveAll = new JButton("Save All");
+		btnSaveAll = new JButton("Save");
 		panel.add(btnSaveAll, "cell 3 20, growx, center");
 		btnSaveAll.addActionListener(new ActionListener(){
 			@Override
@@ -514,6 +515,116 @@ public class StockManagementPanel extends JSplitPane{
 		
 		displayProductsTable("");
 		scrollPane.getViewport().add(table);
+	}
+	
+	
+	//checks all fields valid
+	public boolean allFieldsValid(){
+		if(productLoaded){
+			try{
+				int id = Integer.parseInt(textId.getText());
+				for(Product product : Shop.getProducts()){
+					if(product.getId()==id){
+						if(!(textCategory.getText().trim().equals(""))){
+							if(!(textName.getText().trim().equals(""))){
+								if(!(textPrice.getText().trim().equals(""))){
+									try{
+										Double.parseDouble(textPrice.getText().trim());
+										if(!(textThreshold.getText().trim().equals(""))){
+											try{
+												Integer.parseInt(textThreshold.getText().trim());
+												if(!(textQuantity.getText().trim().equals(""))){
+													try{
+														Integer.parseInt(textQuantity.getText().trim());
+														if(!(((String) comboSelectSupplier.getSelectedItem()).trim().equals(""))){
+															return true;
+														}else{
+															txtNotification.setText("Empty Supplier");
+															notificationTimer.stop();
+															txtNotification.setVisible(true);
+															notificationTimer.start();
+															return false;
+														}
+													}catch(NumberFormatException e){
+														txtNotification.setText("Invalid Quantity Entered");
+														notificationTimer.stop();
+														txtNotification.setVisible(true);
+														notificationTimer.start();
+														return false;
+													}
+												}else{
+													txtNotification.setText("Empty Quantity");
+													notificationTimer.stop();
+													txtNotification.setVisible(true);
+													notificationTimer.start();
+													return false;
+												}
+											}catch(NumberFormatException e){
+												txtNotification.setText("Invalid Threshold Entered");
+												notificationTimer.stop();
+												txtNotification.setVisible(true);
+												notificationTimer.start();
+												return false;
+											}
+										}else{
+											txtNotification.setText("Empty Threshold");
+											notificationTimer.stop();
+											txtNotification.setVisible(true);
+											notificationTimer.start();
+											return false;
+										}
+									}catch(NumberFormatException e){
+										txtNotification.setText("Invalid Price Entered");
+										notificationTimer.stop();
+										txtNotification.setVisible(true);
+										notificationTimer.start();
+										return false;
+									}
+								}else{
+									txtNotification.setText("Empty Price");
+									notificationTimer.stop();
+									txtNotification.setVisible(true);
+									notificationTimer.start();
+									return false;
+								}
+							}else{
+								txtNotification.setText("Empty Name");
+								notificationTimer.stop();
+								txtNotification.setVisible(true);
+								notificationTimer.start();
+								return false;
+							}
+						}else{
+							txtNotification.setText("Empty Category");
+							notificationTimer.stop();
+							txtNotification.setVisible(true);
+							notificationTimer.start();
+							return false;
+						}
+					}
+				}
+
+				txtNotification.setText("No product with id " + id + " found");
+				notificationTimer.stop();
+				txtNotification.setVisible(true);
+				notificationTimer.start();
+				return false;
+				
+			}catch(NumberFormatException e){
+				System.out.println("textId contains invaid string");
+				txtNotification.setText("Invalid id loaded");
+				notificationTimer.stop();
+				txtNotification.setVisible(true);
+				notificationTimer.start();
+				return false;
+			}
+		}else{
+			txtNotification.setText("No Product Loaded");
+			notificationTimer.stop();
+			txtNotification.setVisible(true);
+			notificationTimer.start();
+			return false;
+		}
 	}
 	
 	
@@ -1073,7 +1184,6 @@ public class StockManagementPanel extends JSplitPane{
 		}catch(ClassCastException e){
 			System.out.println("textId contains invaid string");
 		}
-		//TODO
 		boolean notValid = productAndSupplierAlreadyExist(Integer.parseInt(textId.getText()), textName.getText(), (String)comboSelectSupplier.getSelectedItem(), Shop.getProducts(), Shop.getSuppliers());
 		if(notValid){
 			System.out.println("Already Exists, Product Not Saved");
@@ -1081,33 +1191,33 @@ public class StockManagementPanel extends JSplitPane{
 			notificationTimer.stop();
 			txtNotification.setVisible(true);
 			notificationTimer.start();
-		}else{
-			saveCategory();
-			saveName();
-			savePrice();
-			saveSupplier();
-			saveThreshold();
-			saveQuantity();
+		}else if(allFieldsValid()){
+			for(Supplier supplier : Shop.getSuppliers()){
+				if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
+					for(Product product : Shop.getProducts()){
+						if(product.getId()==id){
+							product.setCategory(textCategory.getText().trim());
+							product.setName(textName.getText());
+							double price = Double.parseDouble(textPrice.getText());
+							String strPrice = String.format("%.2f", price);
+							price = Double.parseDouble(strPrice);
+							product.setPrice(price);
+							product.setSupplier(supplier);
+							int threshold = Integer.parseInt(textThreshold.getText().trim());
+							product.setLowStockOrder(threshold);
+							int quantity = Integer.parseInt(textQuantity.getText().trim());
+							product.setQuantity(quantity);
+						}
+					}
+				}
+			}
 			saveDetails();
 			textId.setText(""+id);
 			refreshTable();
-		}
-	}
-	
-	
-	public void saveCategory(){
-		if(productLoaded){
-			int id = 0;
-			try{
-				id = Integer.parseInt(textId.getText());
-			}catch(ClassCastException e){
-				System.out.println("textId contains invaid string");
-			}
-			for(Product product : Shop.getProducts()){
-				if(product.getId() == id){
-					product.setCategory(textCategory.getText());
-				}
-			}
+			txtNotification.setText("Saved");
+			notificationTimer.stop();
+			txtNotification.setVisible(true);
+			notificationTimer.start();
 		}
 	}
 	
@@ -1119,118 +1229,6 @@ public class StockManagementPanel extends JSplitPane{
 			Json.saveProductToFile(product);
 		}
 		System.out.println("Finished saving products");
-	}
-	
-	
-	public void saveName(){
-		if(productLoaded){
-			int id = 0;
-			try{
-				id = Integer.parseInt(textId.getText());
-			}catch(ClassCastException e){
-				System.out.println("textId contains invaid string");
-			}
-			for(Product product : Shop.getProducts()){
-				if(product.getId() == id){
-					product.setName(textName.getText());
-				}
-			}
-		}
-	}
-	
-	
-	public void savePrice(){
-		double price = 0;
-		if(productLoaded){
-			int id = 0;
-			try{
-				id = Integer.parseInt(textId.getText());
-			}catch(ClassCastException e){
-				System.out.println("textId contains invaid string");
-			}
-			String tempPrice = textPrice.getText();
-			try{
-				price = Double.parseDouble(tempPrice);
-				for(Product product : Shop.getProducts()){
-					if(product.getId() == id){
-						String test = String.format("%.2f", price);
-						price = Double.parseDouble(test);
-						product.setPrice(price);
-					}
-				}
-			}catch(NumberFormatException nfe){
-				System.out.println("number entered not an integer");
-			}
-		}
-	}
-	
-	
-	public void saveSupplier(){
-		if(productLoaded){
-			int id = 0;
-			try{
-				id = Integer.parseInt(textId.getText());
-			}catch(ClassCastException e){
-				System.out.println("textId contains invaid string");
-			}
-			for(Supplier supplier : Shop.getSuppliers()){
-				if(supplier.getSupplierName().equals((String)comboSelectSupplier.getSelectedItem())){
-					for(Product product : Shop.getProducts()){
-						if(product.getId() == id){
-							product.setSupplier(supplier);
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	
-	public void saveThreshold(){
-		int threshold = 0;
-		if(productLoaded){
-			int id = 0;
-			try{
-				id = Integer.parseInt(textId.getText());
-			}catch(ClassCastException e){
-				System.out.println("textId contains invaid string");
-			}
-			String tempThreshold = textThreshold.getText();
-			try{
-				threshold = Integer.parseInt(tempThreshold);
-				for(Product product : Shop.getProducts()){
-					if(product.getId() == id){
-						product.setLowStockOrder(threshold);
-					}
-				}
-			}catch(NumberFormatException nfe){
-				System.out.println("number entered not an integer");
-			}
-		}
-	}
-	
-	
-	public void saveQuantity(){
-		int quantity = 0;
-		if(productLoaded){
-			int id = 0;
-			try{
-				id = Integer.parseInt(textId.getText());
-			}catch(ClassCastException e){
-				System.out.println("textId contains invaid string");
-			}
-			String tempQuantity = textQuantity.getText();
-			try{
-				quantity = Integer.parseInt(tempQuantity);
-				for(Product product : Shop.getProducts()){
-					if(product.getId() == id){
-						product.setQuantity(quantity);
-					}
-				}
-			}catch(NumberFormatException nfe){
-				System.out.println("number entered not an integer");
-			}
-		}
 	}
 	
 	
