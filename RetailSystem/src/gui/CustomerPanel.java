@@ -23,6 +23,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.Font;
 import java.util.ArrayList;
 
@@ -222,20 +224,48 @@ public class CustomerPanel extends JPanel {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				// TODO Auto-generated method stub
-				if (e.getStateChange() == ItemEvent.SELECTED) {
+				
+				System.out.println(ItemEvent.SELECTED);
+				
+				if(comboSelectCustomer.getSelectedItem() != null){
+				String surname = comboSelectCustomer.getSelectedItem()
+						.toString();
+
+				for (Customer customer : Shop.getCustomers()) {
+					String fullname = customer.getCustomerFName() + " "
+							+ customer.getCustomerLName();
+					if (fullname.equalsIgnoreCase(surname)) {
+						// selectedCustomer = customer.getCustomerID();
+
+						comboCustomerID.setSelectedItem(customer
+								.getCustomerID());
+
+					} else {
+						System.out.println("ERROR");
+					}
+				}
+			}
+			}
+				/*
+				//if (e.getStateChange() == ItemEvent.SELECTED) {
 					Customer customer = getCustomerbyID(e.getItem().toString());
 					if (customer != null) {
 						selectedCustomer = customer;
 						comboCustomerID.setSelectedItem(selectedCustomer
 								.getCustomerID());
+						
 					}
 
-				}
+				}*/
+				
 
-			}
+			});
 
-		});
+			
 
+		//});
+		
+		
 		/*
 		 * btnSearch = new JButton("Search"); add(btnSearch, "cell 1 9");
 		 * btnSearch.addActionListener(new ActionListener() { public void
