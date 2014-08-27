@@ -373,41 +373,59 @@ public class SupplierPanel extends JSplitPane{
 
 	// create new supplier
 	public void createSupplier(){
-		boolean isValid = false;
+		boolean isValid= true ;
 		// check if there are details entered for the new supplier
 		if((nameField.getText().isEmpty()==false)&&(addressField.getText().isEmpty()==false)){
 			for(Supplier supplier:Shop.getSuppliers()){
 				// check if another supplier with the same details exists
-				if((!supplier.getSupplierName().equalsIgnoreCase(nameField.getText()))&& (!supplier.getSupplierAddress().equalsIgnoreCase(addressField.getText()))){
-					isValid = true;
-					
-				}
-				else {
+				if((nameField.getText().equalsIgnoreCase(supplier.getSupplierName()))&& (addressField.getText().equalsIgnoreCase(supplier.getSupplierAddress()))){
 					isValid = false;
-					if(supplier.isSupplierDeleted()==false){
-						JOptionPane.showMessageDialog(null, " The supplier entered exists");
-					}
-					else{
-						JOptionPane.showMessageDialog(null, " The supplier entered is on the deleted suppliers list. Please restore it.");
-					}
+						if(supplier.isSupplierDeleted()==false){
+							
+							showSuppliers();
+								for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
+									Object item = suppliersList.getModel().getElementAt(i);
+									// if an element in the GUI list contains the searched name select it 
+									if(item.toString().contains(nameField.getText())){
+										suppliersList.setSelectedValue(item,true);
+										
+							}
+						}
+								JOptionPane.showMessageDialog(null, " The supplier entered exists");
+						}
+								else{
+									
+									showDeletedSuppliers();
+										for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
+											Object item = suppliersList.getModel().getElementAt(i);
+											// if an element in the GUI list contains the searched name select it 
+											if(item.toString().contains(nameField.getText())){
+												suppliersList.setSelectedValue(item,true);
+												
+									}
+								}
+									JOptionPane.showMessageDialog(null, " The supplier entered exists. Plese restore the deleted supplier.");
+								}
+					
 					nameField.setText("");
 					addressField.setText("");
+					break;
 				}
 			}
+		
 			// if a supplier with the same details doesn't exist add the new supplier to the list
-			if(isValid==true){
+			if(isValid){
 				Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
-		//		Shop.getSuppliers().add(newSupplier);
+				Shop.getSuppliers().add(newSupplier);
 				showSuppliers();
 				nameField.setText("");
 				addressField.setText("");
-				saveDetails();
 			}
 		}
 		else{
 			JOptionPane.showMessageDialog(null, " Enter details for new supplier");
 		}
-		
+		saveDetails();
 		
 	}
 	// inner class to delete supplier from GUI list and set it as deleted in the Arraylist
