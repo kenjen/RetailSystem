@@ -94,6 +94,7 @@ public class SupplierPanel extends JSplitPane{
 		final JButton edited = new JButton("SUBMIT CHANGES");
 		edited.setEnabled(false);
 		final JButton add = new JButton("ADD NEW supplier");
+		final JButton cancel = new JButton("CANCEL");
 
 		// create the items for the right click popup menu.
 		rightClickMenu = new JPopupMenu();
@@ -133,6 +134,15 @@ public class SupplierPanel extends JSplitPane{
 			}
 		});
 		buttonPanel.add(edited, "flowx,cell 1 7");
+		
+		// add action listener to cancel button
+		cancel.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				nameField.setText("");
+				addressField.setText("");
+			}
+		});
+		buttonPanel.add(cancel, "growx,cell 1 8");
 
 
 		/* add action listener to the submenu items
@@ -353,7 +363,7 @@ public class SupplierPanel extends JSplitPane{
 
 	// create new supplier
 	public void createSupplier(){
-		boolean isValid = true;
+		boolean isValid = false;
 		// check if there are details entered for the new supplier
 		if((nameField.getText().isEmpty()==false)&&(addressField.getText().isEmpty()==false)){
 			for(Supplier supplier:Shop.getSuppliers()){
@@ -361,7 +371,7 @@ public class SupplierPanel extends JSplitPane{
 				if((!nameField.getText().equalsIgnoreCase(supplier.getSupplierName()))&& (!addressField.getText().equalsIgnoreCase(supplier.getSupplierAddress()))){
 					isValid = true;
 				}
-				else {
+				else if((nameField.getText().equalsIgnoreCase(supplier.getSupplierName()))&& (addressField.getText().equalsIgnoreCase(supplier.getSupplierAddress()))){
 					isValid = false;
 					JOptionPane.showMessageDialog(null, " The supplier entered exists");
 				}
