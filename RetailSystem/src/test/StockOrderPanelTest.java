@@ -3,9 +3,8 @@ package test;
 
 import static org.junit.Assert.*;
 
-import gui.CustomerOrderPanel;
+import gui.StockOrderPanel;
 import gui.Shop;
-import gui.CustomerOrderPanel.ComboBoxKeyListener;
 
 import java.awt.Color;
 import java.text.SimpleDateFormat;
@@ -42,7 +41,6 @@ public class StockOrderPanelTest {
 	static ArrayList<StockOrder> stockOrders = null;
 	static ArrayList<ProductToOrder> productsToOrder = null;
 	static ArrayList<Supplier> suppliers = new ArrayList<Supplier>();
-	static Date date = null;
 	JComboBox comboSelectSupplier;
 	final static int PRODUCT_1_PRICE =15;
 	final static int PRODUCT_1_AMOUNT = 10;
@@ -52,6 +50,7 @@ public class StockOrderPanelTest {
 	final static int FIRST_PRODUCT_ID = 1;
 	final int AMOUNT_TO_DECREASE = 5;
 	final int QUANTITY_AFTER_DECREASE = 45;
+	static StockOrderPanel panel;
 	
 	
 	
@@ -67,7 +66,7 @@ public class StockOrderPanelTest {
 		productToOrder = new ProductToOrder(product,PRODUCT_1_AMOUNT);
 		productsToOrder.add(productToOrder);
 		suppliers.add(supplier);
-		stockOrder = new StockOrder(date, productsToOrder, staff);
+		stockOrder = new StockOrder(productsToOrder, staff);
 		stockOrders = new ArrayList<StockOrder>();
 		stockOrders.add(stockOrder);
 		Shop.getProducts().add(product);
@@ -96,11 +95,6 @@ public class StockOrderPanelTest {
 		return arrayToSort;
 	}
 	
-	@Test
-	public void stockOrder_addASupplierToTheArrayListOfStockOrders_stockOrderInArray(){
-		assertEquals(1, stockOrders.size());
-	}
-	
 
 	@Test
 	public void testSaveDetails() {
@@ -108,7 +102,8 @@ public class StockOrderPanelTest {
 		stockOrder.setProductsToOrder(productsToOrder);
 		stockOrder.setStaff(staff);
 		
-				
+		
+			
 		if(stockOrder.getProductsToOrder().lastIndexOf(stockOrder)==0) {
 			fail("ID not Saved");
 		}
@@ -131,44 +126,7 @@ public class StockOrderPanelTest {
 		AutoCompleteDecorator.decorate(comboSelectSupplier);
 		
 		assertEquals(2, supplierNames.size());
-		assertEquals("Joe surname", supplierNames.get(1));
-		assertEquals("Joe surname", comboSelectSupplier.getItemAt(1));
+		assertEquals("Doyle's", supplierNames.get(1));
+		assertEquals("Doyle's", comboSelectSupplier.getItemAt(1));
 	}
-
-	@Test
-	public void testChangeStockOrderToComplete() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetProductNamesForComboBox() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testDisplayErrorMessage() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testDisplayOrderTable() {
-		
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testDisplayProductsTable() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetArrayTemporaryOrder() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetArrayTemporaryOrder() {
-		fail("Not yet implemented");
-	}
-
 }
