@@ -186,6 +186,12 @@ public void populateSuppliers(){
 		}
 
 		//System.out.println("Staff members populated");
+		
+		for(Staff s : staffMembers){
+			if(s.getId() > Staff.getNextId()){
+				Staff.setNextId(s.getId());
+			}
+		}
 	}
 
 	public void populateProducts() {
