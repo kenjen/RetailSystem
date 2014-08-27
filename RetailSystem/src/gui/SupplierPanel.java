@@ -55,7 +55,7 @@ public class SupplierPanel extends JSplitPane{
 		// create a split pane with a scroll pane in it and a Jpanel
 
 		// set the right component to the scrollpane
-		setDividerLocation(650);
+		setDividerLocation(750);
 		JScrollPane listScroller = new JScrollPane(suppliersList);
 		setRightComponent(listScroller);
 		listScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -81,9 +81,9 @@ public class SupplierPanel extends JSplitPane{
 		addressField = new JTextField(20);
 		// add them to the leftpane, to the JPanel
 		buttonPanel.add(nameLabel, "cell 0 4,alignx trailing");
-		buttonPanel.add(nameField, "cell 1 4,growx");
+		buttonPanel.add(nameField, "cell 1 4,flowx");
 		buttonPanel.add(addressLabel, "cell 0 5,alignx trailing");
-		buttonPanel.add(addressField, "cell 1 5,growx");
+		buttonPanel.add(addressField, "cell 1 5,flowx");
 
 		/* create buttons to display suppliers;
 		 * edit supplier details;
@@ -324,7 +324,7 @@ public class SupplierPanel extends JSplitPane{
 }
 	
 	
-	// Methods
+	// Methods; classes
 
 	// setup list 
 	public void createList(){
@@ -378,18 +378,26 @@ public class SupplierPanel extends JSplitPane{
 		if((nameField.getText().isEmpty()==false)&&(addressField.getText().isEmpty()==false)){
 			for(Supplier supplier:Shop.getSuppliers()){
 				// check if another supplier with the same details exists
-				if((!nameField.getText().equalsIgnoreCase(supplier.getSupplierName()))&& (!addressField.getText().equalsIgnoreCase(supplier.getSupplierAddress()))){
+				if((!supplier.getSupplierName().equalsIgnoreCase(nameField.getText()))&& (!supplier.getSupplierAddress().equalsIgnoreCase(addressField.getText()))){
 					isValid = true;
+					
 				}
-				else if((nameField.getText().equalsIgnoreCase(supplier.getSupplierName()))&& (addressField.getText().equalsIgnoreCase(supplier.getSupplierAddress()))){
+				else {
 					isValid = false;
-					JOptionPane.showMessageDialog(null, " The supplier entered exists");
+					if(supplier.isSupplierDeleted()==false){
+						JOptionPane.showMessageDialog(null, " The supplier entered exists");
+					}
+					else{
+						JOptionPane.showMessageDialog(null, " The supplier entered is on the deleted suppliers list. Please restore it.");
+					}
+					nameField.setText("");
+					addressField.setText("");
 				}
 			}
 			// if a supplier with the same details doesn't exist add the new supplier to the list
 			if(isValid==true){
 				Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
-				Shop.getSuppliers().add(newSupplier);
+		//		Shop.getSuppliers().add(newSupplier);
 				showSuppliers();
 				nameField.setText("");
 				addressField.setText("");
