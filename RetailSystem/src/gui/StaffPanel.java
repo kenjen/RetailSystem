@@ -61,7 +61,8 @@ public class StaffPanel extends JPanel {
 	private JComboBox staffComboBox;
 	private ArrayList<String> staffMembers;
 	
-	private int id;
+	public int id;
+	//loop through the ids in json file till you reach the last value. id = this value
 
 	public StaffPanel() {
 		setLayout(new MigLayout("", "[][][][grow][][grow][][][][][][][][]", "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
@@ -138,6 +139,11 @@ public class StaffPanel extends JPanel {
 				
 				// Access the Shop class and the staffMembers Array
 				ArrayList<Staff> staffMembers = Shop.getStaffMembers();
+				
+				//Read the staff members from the json file
+				//staffMembers = Json.readStaffFromFile();
+				
+				
 
 				for (Staff s1 : Shop.getStaffMembers()) {
 					if (s1.getUsername().equals(userNameField.getText())) {

@@ -208,6 +208,7 @@ public class StockOrderPanel extends JPanel {
 
 		btnAddToOrder.addActionListener(new ButtonTemporaryOrderHandler());
 		btnOrder.addActionListener(new ButtonOrderHandler());
+		
 		JLabel lblOrders = new JLabel("Orders:");
 		lblOrders.setFont(Shop.TITLE_FONT);
 		lblOrders.setForeground(Shop.TITLE_COLOR);
@@ -699,6 +700,7 @@ public class StockOrderPanel extends JPanel {
 			tableModel.fireTableDataChanged();
 
 			boolean found = false;
+			tableProducts.editCellAt(0, 0);
 			for (int i = 0; i < arrayTableProducts.length; i++) {
 				if ((int) arrayTableProducts[i][8] > 0) {
 					Object[] thisObject = new Object[9];
