@@ -446,12 +446,13 @@ public class CustomerPanel extends JPanel {
 		surnames.add("");
 
 		for (Customer customer : Shop.getCustomers()) {
-			if (!customer.isDeleted()) {
-				String name = customer.getCustomerLName();
+			if (customer.isDeleted() == false) {
+				String name = customer.getCustomerFName() + " "
+						+ customer.getCustomerLName();
 				surnames.add(name);
 			}
-
 		}
+
 		comboSelectCustomer.removeAllItems();
 		for (String current : surnames) {
 			comboSelectCustomer.addItem(current);

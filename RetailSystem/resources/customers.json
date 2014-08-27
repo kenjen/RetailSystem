@@ -3,3 +3,4 @@
 {"customerID":3,"customerFName":"Carl","customerLName":"Lenny","customerAddress":"54 Shelbyville Drive","customerMobile":"0867839022","customerHome":"014039202","deleted":false}
 {"customerID":4,"customerFName":"Leonard","customerLName":"Cooper","customerAddress":"16 Pasadena Avenue","customerMobile":"0850393939","customerHome":"018280304","deleted":false}
 {"customerID":5,"customerFName":"Roy","customerLName":"Moss","customerAddress":"3 Rehnham Way","customerMobile":"0872349299","customerHome":"013202033","deleted":false}
+{"customerID":6,"customerFName":"Megan","customerLName":"Foley","customerAddress":"34 Green Street\t","customerMobile":"wqwq","customerHome":"","deleted":false}
