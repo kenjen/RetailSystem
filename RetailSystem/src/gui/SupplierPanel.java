@@ -3,42 +3,28 @@ package gui;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.beans.PropertyChangeListener;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.text.Position;
-
 import net.miginfocom.swing.MigLayout;
-
-import org.codehaus.jackson.map.ObjectMapper;
-import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import data.Json;
 import data.Product;
-import data.ProductToOrder;
 import data.Supplier;
 
 
 public class SupplierPanel extends JSplitPane{
-	// declaring instance variables
+	
+	/**
+	 * declaring instance variables
+	 */
+	private static final long serialVersionUID = 1L;
 	private Supplier supplier;
-	private JLabel title;
-	private DefaultListModel listModel ;
-	private static JList suppliersList;
-	private JLabel idLabel;
+	private DefaultListModel<Object> listModel ;
+	private static JList<Object> suppliersList;
+	private static String supplierName;
+	private static String supplierAddress;
 	private JLabel nameLabel;
 	private JLabel addressLabel;
 	private JTextField nameField;
@@ -122,7 +108,7 @@ public class SupplierPanel extends JSplitPane{
 		// add action listener to add suppliers button
 		add.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				createSupplier();
+				addSupplier();
 			}
 		});
 		buttonPanel.add(add, "flowx,cell 1 6");
@@ -329,8 +315,8 @@ public class SupplierPanel extends JSplitPane{
 
 	// setup list 
 	public void createList(){
-		listModel = new DefaultListModel();
-		suppliersList = new JList(listModel);
+		listModel = new DefaultListModel<Object>();
+		suppliersList = new JList<Object>(listModel);
 		suppliersList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		suppliersList.setVisibleRowCount(0);
 		suppliersList.setSelectedIndex(0);
@@ -373,7 +359,13 @@ public class SupplierPanel extends JSplitPane{
 	}
 
 	// create new supplier
-	public void createSupplier(){
+	public void createSupplier(String name, String address){
+		Supplier newSupplier = new Supplier(name,address);
+		Shop.getSuppliers().add(newSupplier);
+	}
+	
+	// add new supplier
+	public void addSupplier(){
 		boolean isValid= true ;
 		// check if there are details entered for the new supplier
 		if((nameField.getText().isEmpty()==false)&&(addressField.getText().isEmpty()==false)){
@@ -412,8 +404,9 @@ public class SupplierPanel extends JSplitPane{
 		
 			// if a supplier with the same details doesn't exist add the new supplier to the list
 			if(isValid){
-				Supplier newSupplier = new Supplier(nameField.getText(), addressField.getText());
-				Shop.getSuppliers().add(newSupplier);
+			//	Supplier newSupplier = new Supplier();
+				createSupplier(nameField.getText(), addressField.getText());
+			//	Shop.getSuppliers().add(newSupplier);
 				showSuppliers();
 				nameField.setText("");
 				addressField.setText("");
@@ -593,5 +586,35 @@ public class SupplierPanel extends JSplitPane{
 			Json.saveSupplierToFile(supplier);
 		}
 	}
+
+
+	public String getSupplierName() {
+		return supplierName;
+	}
+
+
+	public void setSupplierAddress(String name) {
+		SupplierPanel.supplierName = name;
+	}
+	
+	public String getSupplierAddress() {
+		return supplierAddress;
+	}
+
+
+	public void setSupplierName(String address) {
+		SupplierPanel.supplierAddress = address;
+	}
+
+
+	public Supplier getSupplier() {
+		return supplier;
+	}
+
+
+	public void setSupplier(Supplier supplier) {
+		this.supplier = supplier;
+	}
+	
 
 }
