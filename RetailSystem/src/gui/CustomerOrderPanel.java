@@ -750,6 +750,7 @@ public class CustomerOrderPanel extends JPanel{
 	public class BtnAddToOrderActionListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			tableAvailableProducts.editCellAt(0, 0);
 			boolean found = false;
 			for(int i =0; i< availableProductsArray.length; i++){
 				if((int)availableProductsArray[i][7] > 0 && (int)availableProductsArray[i][6] >= (int)availableProductsArray[i][7]){
