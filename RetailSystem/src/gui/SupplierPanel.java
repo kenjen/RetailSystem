@@ -44,6 +44,7 @@ public class SupplierPanel extends JSplitPane{
 	private JTextField nameField;
 	private JTextField addressField;
 	private JPopupMenu rightClickMenu;
+	private JMenuItem restore;
 
 
 	public SupplierPanel() {
@@ -102,7 +103,7 @@ public class SupplierPanel extends JSplitPane{
 		final JMenuItem showProducts = new JMenuItem("Show Products ");
 		final JMenuItem editDetails = new JMenuItem("Edit Supplier");
 		final JMenuItem removeSupplier = new JMenuItem("Remove Supplier");
-		final JMenuItem restore = new JMenuItem("Restore deleted supplier");
+		restore = new JMenuItem("Restore deleted supplier");
 		restore.setEnabled(false);
 
 		// add action listener to display suppliers button
@@ -381,31 +382,27 @@ public class SupplierPanel extends JSplitPane{
 				if((nameField.getText().equalsIgnoreCase(supplier.getSupplierName()))&& (addressField.getText().equalsIgnoreCase(supplier.getSupplierAddress()))){
 					isValid = false;
 						if(supplier.isSupplierDeleted()==false){
-							
 							showSuppliers();
 								for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
 									Object item = suppliersList.getModel().getElementAt(i);
 									// if an element in the GUI list contains the searched name select it 
 									if(item.toString().contains(nameField.getText())){
 										suppliersList.setSelectedValue(item,true);
-										
-							}
-						}
-								JOptionPane.showMessageDialog(null, " The supplier entered exists");
-						}
-								else{
-									
-									showDeletedSuppliers();
-										for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
-											Object item = suppliersList.getModel().getElementAt(i);
-											// if an element in the GUI list contains the searched name select it 
-											if(item.toString().contains(nameField.getText())){
-												suppliersList.setSelectedValue(item,true);
-												
 									}
 								}
-									JOptionPane.showMessageDialog(null, " The supplier entered exists. Plese restore the deleted supplier.");
+								JOptionPane.showMessageDialog(null, " The supplier entered exists");
+						}
+						else{
+							showDeletedSuppliers();
+								for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
+									Object item = suppliersList.getModel().getElementAt(i);
+										// if an element in the GUI list contains the searched name select it 
+										if(item.toString().contains(nameField.getText())){
+												suppliersList.setSelectedValue(item,true);
+										}
 								}
+								JOptionPane.showMessageDialog(null, " The supplier entered exists. Please restore the deleted supplier.");
+						}
 					
 					nameField.setText("");
 					addressField.setText("");
@@ -564,7 +561,7 @@ public class SupplierPanel extends JSplitPane{
 						}
 					}
 					else if(supplier.isSupplierDeleted()==true){
-
+						restore.setEnabled(false);
 						listModel.clear();
 						listModel.addElement("The supplier was deleted.The products from Supplier id "+ supplier.getSupplierId()+" are: ");
 
