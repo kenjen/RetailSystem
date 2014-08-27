@@ -97,8 +97,8 @@ public class SupplierPanel extends JSplitPane{
 
 		// create the items for the right click popup menu.
 		rightClickMenu = new JPopupMenu();
-		JMenuItem showProducts = new JMenuItem("Show Products ");
-		JMenuItem editDetails = new JMenuItem("Edit Supplier");
+		final JMenuItem showProducts = new JMenuItem("Show Products ");
+		final JMenuItem editDetails = new JMenuItem("Edit Supplier");
 		final JMenuItem removeSupplier = new JMenuItem("Remove Supplier");
 		final JMenuItem restore = new JMenuItem("Restore deleted supplier");
 		restore.setEnabled(false);
@@ -106,6 +106,8 @@ public class SupplierPanel extends JSplitPane{
 		// add action listener to display suppliers button
 		showS.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
+				editDetails.setEnabled(true);
+				showProducts.setEnabled(true);
 				removeSupplier.setEnabled(true);
 				restore.setEnabled(false);
 				showSuppliers();
@@ -140,7 +142,11 @@ public class SupplierPanel extends JSplitPane{
 
 		showProducts.addActionListener( new ActionListener(){
 			public void actionPerformed(ActionEvent e){
+				editDetails.setEnabled(false);
+				showProducts.setEnabled(false);
+				removeSupplier.setEnabled(false);
 				showProducts();
+				
 			}
 		});
 		rightClickMenu.add(showProducts);
@@ -245,9 +251,9 @@ public class SupplierPanel extends JSplitPane{
 									if(item.toString().contains(searchField.getText())){
 										suppliersList.setSelectedValue(item,true);
 										foundIt = true;
-										searchField.setText("");
 									}
 								}
+								searchField.setText("");
 							}
 							// check the deleted suppliers list if supplier is deleted
 							else if(supplier.isSupplierDeleted()==true){
@@ -258,9 +264,10 @@ public class SupplierPanel extends JSplitPane{
 									if(item.toString().contains(searchField.getText())){
 										suppliersList.setSelectedValue(item,true);
 										foundIt = true;
-										searchField.setText("");
+									
 									}
 								}
+								searchField.setText("");
 							}
 							break; 	
 						}
@@ -286,6 +293,8 @@ public class SupplierPanel extends JSplitPane{
 		JButton showDeleted = new JButton("Show deleted suppliers");
 		showDeleted.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
+				editDetails.setEnabled(true);
+				showProducts.setEnabled(true);
 				restore.setEnabled(true);
 				removeSupplier.setEnabled(false);
 				showDeletedSuppliers();
@@ -471,11 +480,10 @@ public class SupplierPanel extends JSplitPane{
 	// display deleted suppliers
 	public void showDeletedSuppliers(){
 		listModel.clear();
-		listModel.addElement("Deleted suppliers");
 		for(Supplier supplier:Shop.getSuppliers()){
 			if(supplier.isSupplierDeleted()==true){
 				listModel.addElement( "Id: "+supplier.getSupplierId( )+", name: " + supplier.getSupplierName()+
-						", address: "+ supplier.getSupplierAddress());
+						", address: "+ supplier.getSupplierAddress()+"- SUPPLIER IS DELETED.");
 			}
 		}
 	}
@@ -500,6 +508,7 @@ public class SupplierPanel extends JSplitPane{
 						for(Product product:Shop.getProducts()){	
 							if((product.getSupplier().getSupplierId() == idS)&& product.getName().isEmpty()==false){
 								listModel.addElement("\n"+ product.getName());
+								
 							}
 							else if((product.getSupplier().getSupplierId() == idS)&&product.getName().isEmpty()==false){
 								listModel.addElement("There are no products from this supplier");
