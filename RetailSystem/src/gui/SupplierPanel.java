@@ -243,61 +243,65 @@ public class SupplierPanel extends JSplitPane{
 		buttonPanel.add(searchField, "flowx,cell 1 9 ");
 		buttonPanel.add(searchSupplier, "flowx,cell 2 9");
 		
-		// add action listener to search button
-		searchSupplier.addActionListener(new ActionListener(){
-			// create method to look for a supplier by name
-			public void actionPerformed(ActionEvent e){
-				boolean foundIt = true;
-				if((searchField.getText().isEmpty()==false)){
-					for(Supplier supplier:Shop.getSuppliers()){
-						
-						if(searchField.getText().equalsIgnoreCase(supplier.getSupplierName())){
-							// check the suppliers list for the name entered if supplier isn't deleted
-							if(supplier.isSupplierDeleted()==false){
-								showSuppliers();
-								for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
-									Object item = suppliersList.getModel().getElementAt(i);
-									// if an element in the GUI list contains the searched name select it 
-									if(item.toString().contains(searchField.getText())){
-										suppliersList.setSelectedValue(item,true);
-										foundIt = true;
+		// create action listener to search a supplier by name and select it in the GUI list if found
+		ActionListener listener = new ActionListener(){
+			 public void actionPerformed(ActionEvent e) {
+		    	 boolean foundIt = true;
+					if((searchField.getText().isEmpty()==false)){
+						for(Supplier supplier:Shop.getSuppliers()){
+							
+							if(searchField.getText().equalsIgnoreCase(supplier.getSupplierName())){
+								// check the suppliers list for the name entered if supplier isn't deleted
+								if(supplier.isSupplierDeleted()==false){
+									showSuppliers();
+									for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
+										Object item = suppliersList.getModel().getElementAt(i);
+										// if an element in the GUI list contains the searched name select it 
+										if(item.toString().contains(searchField.getText())){
+											suppliersList.setSelectedValue(item,true);
+											foundIt = true;
+										}
 									}
+									searchField.setText("");
 								}
-								searchField.setText("");
-							}
-							// check the deleted suppliers list if supplier is deleted
-							else if(supplier.isSupplierDeleted()==true){
-								showDeletedSuppliers();
-								for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
-									Object item = suppliersList.getModel().getElementAt(i);
-									// if an element in the GUI list contains the searched name select it
-									if(item.toString().contains(searchField.getText())){
-										suppliersList.setSelectedValue(item,true);
-										foundIt = true;
-									
+								// check the deleted suppliers list if supplier is deleted
+								else if(supplier.isSupplierDeleted()==true){
+									showDeletedSuppliers();
+									for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
+										Object item = suppliersList.getModel().getElementAt(i);
+										// if an element in the GUI list contains the searched name select it
+										if(item.toString().contains(searchField.getText())){
+											suppliersList.setSelectedValue(item,true);
+											foundIt = true;
+										
+										}
 									}
+									searchField.setText("");
 								}
-								searchField.setText("");
+								break; 	
 							}
-							break; 	
+							else{
+								foundIt = false;
+							}
 						}
-						else{
-							foundIt = false;
+						// show message if supplier is not found
+						if(foundIt == false){
+							JOptionPane.showMessageDialog(null, "Didn't find supplier");
+							searchField.setText("");
 						}
 					}
-					// show message if supplier is not found
-					if(foundIt == false){
-						JOptionPane.showMessageDialog(null, "Didn't find supplier");
-						searchField.setText("");
+					else{
+						JOptionPane.showMessageDialog(null, "Please enter a name");
 					}
-				}
-				else{
-					JOptionPane.showMessageDialog(null, "Please enter a name");
-				}
-			}
-
-		});
-
+				
+			 }
+		
+		};
+	
+		
+		// add action listener to search button and search text field
+		searchField.addActionListener(listener); 
+		searchSupplier.addActionListener(listener);
 
 		// display deleted suppliers
 		JButton showDeleted = new JButton("Show deleted suppliers");
@@ -530,8 +534,7 @@ public class SupplierPanel extends JSplitPane{
 					else if(supplier.isSupplierDeleted()==true){
 
 						listModel.clear();
-						listModel.addElement("The supplier was deleted.");
-						listModel.addElement("The products from Supplier id "+ supplier.getSupplierId()+" are: ");
+						listModel.addElement("The supplier was deleted.The products from Supplier id "+ supplier.getSupplierId()+" are: ");
 
 						// call Shop class to display products for the selected supplier
 						for(Product product:Shop.getProducts()){	
@@ -562,13 +565,4 @@ public class SupplierPanel extends JSplitPane{
 		}
 	}
 
-	public static void hasElement() {
-		for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
-
-			Object item = suppliersList.getModel().getElementAt(i);
-			//	            if(item.toString().contains(searchField.getText()))
-			//	            System.out.println("Item = " + item);
-			//	            suppliersList.setSelectedValue(item,true);
-		}
-	}
 }
