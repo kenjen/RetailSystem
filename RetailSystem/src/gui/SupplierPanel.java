@@ -30,8 +30,13 @@ public class SupplierPanel extends JSplitPane{
 	private JLabel addressLabel;
 	private JTextField nameField;
 	private JTextField addressField;
+	private JTextField searchField;
 	private JPopupMenu rightClickMenu;
 	private JMenuItem restore;
+	private JMenuItem  removeSupplier;
+	private JMenuItem showProducts;
+	private JMenuItem editDetails;
+	
 
 
 	public SupplierPanel() {
@@ -40,10 +45,12 @@ public class SupplierPanel extends JSplitPane{
 		createList();
 		showSuppliers();
 
-		// create a split pane with a scroll pane in it and a Jpanel
+		/**
+		 ** create a split pane with a scroll pane in it and a Jpanel
+		 **/
 
 		// set the right component to the scrollpane
-		setDividerLocation(750);
+		setDividerLocation(700);
 		JScrollPane listScroller = new JScrollPane(suppliersList);
 		setRightComponent(listScroller);
 		listScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -53,31 +60,30 @@ public class SupplierPanel extends JSplitPane{
 		JPanel buttonPanel = new JPanel();	
 		buttonPanel.setLayout(new MigLayout());
 		setLeftComponent(buttonPanel);
+		// add image to left panel
+		JLabel supplierImage = new JLabel(new ImageIcon("resources/supplier photo1.jpg"));
+		buttonPanel.add(supplierImage, "cell 0 0");
 
 		//set a preferred size for the split pane.
 		setPreferredSize(new Dimension(320, 350));
-
-		// create title
-	//	JLabel titleLabel = new JLabel("SUPPLIERS");
-	//	titleLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
-	//	buttonPanel.add(titleLabel, "cell 0 0");
 
 		// create labels and textfields for user input
 		nameLabel = new JLabel(" Name");
 		addressLabel = new JLabel(" Address");
 		nameField = new JTextField(20);
 		addressField = new JTextField(20);
+		
 		// add them to the leftpane, to the JPanel
-		buttonPanel.add(nameLabel, "cell 0 4,alignx trailing");
-		buttonPanel.add(nameField, "cell 1 4,flowx");
-		buttonPanel.add(addressLabel, "cell 0 5,alignx trailing");
-		buttonPanel.add(addressField, "cell 1 5,flowx");
+		buttonPanel.add(nameLabel, "cell 0 3,alignx trailing");
+		buttonPanel.add(nameField, "cell 1 3,flowx");
+		buttonPanel.add(addressLabel, "cell 0 4,alignx trailing");
+		buttonPanel.add(addressField, "cell 1 4,flowx");
 
-		/* 
-		 * create buttons to display suppliers;
-		 * submit changes for edited supplier;
-		 * cancel actions.
-		 */
+		/**
+		 ** create buttons 
+		 **/ 
+		
+		 // display suppliers list  and deleted suppliers list; submit changes for edited supplier;cancel actions.
 		JButton showS = new JButton("Show Suppliers");
 		JButton showDeleted = new JButton("Show deleted suppliers");
 		final JButton edited = new JButton("SUBMIT CHANGES");
@@ -85,15 +91,23 @@ public class SupplierPanel extends JSplitPane{
 		final JButton add = new JButton("ADD NEW supplier");
 		final JButton cancel = new JButton("CANCEL");
 
-		// create the items for the right click popup menu.
+		/**
+		 ** create the items for the right click popup menu.
+		 **/
+		
+		// show products; edit supplier; remove supplier; restore deleted supplier
 		rightClickMenu = new JPopupMenu();
-		final JMenuItem showProducts = new JMenuItem("Show Products ");
-		final JMenuItem editDetails = new JMenuItem("Edit Supplier");
-		final JMenuItem removeSupplier = new JMenuItem("Remove Supplier");
+		showProducts = new JMenuItem("Show Products ");
+		editDetails = new JMenuItem("Edit Supplier");
+		removeSupplier = new JMenuItem("Remove Supplier");
 		restore = new JMenuItem("Restore deleted supplier");
 		restore.setEnabled(false);
 
-		// add action listener to display suppliers button
+		/*
+		 * add action listener to buttons
+		 * 
+		 *  1. display suppliers
+		 */
 		showS.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				editDetails.setEnabled(true);
@@ -104,9 +118,9 @@ public class SupplierPanel extends JSplitPane{
 				
 			}
 		});
-		buttonPanel.add(showS, "cell 3 1, growx");
+		buttonPanel.add(showS, "cell 4 3, growx");
 
-		// add action listener to add suppliers button
+		// 2. add action listener to add suppliers button
 		add.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				addSupplier();
@@ -114,7 +128,7 @@ public class SupplierPanel extends JSplitPane{
 		});
 		buttonPanel.add(add, "flowx,cell 1 6");
 
-		// add action listener to edit supplier details button
+		// 3. add action listener to edit supplier details button
 		edited.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				addEditedSupplier();
@@ -124,14 +138,24 @@ public class SupplierPanel extends JSplitPane{
 		});
 		buttonPanel.add(edited, "flowx,cell 1 7");
 		
-		// add action listener to cancel button
+		// 4. add action listener to cancel button
 		cancel.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				nameField.setText("");
 				addressField.setText("");
+				edited.setEnabled(false);
+				add.setEnabled(true);
 			}
 		});
 		buttonPanel.add(cancel, "flowx,cell 1 8");
+		
+		// 5. action listener to display deleted suppliers button
+		showDeleted.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				showDeletedSuppliers();
+			}
+		});
+				buttonPanel.add(showDeleted, "cell 4 4, growx");
 
 		// add listener to suppliers list to bring up popup menu
 		MouseListener popupListener = new PopupListener();
@@ -154,66 +178,24 @@ public class SupplierPanel extends JSplitPane{
 		});
 		rightClickMenu.add(showProducts);
 
-		// add action listener to edit details  menu item
+		// 2. add action listener to edit details  menu item
 		editDetails.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				edited.setEnabled(true);
-				int index = suppliersList.getSelectedIndex();
-				// select supplier
-				if (index != -1) {
-					for(Supplier supplier:Shop.getSuppliers()){
-						// get the characters corresponding to the id of selected supplier
-						String supplierFromList = (String) suppliersList.getSelectedValue();
-						char[] charList = supplierFromList.toCharArray();
-						String id = "";
-						id = id + charList[4] + charList[5] + charList[6];
-						String ids = Integer.toString(supplier.getSupplierId());
-						// show details of selected supplier in the textfield
-						if(ids.equals(id)){
-							nameField.setText(supplier.getSupplierName());
-							addressField.setText(supplier.getSupplierAddress());
-							add.setEnabled(false);
-						}
-					}
-				}
-				//	 if no supplier is selected show message
-				else{
-					JOptionPane.showMessageDialog(null, "Please select a supplier from the list.");
-				}	
+				edit();
+				add.setEnabled(false);
 			}
 		});
 		rightClickMenu.add(editDetails);
 
-		// add action listener to remove menu item
+		// 3. add action listener to remove menu item
 		removeSupplier.addActionListener(new Remove());
 		rightClickMenu.add(removeSupplier);
 
-		// add action listener to restore deleted suppliers menu item		
+		// 4. add action listener to restore deleted suppliers menu item		
 		restore.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				// get index of selected supplier
-				int index = suppliersList.getSelectedIndex();
-				if (index != -1) {
-
-					// get the supplier at the selected index
-					String supplierFromList = (String) suppliersList.getSelectedValue();
-					for(Supplier supplier:Shop.getSuppliers()){
-						char[] charList = supplierFromList.toCharArray();
-						String id = "";
-						id = id + charList[4] + charList[5] + charList[6];
-						int idS = Integer.parseInt(id);
-						if(idS==supplier.getSupplierId()){
-							if(supplier.isSupplierDeleted()==true){
-								supplier.setSupplierDeleted(false);
-								listModel.remove(index);
-								JOptionPane.showMessageDialog(null, "The deleted supplier was restored to the suppliers list");
-								break;
-							}
-
-						}
-					}
-				}
-
+				restore();
 				saveDetails();
 			}
 		});
@@ -227,90 +209,25 @@ public class SupplierPanel extends JSplitPane{
 		sens.setFont(new Font("Tahoma", Font.ITALIC, 11));
 		buttonPanel.add(search, "flowx,cell 0 9 ");
 		buttonPanel.add(sens, "flowx,cell 1 10 ");
-		final JTextField searchField = new JTextField (20); 
+		searchField = new JTextField (20); 
+		searchField.setName("input");
+	
 		JButton searchSupplier = new JButton ("GO");
 		buttonPanel.add(searchField, "flowx,cell 1 9 ");
 		buttonPanel.add(searchSupplier, "flowx,cell 2 9");
 		
-		// create action listener to search a supplier by name and select it in the GUI list if found
-		ActionListener listener = new ActionListener(){
-			 public void actionPerformed(ActionEvent e) {
-		    	 boolean foundIt = true;
-		    	 if((searchField.getText().isEmpty()==false)){
-						for(Supplier supplier:Shop.getSuppliers()){
-							
-							if(searchField.getText().equalsIgnoreCase(supplier.getSupplierName())){
-								// check the suppliers list for the name entered if supplier isn't deleted
-								if(supplier.isSupplierDeleted()==false){
-									showSuppliers();
-									for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
-										Object item = suppliersList.getModel().getElementAt(i);
-										// if an element in the GUI list contains the searched name select it 
-										if(item.toString().contains(searchField.getText())){
-											suppliersList.setSelectedValue(item,true);
-											foundIt = true;
-										}
-									}
-									searchField.setText("");
-								}
-								// check the deleted suppliers list if supplier is deleted
-								else if(supplier.isSupplierDeleted()==true){
-									showDeletedSuppliers();
-									for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
-										Object item = suppliersList.getModel().getElementAt(i);
-										// if an element in the GUI list contains the searched name select it
-										if(item.toString().contains(searchField.getText())){
-											suppliersList.setSelectedValue(item,true);
-											foundIt = true;
-										}
-									}
-									searchField.setText("");
-								}
-								break; 	
-							}
-							else{
-								foundIt = false;
-							}
-						}
-						// show message if supplier is not found
-						if(foundIt == false){
-							JOptionPane.showMessageDialog(null, "Didn't find supplier");
-							searchField.setText("");
-						}
-					}
-					else{
-						JOptionPane.showMessageDialog(null, "Please enter a name");
-					}
-				
-			 }
-		
-		};
-	
-		
 		// add action listener to search button and search text field
-		searchField.addActionListener(listener); 
-		searchSupplier.addActionListener(listener);
-
-		// display deleted suppliers
-		
-		showDeleted.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
-				editDetails.setEnabled(true);
-				showProducts.setEnabled(true);
-				restore.setEnabled(true);
-				removeSupplier.setEnabled(false);
-				showDeletedSuppliers();
-			}
-		});
-		buttonPanel.add(showDeleted, "cell 3 2, growx");
-		
-		// add photo to left panel
-		JLabel supplierImage = new JLabel(new ImageIcon("resources/supplier photo1.jpg"));
-		buttonPanel.add(supplierImage, "cell 0 0, flowx");
-}
+		searchField.addActionListener(new Search()); 
+		searchSupplier.addActionListener(new Search());
+				
+	}
 	
+		
 	
-	// Methods; classes
+	/**
+	 ********* Create methods and classes to implement features ***********
+	**/
+	
 
 	// setup list 
 	public void createList(){
@@ -374,9 +291,9 @@ public class SupplierPanel extends JSplitPane{
 					isValid = false;
 						if(supplier.isSupplierDeleted()==false){
 							showSuppliers();
+								// if an element in the GUI list contains the searched name select it 
 								for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
 									Object item = suppliersList.getModel().getElementAt(i);
-									// if an element in the GUI list contains the searched name select it 
 									if(item.toString().contains(nameField.getText())){
 										suppliersList.setSelectedValue(item,true);
 									}
@@ -426,6 +343,7 @@ public class SupplierPanel extends JSplitPane{
 			int index = suppliersList.getSelectedIndex();
 			if (index != -1) {
 				// get the id corresponding characters from the GUI list
+				
 				String supplierFromList = (String) suppliersList.getSelectedValue();
 				char[] charList = supplierFromList.toCharArray();
 				String id = "";
@@ -443,6 +361,8 @@ public class SupplierPanel extends JSplitPane{
 					listModel.remove(index);
 					deleted.setSupplierDeleted(true);
 				}
+				
+				
 			}
 			else{
 				JOptionPane.showMessageDialog(null, " You didn't select a supplier to remove!");
@@ -451,15 +371,34 @@ public class SupplierPanel extends JSplitPane{
 		}
 
 	}
+	
+	// delete supplier
+	public void deleteSupplier(String supplierFromList, int ids, Supplier deleted){
+		// get the id corresponding characters from the GUI list
+		char[] charList = supplierFromList.toCharArray();
+		String id = "";
+		id = id + charList[4] + charList[5] + charList[6];
+		ids = Integer.parseInt(id);
+		// create object to store the selected supplier
+		
+		for(Supplier supplier:Shop.getSuppliers()){
+			if(supplier.getSupplierId() == ids){
+				deleted = supplier;
+			}
+		}
+		// delete supplier from GUI list and set him as deleted in the arraylist
+		if(deleted!= null){
+			deleted.setSupplierDeleted(true);
+		}
+	}
 
-	// inner class get suppliers details in the textfield to be edited
-	class Edit implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
+	// select supplier to be edited and set textfields with the supplier's details
+	public void edit(){
 			int index = suppliersList.getSelectedIndex();
 			// select supplier
 			if (index != -1) {
 				for(Supplier supplier:Shop.getSuppliers()){
-					// store in a string the id corresponding characters of selected supplier from the GUI list
+					// get the characters corresponding to the id of selected supplier
 					String supplierFromList = (String) suppliersList.getSelectedValue();
 					char[] charList = supplierFromList.toCharArray();
 					String id = "";
@@ -471,15 +410,12 @@ public class SupplierPanel extends JSplitPane{
 						addressField.setText(supplier.getSupplierAddress());
 					}
 				}
-
 			}
 			//	 if no supplier is selected show message
 			else{
 				JOptionPane.showMessageDialog(null, "Please select a supplier from the list.");
-
 			}	
-		}
-	}
+	}	
 
 	// method for editing supplier details
 	public void addEditedSupplier(){
@@ -514,38 +450,82 @@ public class SupplierPanel extends JSplitPane{
 		saveDetails();
 	}
 	
-	// 
-	public void getStringId(){
-		boolean foundIt;
-		for(Supplier supplier:Shop.getSuppliers()){
-			String supplierFromList = (String) suppliersList.getSelectedValue();
-			char[] charList = supplierFromList.toCharArray();
-			String id = "";
-			id = id + charList[4] + charList[5] + charList[6];
-			String ids = Integer.toString(supplier.getSupplierId());
-			if(ids == id){
-				foundIt = true;
-			}
-			else{
-				foundIt = false;
+	// create action listener to search a supplier by name and select it in the GUI list if found
+	class Search implements ActionListener{
+		public void actionPerformed(ActionEvent e) {
+			boolean foundIt = true;
+			
+			// if something is typed in the search field
+				if((searchField.getText().isEmpty()==false)){
+					// check if the entered supplier name exists in the Array List
+					for(Supplier supplier:Shop.getSuppliers()){
+						if(searchField.getText().equalsIgnoreCase(supplier.getSupplierName())){
+							// check the suppliers list for the name entered if supplier isn't deleted
+							if(supplier.isSupplierDeleted()==false){
+								showSuppliers();
+									for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
+										Object item = suppliersList.getModel().getElementAt(i);
+											// if an element in the GUI list contains the searched name select it 
+											if(item.toString().contains(searchField.getText())){
+												suppliersList.setSelectedValue(item,true);
+												foundIt = true;
+											}
+									}
+								searchField.setText("");
+							}
+							// check the deleted suppliers list if supplier is deleted
+						else if(supplier.isSupplierDeleted()==true){
+							showDeletedSuppliers();
+								for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
+									Object item = suppliersList.getModel().getElementAt(i);
+										// if an element in the GUI list contains the searched name select it
+										if(item.toString().contains(searchField.getText())){
+											suppliersList.setSelectedValue(item,true);
+											foundIt = true;
+										}
+								}
+								searchField.setText("");
+						}
+					break; 	
+						}
+						else{
+							foundIt = false;
+						}
+					}
+					// show message if supplier is not found
+					if(foundIt == false){
+						JOptionPane.showMessageDialog(null, "Didn't find supplier");
+						searchField.setText("");
+					}
+				}
+				else{
+					JOptionPane.showMessageDialog(null, "Please enter a name");
+				}
+		}
+	}
+	
+	public void search(){
+		// check if something is typed in the search field
+		if((searchField.getText().isEmpty()==false)){
+			// check if the entered supplier name exists in the Array List
+			for(Supplier supplier:Shop.getSuppliers()){
+				if(searchField.getText().equalsIgnoreCase(supplier.getSupplierName())){
+					// check the suppliers list for the name entered if supplier isn't deleted
+					if(supplier.isSupplierDeleted()==false){
+						showSuppliers();
+					}
+				}
 			}
 		}
 	}
 	
-	public void setSelection(){
-		for (int i = 0; i < suppliersList.getModel().getSize(); i++) {
-			Object item = suppliersList.getModel().getElementAt(i);
-			// if an element in the GUI list contains the searched name select it 
-			String search = "";
-			if(item.toString().contains(search)){
-				suppliersList.setSelectedValue(item,true);
-				
-			}
-		}
-	}
 
 	// display deleted suppliers
 	public void showDeletedSuppliers(){
+		editDetails.setEnabled(true);
+		showProducts.setEnabled(true);
+		restore.setEnabled(true);
+		removeSupplier.setEnabled(false);
 		listModel.clear();
 		for(Supplier supplier:Shop.getSuppliers()){
 			if(supplier.isSupplierDeleted()==true){
@@ -609,6 +589,33 @@ public class SupplierPanel extends JSplitPane{
 			JOptionPane.showMessageDialog(null, "Please select a supplier from the list  ");
 		}	
 	}	
+	
+	// method to restore to deleted supplier instead of creating  a new one
+	public void restore(){
+		// get index of selected supplier
+		int index = suppliersList.getSelectedIndex();
+		if (index != -1) {
+
+			// get the id corresponding characters from selection
+			String supplierFromList = (String) suppliersList.getSelectedValue();
+			for(Supplier supplier:Shop.getSuppliers()){
+				char[] charList = supplierFromList.toCharArray();
+				String id = "";
+				id = id + charList[4] + charList[5] + charList[6];
+				int idS = Integer.parseInt(id);
+				// get the supplier with the same id from the array list
+				if(idS==supplier.getSupplierId()){
+					if(supplier.isSupplierDeleted()==true){
+						supplier.setSupplierDeleted(false);
+						listModel.remove(index);
+						JOptionPane.showMessageDialog(null, "The deleted supplier was restored to the suppliers list");
+						break;
+					}
+
+				}
+			}
+		}
+	}
 
 	// save updates to file
 	public void saveDetails(){
