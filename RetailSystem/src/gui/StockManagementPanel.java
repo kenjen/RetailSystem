@@ -532,17 +532,18 @@ public class StockManagementPanel extends JSplitPane {
 		if (productLoaded) {
 			try {
 				int id = Integer.parseInt(textId.getText());
+				boolean idValid = false;
 				for (Product product : Shop.getProducts()) {
 					if (product.getId() == id) {
-
-					} else {
-						txtNotification.setText("No product with id " + id
-								+ " found");
-						notificationTimer.stop();
-						txtNotification.setVisible(true);
-						notificationTimer.start();
-						return false;
+						idValid = true;
 					}
+				}
+				if(idValid==false){
+					txtNotification.setText("No product with id " + id + " found");
+					notificationTimer.stop();
+					txtNotification.setVisible(true);
+					notificationTimer.start();
+					return false;
 				}
 			} catch (NumberFormatException e) {
 				System.out.println("textId contains invaid string");
@@ -1011,13 +1012,19 @@ public class StockManagementPanel extends JSplitPane {
 								menu.add(item = new JMenuItem("Delete"));
 								item.addActionListener(menuListener);
 							}
+							
+							if(product.isFlaggedForOrder()){
+								menu.add(item = new JMenuItem("Deflag For Order"));
+								item.addActionListener(menuListener);
+							}else{
+								menu.add(item = new JMenuItem("Flag For Order"));
+								item.addActionListener(menuListener);
+							}
 						}
 					}
 					menu.add(item = new JMenuItem("Discount"));
 					item.addActionListener(menuListener);
 					menu.add(item = new JMenuItem("Edit"));
-					item.addActionListener(menuListener);
-					menu.add(item = new JMenuItem("Flag For Order"));
 					item.addActionListener(menuListener);
 					menu.add(item = new JMenuItem("New Product"));
 					item.addActionListener(menuListener);
@@ -1041,9 +1048,11 @@ public class StockManagementPanel extends JSplitPane {
 					if (product.isFlaggedForOrder()) {
 						product.setFlaggedForOrder(false);
 						txtFlaggedForOrder.setVisible(false);
+						btnFlagForOrder.setText("Flag For Order");
 					} else {
 						product.setFlaggedForOrder(true);
 						txtFlaggedForOrder.setVisible(true);
+						btnFlagForOrder.setText("Deflag For Order");
 					}
 				}
 			}
@@ -1100,6 +1109,11 @@ public class StockManagementPanel extends JSplitPane {
 			txtNotification.setVisible(true);
 			notificationTimer.start();
 		} else {
+			if(tempProduct.isFlaggedForOrder()){
+				btnFlagForOrder.setText("Deflag For Order");
+			}else{
+				btnFlagForOrder.setText("Flag For Order");
+			}
 			textId.setText("" + id);
 			textName.setText(tempProduct.getName());
 			textCategory.setText(tempProduct.getCategory());
@@ -1245,7 +1259,7 @@ public class StockManagementPanel extends JSplitPane {
 					discountProduct(id, Shop.getProducts(), false);
 				} else if (command.equals("Edit")) {
 					loadProductDetails(id, Shop.getProducts());
-				} else if (command.equals("Flag For Order")) {
+				} else if (command.equals("Flag For Order") || command.equals("Deflag For Order")) {
 					flagForOrder(id, Shop.getProducts());
 				} else if (command.equals("Restore")) {
 					restoreProduct(id, Shop.getProducts());
@@ -1324,8 +1338,7 @@ public class StockManagementPanel extends JSplitPane {
 					Shop.getProducts(), Shop.getSuppliers());
 			if (notValid) {
 				System.out.println("Already Exists, Product Not Saved");
-				txtNotification
-						.setText("Product With Same Supplier Already Exists");
+				txtNotification.setText("Product With Same Supplier Already Exists");
 				notificationTimer.stop();
 				txtNotification.setVisible(true);
 				notificationTimer.start();
