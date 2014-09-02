@@ -365,6 +365,8 @@ public class StaffPanel extends JPanel {
 					btnRemove.setEnabled(false);
 					staffComboBox.setEnabled(false);
 					resetTextFields();
+					//Reset the selected item to null
+					staffComboBox.setSelectedItem(null);
 				}
 			}
 		});
