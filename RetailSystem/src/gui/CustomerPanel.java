@@ -194,7 +194,7 @@ public class CustomerPanel extends JPanel {
 		});
 
 		// SEARCH BY SURNAME
-		lblEnterSurnameTo = new JLabel("Enter Surname to find:");
+		lblEnterSurnameTo = new JLabel("Enter name to find:");
 		add(lblEnterSurnameTo, "flowx,cell 1 9");
 		/*
 		 * searchString = new JTextField(); add(searchString,
@@ -299,6 +299,7 @@ public class CustomerPanel extends JPanel {
 					customerEdit.setEnabled(true);
 					;
 				} else {
+					comboCustomerID.setSelectedItem(0);
 					comboCustomerID.enable(false);
 					btnNewButton.setEnabled(true);
 					customerDelete.setEnabled(false);
@@ -347,7 +348,7 @@ public class CustomerPanel extends JPanel {
 				for (Customer customer : Shop.getCustomers()) {
 					String fullname = customer.getCustomerFName() + " "
 							+ customer.getCustomerLName();
-					if (fullname.equalsIgnoreCase(surname)) {
+					if (fullname.trim().equalsIgnoreCase(surname)) {
 						// selectedCustomer = customer.getCustomerID();
 
 						comboCustomerID.setSelectedItem(customer
