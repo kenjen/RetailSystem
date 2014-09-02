@@ -2,3 +2,6 @@
 {"id":2,"name":"John","surname":"Doe","salary":15.23,"holidayDaysLeft":21,"admin":false,"username":"JohnDoe","password":"Firefly","deleted":false}
 {"id":3,"name":"Mick","surname":"Green","salary":8.65,"holidayDaysLeft":21,"admin":false,"username":"MickGreen","password":"Avalanche","deleted":false}
 {"id":4,"name":"Angela","surname":"Blue","salary":23.5,"holidayDaysLeft":21,"admin":false,"username":"AngelaBlue","password":"Onyx","deleted":false}
+{"id":5,"name":"sd","surname":"sd","salary":12.0,"holidayDaysLeft":21,"admin":false,"username":"123","password":"123","deleted":false}
+{"id":6,"name":"fg","surname":"fg","salary":15.0,"holidayDaysLeft":21,"admin":false,"username":"rt","password":"rt","deleted":false}
+{"id":7,"name":" ","surname":" ","salary":10.0,"holidayDaysLeft":21,"admin":false,"username":" ","password":" ","deleted":false}
