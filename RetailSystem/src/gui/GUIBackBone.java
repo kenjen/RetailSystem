@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -31,6 +32,7 @@ public class GUIBackBone extends JFrame {
 	private CustomerPanel panelCustomer = new CustomerPanel();
 	private SupplierPanel panelSupplier = new SupplierPanel();
 	private ProfitLossPanel panelProfit = new ProfitLossPanel();
+		private StatisticsPanel panelStat = new StatisticsPanel();
 	private static boolean userTypeAdmin = false;
 	private static Staff loggedStaffMember;
 	private int previousTabIndex = 0;
@@ -52,6 +54,8 @@ public class GUIBackBone extends JFrame {
 			tabbedPane.addTab("Supplier", panelSupplier);
 			tabbedPane.addTab("Finance", panelProfit);
 			tabbedPane.addTab("", logoutPanel);
+				tabbedPane.addTab("Statistics", panelStat);
+				JLabel stat = new JLabel("statistics");
 			tabbedPane.setIconAt(0,
 					new ImageIcon(getClass().getResource("/CheckList.png")));
 			tabbedPane.setIconAt(1,
@@ -67,6 +71,7 @@ public class GUIBackBone extends JFrame {
 			tabbedPane.setIconAt(6,
 					new ImageIcon(getClass().getResource("/Finance.png")));
 			tabbedPane.setTabComponentAt(7, lblLogout);
+				tabbedPane.setTabComponentAt(8, stat);
 
 		} else {
 			loggedStaffMember = logStaff;
@@ -94,6 +99,7 @@ public class GUIBackBone extends JFrame {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				saveTabDetails(0);
+				//panelStat.refresh();
 				if (tabbedPane.getSelectedIndex() == 7
 						|| (tabbedPane.getSelectedIndex() == 5 && GUIBackBone.loggedStaffMember
 								.isAdmin() == false)) {
