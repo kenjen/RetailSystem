@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
@@ -147,7 +148,7 @@ public class StatisticsPanel extends JPanel {
 	
 	// generate data and upload data to chart
 	public void generateData(DefaultCategoryDataset dataset){
-		for(Product product : Shop.getProducts()){
+		for(@SuppressWarnings("unused") Product product : Shop.getProducts()){
 			totalValues.add(0);
 		}
 		// get the data from customer orders
