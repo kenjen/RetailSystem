@@ -63,7 +63,7 @@ public class TableModelWithNoEditableColumns extends AbstractTableModel{
 		if(col == columnNames.length-1){
 			return false;
 		}else{
-			return true;
+			return false;
 		}
     }
 	
