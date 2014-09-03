@@ -146,30 +146,30 @@ public class StaffPanel extends JPanel {
 				
 
 				for (Staff s1 : Shop.getStaffMembers()) {
-					if (s1.getUsername().equals(userNameField.getText())) {
+					if (s1.getUsername().equals(userNameField.getText().trim())) {
 						JOptionPane.showMessageDialog(null,
 								"Error: UserName Already Exists!!!");
 						return;
 					}
 				}
 				
-				if (nameField.getText().length() > 0
-						&& surNameField.getText().length() > 0
-						&& salaryField.getText().length() > 0
-						&& userNameField.getText().length() > 0
-						&& passwordField.getText().length() > 0) {
+				if (nameField.getText().trim().length() > 0
+						&& surNameField.getText().trim().length() > 0
+						&& salaryField.getText().trim().length() > 0
+						&& userNameField.getText().trim().length() > 0
+						&& passwordField.getText().trim().length() > 0) {
 
 					// if text entered to Salary field is not type double, make error message
 					try {
 						// variables for parsing
 						double salaryD = Double.parseDouble(salaryField
-								.getText());
+								.getText().trim());
 						// if the code gets to here, it was recognizable as a double
 
 						// add the values to the array
-						Staff s = new Staff(nameField.getText(), surNameField
-								.getText(), salaryD, userNameField.getText(),
-								passwordField.getText());
+						Staff s = new Staff(nameField.getText().trim(), surNameField
+								.getText().trim(), salaryD, userNameField.getText().trim(),
+								passwordField.getText().trim());
 						if(chckbxAdmin.isSelected()){
 							s.setAdmin(true);	
 					}
@@ -302,14 +302,14 @@ public class StaffPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 
 				/*for (Staff s1 : Shop.getStaffMembers()) {
-					if (s1.getUsername().equals(userNameField.getText())) {
+					if (s1.getUsername().equals(userNameField.getText().trim())) {
 						JOptionPane.showMessageDialog(null,"Error: UserName Already Exists!!!");
 						return;
 					}
 				}*/
 				try {
 					// variables for parsing
-					double salaryD = Double.parseDouble(salaryField.getText());
+					double salaryD = Double.parseDouble(salaryField.getText().trim());
 
 					// find the selected user by username and get the id.
 					// The id never changes
@@ -324,9 +324,9 @@ public class StaffPanel extends JPanel {
 					System.out.println("ID Selected" + id);
 
 					System.out.println("Cannot Change userName");
-					Shop.EditDetails(nameField.getText(),
-							surNameField.getText(), salaryD,
-							userNameField.getText(), passwordField.getText(),
+					Shop.EditDetails(nameField.getText().trim(),
+							surNameField.getText().trim(), salaryD,
+							userNameField.getText().trim(), passwordField.getText().trim(),
 							id, chckbxAdmin.isSelected());
 					
 					System.out.println("Selected Item" + staffComboBox.getSelectedItem());
