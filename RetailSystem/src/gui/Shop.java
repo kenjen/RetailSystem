@@ -116,8 +116,8 @@ public class Shop {
 		for (Staff staff : staffMembers) {
 			if (staff.getUsername() == Username) {
 				staff.setDeleted(true);
+			
 			}
-
 		}
 	}
 
