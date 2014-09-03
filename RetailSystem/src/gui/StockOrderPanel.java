@@ -39,6 +39,7 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import tableModels.TableModelWithLastColEditable;
+import tableModels.UneditableTableModel;
 import data.Json;
 import data.Product;
 import data.ProductToOrder;
@@ -433,7 +434,7 @@ public class StockOrderPanel extends JPanel {
 			}
 		}
 
-		TableModelWithLastColEditable ordersTableModel = new TableModelWithLastColEditable(
+		UneditableTableModel ordersTableModel = new UneditableTableModel(
 				arrayTableOrders, columnNamesForOrders);
 		tableOrders = new JTable(ordersTableModel);
 		tableOrders.setAutoCreateRowSorter(true);
@@ -802,7 +803,7 @@ public class StockOrderPanel extends JPanel {
 			menuItemUpdate.addMouseListener(new MouseAdapter(){
 				public void mousePressed(MouseEvent e){
 					int row = tableOrders.getSelectedRow();
-					TableModelWithLastColEditable model = (TableModelWithLastColEditable) tableOrders.getModel();
+					UneditableTableModel model = (UneditableTableModel) tableOrders.getModel();
 					model.setValueAt(true, row, 4);
 					model.fireTableDataChanged();
 					updateOrders();
