@@ -224,33 +224,36 @@ public class Json {
 	/**
 	 * Returns the whole list of staff stored in /resources/staff.json
 	 * @return
+	 * @throws FileNotFoundException 
 	 */
-	public static ArrayList<Staff> readStaffFromFile() {
+	public static ArrayList<Staff> readStaffFromFile() throws FileNotFoundException {
 		Scanner in=null;
 		try {
 			in = new Scanner(new FileReader("resources/staff.json"));
 			ObjectMapper mapper = new ObjectMapper();
-		if(in.hasNextLine()){	
-			while (in.hasNextLine()) {
-				Staff staff = mapper
+			if(in.hasNextLine()){	
+				while (in.hasNextLine()) {
+					Staff staff = mapper
 						.readValue(in.nextLine(), Staff.class);
-				Shop.getStaffMembers().add(staff);
+					Shop.getStaffMembers().add(staff);
+				}
+				return Shop.getStaffMembers();
+			}else{
+				return null;
 			}
-			return Shop.getStaffMembers();
-		}
-		else{
-			return null;
-		}
-		} catch (EOFException eof){
+		}catch(FileNotFoundException fnf){ 
+			throw new FileNotFoundException();
+		}catch (EOFException eof){
 			eof.printStackTrace();
 			return null;
-		}
-		catch (IOException e) {
+		}catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		finally{
-			in.close();
+			if(in!=null){
+				in.close();
+			}
 		}
 		return null;
 	}

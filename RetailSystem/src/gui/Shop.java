@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -158,21 +159,20 @@ public void populateSuppliers(){
 
 	public void populateStaffMembers() {
 		
-		staffMembers = Json.readStaffFromFile();
-		
-		if (staffMembers.size() == 0) {
+		try{
+			staffMembers = Json.readStaffFromFile();
+		}catch(FileNotFoundException e){
 			staffMembers = new ArrayList<Staff>();
 
-		Staff admin = new Staff("admin", "admin", 0, "admin", "admin");
-		admin.setAdmin(true);
-		Staff john = new Staff("John", "Doe", 15.23, "JohnDoe", "Firefly");
-		Staff mick = new Staff("Mick", "Green", 8.65, "MickGreen", "Avalanche");
-		Staff angela = new Staff("Angela", "Blue", 23.5, "AngelaBlue", "Onyx");
-		staffMembers.add(admin);
-		staffMembers.add(john);
-		staffMembers.add(mick);
-		staffMembers.add(angela);
-		
+			Staff admin = new Staff("admin", "admin", 0, "admin", "admin");
+			admin.setAdmin(true);
+			Staff john = new Staff("John", "Doe", 15.23, "JohnDoe", "Firefly");
+			Staff mick = new Staff("Mick", "Green", 8.65, "MickGreen", "Avalanche");
+			Staff angela = new Staff("Angela", "Blue", 23.5, "AngelaBlue", "Onyx");
+			staffMembers.add(admin);
+			staffMembers.add(john);
+			staffMembers.add(mick);
+			staffMembers.add(angela);
 		}
 
 		for(Staff s : staffMembers){
