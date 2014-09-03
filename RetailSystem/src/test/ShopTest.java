@@ -3,6 +3,7 @@ package test;
 import static org.junit.Assert.*;
 import gui.Shop;
 
+import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ public void populateSuppliersFromJSonFile_sizeNotNull(){
 	}
 	
 	@Test
-	public void populateStaffMembersFromJSonFile_sizeNotNull() {
+	public void populateStaffMembersFromJSonFile_sizeNotNull() throws FileNotFoundException {
 		
 		staffMembers = Json.readStaffFromFile();
 		
