@@ -60,9 +60,7 @@ public class SupplierPanel extends JSplitPane{
 		JPanel buttonPanel = new JPanel();	
 		buttonPanel.setLayout(new MigLayout());
 		setLeftComponent(buttonPanel);
-		// add image to left panel
-		JLabel supplierImage = new JLabel(new ImageIcon("resources/supplier photo1.jpg"));
-		buttonPanel.add(supplierImage, "cell 0 0");
+		
 
 		//set a preferred size for the split pane.
 		setPreferredSize(new Dimension(320, 350));

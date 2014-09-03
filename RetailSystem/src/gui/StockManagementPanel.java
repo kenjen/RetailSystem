@@ -1254,7 +1254,6 @@ public class StockManagementPanel extends JSplitPane {
 
 	public void saveAll() {
 		if (creatingNewProduct) {
-			// TODO
 			if (allFieldsValid()) {
 				for (Supplier supplier : Shop.getSuppliers()) {
 					if (supplier.getSupplierName().equals(

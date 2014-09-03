@@ -31,6 +31,11 @@ public class Product {
 		this.name = name;
 		this.category = category;
 		this.quantity = quantity;
+		if(quantity<1){
+			available = false;
+		}else{
+			available = true;
+		}
 		this.price = price;
 		this.supplier = supplier;
 		this.available = available;
@@ -66,6 +71,11 @@ public class Product {
 	
 	public void setQuantity(int quantity){
 		this.quantity = quantity;
+		if(quantity<1){
+			available = false;
+		}else{
+			available = true;
+		}
 	}
 	
 	public double getPrice(){

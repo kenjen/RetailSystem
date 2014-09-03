@@ -127,7 +127,7 @@ public class StaffPanel extends JPanel {
 				
 
 				for (Staff s1 : Shop.getStaffMembers()) {
-					if (s1.getUsername().equals(userNameField.getText().trim())) {
+					if (s1.getUsername().equals(userNameField.getText().trim()) && s1.isDeleted() == false) {
 						JOptionPane.showMessageDialog(null,
 								"Error: UserName Already Exists!!!");
 						return;
@@ -354,9 +354,9 @@ public class StaffPanel extends JPanel {
 		
 		Json.clearList("resources/staff.json");
 		for(Staff staff : Shop.getStaffMembers()){
-			if(staff.isDeleted() == false){
+			//if(staff.isDeleted() == false){
 				Json.saveStaffToFile(staff);
-			}
+			//}
 		}
 	}
 
