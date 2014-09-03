@@ -185,6 +185,7 @@ public class StaffPanel extends JPanel {
 						// Remove items from Combo Box and re-add the entire list, which contains the new Staff Member
 						staffComboBox.removeAllItems();
 						staffMembers.add(s);
+						staffComboBox.addItem("");
 
 						// Iterate through the Array staffMembers
 						for (Staff staff : staffMembers) {
@@ -196,7 +197,7 @@ public class StaffPanel extends JPanel {
 								// staffComboBox.addItem(s.getName());
 								
 								//Add null to ComboBox
-								staffComboBox.addItem("");
+								//staffComboBox.addItem("");
 							}
 						}
 
