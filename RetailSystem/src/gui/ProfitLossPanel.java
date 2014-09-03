@@ -71,7 +71,7 @@ public class ProfitLossPanel extends JPanel{
 	private DefaultCategoryDataset dataset;
     // row keys...
     private final String expense = "Expense";
-    private final String profit = "Profit";
+    private final String profit = "Income";
 	
     public ProfitLossPanel(){
     	
