@@ -152,7 +152,7 @@ public class StaffPanel extends JPanel {
 						return;
 					}
 				}
-
+				
 				if (nameField.getText().length() > 0
 						&& surNameField.getText().length() > 0
 						&& salaryField.getText().length() > 0
@@ -289,6 +289,7 @@ public class StaffPanel extends JPanel {
 				staffComboBox.removeItem(staffComboBox.getSelectedItem());
 				saveDetails();
 				resetTextFields();
+				staffComboBox.setSelectedItem(null);
 			}
 		});
 
