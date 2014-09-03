@@ -258,12 +258,11 @@ public class StaffPanel extends JPanel {
 						System.out.println(selectedStaff.getUsername());
 						System.out.println("SelectedStaff: " + selectedStaff);
 
-						nameField.setText(selectedStaff.getName());
-						surNameField.setText(selectedStaff.getSurname());
-						salaryField.setText(String.valueOf(selectedStaff
-								.getSalary()));
+						nameField.setText(selectedStaff.getName().trim());
+						surNameField.setText(selectedStaff.getSurname().trim());
+						salaryField.setText(String.valueOf(selectedStaff.getSalary()));
 
-						userNameField.setText(selectedStaff.getUsername());
+						userNameField.setText(selectedStaff.getUsername().trim());
 						passwordField.setText(selectedStaff.getPassword());
 						chckbxAdmin.setSelected(selectedStaff.isAdmin());
 					}
