@@ -41,7 +41,7 @@ public class Staff {
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		this.name = name.trim();
 	}
 
 	public String getSurname() {
@@ -49,7 +49,7 @@ public class Staff {
 	}
 
 	public void setSurname(String surname) {
-		this.surname = surname;
+		this.surname = surname.trim();
 	}
 
 	public double getSalary() {
@@ -81,7 +81,7 @@ public class Staff {
 	}
 
 	public void setUsername(String username) {
-		this.username = username;
+		this.username = username.trim();
 	}
 
 	public String getPassword() {

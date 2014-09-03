@@ -182,8 +182,8 @@ public class CustomerPanel extends JPanel {
 
 			public void deleteCustomer() {
 				Shop.deleteCustomer((Integer) comboCustomerID.getSelectedItem());
-				String fname = fNameInput.getText();
-				String lname = lNameInput.getText();
+				String fname = fNameInput.getText().trim();
+				String lname = lNameInput.getText().trim();
 				comboCustomerID.removeItem(comboCustomerID.getSelectedItem());
 				JOptionPane.showMessageDialog(null, "You have deleted " + fname
 						+ " " + lname);
@@ -376,16 +376,16 @@ public class CustomerPanel extends JPanel {
 	}
 
 	public void createNewCustomer() {
-		if (fNameInput.getText().length() > 0
-				&& lNameInput.getText().length() > 0
-				&& addressInput.getText().length() > 0
-				&& (mobileInput.getText().length() > 0 || homeInput.getText()
+		if (fNameInput.getText().trim().length() > 0
+				&& lNameInput.getText().trim().length() > 0
+				&& addressInput.getText().trim().length() > 0
+				&& (mobileInput.getText().trim().length() > 0 || homeInput.getText().trim()
 						.length() > 0)) {
-			String fname = fNameInput.getText();
-			String lname = lNameInput.getText();
-			String address = addressInput.getText();
-			String mobile = mobileInput.getText();
-			String home = homeInput.getText();
+			String fname = fNameInput.getText().trim();
+			String lname = lNameInput.getText().trim();
+			String address = addressInput.getText().trim();
+			String mobile = mobileInput.getText().trim();
+			String home = homeInput.getText().trim();
 
 			Customer c1 = new Customer(fname, lname, address, mobile, home);
 			Shop.getCustomers().add(c1);
@@ -415,15 +415,15 @@ public class CustomerPanel extends JPanel {
 	}
 
 	public void editCustomer() {
-		if (fNameInput.getText().length() > 0
-				&& lNameInput.getText().length() > 0
-				&& addressInput.getText().length() > 0
-				&& (mobileInput.getText().length() > 0 || homeInput.getText()
+		if (fNameInput.getText().trim().length() > 0
+				&& lNameInput.getText().trim().length() > 0
+				&& addressInput.getText().trim().length() > 0
+				&& (mobileInput.getText().trim().length() > 0 || homeInput.getText().trim()
 						.length() > 0)) {
 			Shop.editCustomer((Integer) comboCustomerID.getSelectedItem(),
-					fNameInput.getText(), lNameInput.getText(),
-					addressInput.getText(), mobileInput.getText(),
-					homeInput.getText());
+					fNameInput.getText().trim(), lNameInput.getText().trim(),
+					addressInput.getText().trim(), mobileInput.getText().trim(),
+					homeInput.getText().trim());
 
 			// fNameInput.setText("");
 			// lNameInput.setText("");
@@ -431,7 +431,7 @@ public class CustomerPanel extends JPanel {
 			// mobileInput.setText("");
 			// homeInput.setText("");
 			JOptionPane.showMessageDialog(null, "You have editted customer "
-					+ fNameInput.getText() + " " + lNameInput.getText());
+					+ fNameInput.getText().trim() + " " + lNameInput.getText().trim());
 			// comboCustomerID.setSelectedIndex(0);
 		} else {
 			JOptionPane.showMessageDialog(null,
