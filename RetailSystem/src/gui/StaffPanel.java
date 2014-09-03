@@ -1,49 +1,30 @@
 package gui;
 
-import gui.CustomerPanel.CBListener;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JPanel;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JLabel;
-import javax.swing.JPasswordField;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
-import javax.swing.JButton;
-
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.CardLayout;
-
-import net.miginfocom.swing.MigLayout;
-
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-
-import javax.swing.BoxLayout;
-
-import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
-
-import data.Customer;
-import data.Json;
-import data.Product;
-import data.Staff;
-
-import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
+import net.miginfocom.swing.MigLayout;
+
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+
+import data.Json;
+import data.Staff;
 
 public class StaffPanel extends JPanel {
 
