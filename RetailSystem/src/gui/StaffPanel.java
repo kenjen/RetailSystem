@@ -189,7 +189,6 @@ public class StaffPanel extends JPanel {
 
 						// Iterate through the Array staffMembers
 						for (Staff staff : staffMembers) {
-							System.out.println("Staff" + staff.getName());
 
 							// Add new Staff To ComboBox "staffComboBox"
 							if (staff.isDeleted() == false) {
@@ -202,10 +201,6 @@ public class StaffPanel extends JPanel {
 						}
 
 						resetTextFields();
-
-						System.out.println("New Staff Member Added");
-						System.out.println("Add Staff ID " + s.getId());
-
 						saveDetails();
 					} catch (NumberFormatException e) {
 						JOptionPane
@@ -252,13 +247,8 @@ public class StaffPanel extends JPanel {
 					Staff selectedStaff = getStaffbyID(e.getItem().toString());
 					if (selectedStaff != null) {
 
-						System.out.println("Combo Select: " + selectedStaff);
-
 						// add each staff members details to respective
 						// textfields upon selection
-						System.out.println(selectedStaff.getUsername());
-						System.out.println("SelectedStaff: " + selectedStaff);
-
 						nameField.setText(selectedStaff.getName().trim());
 						surNameField.setText(selectedStaff.getSurname().trim());
 						salaryField.setText(String.valueOf(selectedStaff.getSalary()));
@@ -321,18 +311,12 @@ public class StaffPanel extends JPanel {
 						}
 					}
 					
-					System.out.println("ID Selected" + id);
-
-					System.out.println("Cannot Change userName");
 					Shop.EditDetails(nameField.getText(),
 							surNameField.getText(), salaryD,
 							userNameField.getText(), passwordField.getText(),
 							id, chckbxAdmin.isSelected());
 					
-					System.out.println("Selected Item" + staffComboBox.getSelectedItem());
-
 					saveDetails();
-
 					DefaultComboBoxModel model = (DefaultComboBoxModel) staffComboBox
 							.getModel();
 					model.removeAllElements();
@@ -393,7 +377,6 @@ public class StaffPanel extends JPanel {
 				Json.saveStaffToFile(staff);
 			}
 		}
-		System.out.println("Finished save");
 	}
 
 	// Method to retrieve the name from The Array staffMembers in the Shop class

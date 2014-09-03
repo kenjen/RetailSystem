@@ -328,7 +328,6 @@ public class StockOrderPanel extends JPanel {
 		for(StockOrder stockOrder: Shop.getStockOrders()){
 				Json.saveStockOrdersToFile(stockOrder);
 			}
-			System.out.println("Finished saving stockOrders");
 		}
 	
 	
@@ -510,14 +509,10 @@ public class StockOrderPanel extends JPanel {
 			//remove products that have deleted supplier
 			ArrayList<Product> productsArrayList = new ArrayList<Product>();
 			for(Product p : Shop.getProducts()){
-				//System.out.println("supllier "+p.getSupplier().getSupplierName()+" is deleted: "+p.getSupplier().isSupplierDeleted());
 				if(p.getSupplier().isSupplierDeleted() == false){
 					productsArrayList.add(p);
 				}
 			}
-			/*for(Supplier s:Shop.getSuppliers()){
-				System.out.println(s.getSupplierName() + " "+s.isSupplierDeleted());
-			}*/
 			//display table for all products
 			arrayTableProducts = new Object[productsArrayList.size()][9];
 			int counter = 0;

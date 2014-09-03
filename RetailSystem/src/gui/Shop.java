@@ -45,7 +45,6 @@ public class Shop {
 		populateProducts();
 		populateStockOrders();
 		populateCustomerOrders();
-		printCustomerOrderInvoice();
 		updateStockOrderDevilveryDates();
 		populateFinances();
 
@@ -100,7 +99,6 @@ public class Shop {
 				customer.setCustomerHome(customerHome);
 			}
 		}
-		System.out.println(customerID + customerFName);
 	}
 
 	public static void deleteCustomer(int customerID) {
@@ -128,16 +126,12 @@ public class Shop {
 			//set the values according to whats in the textFields
 			
 			if (staff.getId()==id) {
-
-				System.out.println("Edit Details loop");
-
 				staff.setName(name);
 				staff.setSurname(surname);
 				staff.setSalary(salary);
 				staff.setUsername(username);
 				staff.setPassword(password);
 				staff.setAdmin(administrator);
-				System.out.println("Edit Details loop");
 			}
 		}
 
@@ -147,8 +141,6 @@ public void populateSuppliers(){
 		
 		suppliers = Json.readSuppliersFromFile();
 		if(suppliers.size() == 0){
-			System.out.println("reached null loop");
-			
 		Supplier supplier1 = new Supplier("Doyle's", "St.Stephens,Dublin");
 		Supplier supplier2 = new Supplier("Profi", "Baldara, Ashbourne");
 		Supplier supplier3 = new Supplier("Jane LTD", "Kileen, Cork");
@@ -169,8 +161,6 @@ public void populateSuppliers(){
 		staffMembers = Json.readStaffFromFile();
 		
 		if (staffMembers.size() == 0) {
-			System.out.println("reached null loop");
-			
 			staffMembers = new ArrayList<Staff>();
 
 		Staff admin = new Staff("admin", "admin", 0, "admin", "admin");
@@ -185,8 +175,6 @@ public void populateSuppliers(){
 		
 		}
 
-		//System.out.println("Staff members populated");
-		
 		for(Staff s : staffMembers){
 			if(s.getId() > Staff.getNextId()){
 				Staff.setNextId(s.getId());
@@ -199,7 +187,6 @@ public void populateSuppliers(){
 		
 		// if error occured during load, load default products
 		if (products.size() == 0) {
-			System.out.println("REACHED NULL LOOP");
 			Product p1 = new Product("Pear", "Food", 70, 0.23,
 					suppliers.get(0), true, 80);
 			Product p2 = new Product("Coat", "Clothing", 50, 29.99,
@@ -235,10 +222,8 @@ public void populateSuppliers(){
 			StockOrder stockOrder = new StockOrder(
 					sd.parse("10/08/2014 13:36"), toOrder, staffMembers.get(2));
 			stockOrders.add(stockOrder);
-			System.out.println("Order placed with id " + stockOrder.getId());
 		} catch (ParseException e) {
 			e.printStackTrace();
-			System.out.println("Order not placed as error with date");
 		}
 
 		toOrder = new ArrayList<ProductToOrder>();
@@ -249,10 +234,8 @@ public void populateSuppliers(){
 			StockOrder stockOrder = new StockOrder(
 					sd.parse("26/07/2014 10:15"), toOrder, staffMembers.get(2));
 			stockOrders.add(stockOrder);
-			System.out.println("Order placed with id " + stockOrder.getId());
 		} catch (ParseException e) {
 			e.printStackTrace();
-			System.out.println("Order not placed as error with date");
 		}
 
 		toOrder = new ArrayList<ProductToOrder>();
@@ -263,10 +246,8 @@ public void populateSuppliers(){
 			StockOrder stockOrder = new StockOrder(
 					sd.parse("06/08/2014 13:00"), toOrder, staffMembers.get(2));
 			stockOrders.add(stockOrder);
-			System.out.println("Order placed with id " + stockOrder.getId());
 		} catch (ParseException e) {
 			e.printStackTrace();
-			System.out.println("Order not placed as error with date");
 		}
 		
 		}
@@ -285,23 +266,6 @@ public void populateSuppliers(){
 				stockOrders.get(i).setCompleted(true);
 			}
 		}
-	}
-
-	public void printCustomerOrderInvoice() {
-		for (CustomerOrder order : customerOrders) {
-			if (order.isComplete() == true) {
-				System.out.println("-----Invoice-------");
-				System.out.println("Order ID : " + order.getId());
-				System.out.println("Customer ID : " + order.getCustomer());
-				System.out
-						.println("Order received: " + order.getCreationDate());
-				System.out.println("Products ordered : " + order.getProducts());
-				System.out.println("Gross Total : " + order.getTotalGross());
-				System.out.println("Net Total (VAT @ 10%) : "
-						+ order.getTotalNet());
-			}
-		}
-
 	}
 
 	public static ArrayList<Customer> getCustomers() {

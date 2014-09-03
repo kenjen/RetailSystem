@@ -28,7 +28,6 @@ public class Json {
 			while (in.hasNextLine()) {
 				Product product = mapper
 						.readValue(in.nextLine(), Product.class);
-				System.out.println(product.toString());
 				Shop.getProducts().add(product);
 				//repopulate the supplier for this product as the supplier might be different than the one saved
 				for(Supplier s:Shop.getSuppliers()){
@@ -85,7 +84,6 @@ public class Json {
 			while (in.hasNextLine()) {
 				Customer customer = mapper
 						.readValue(in.nextLine(), Customer.class);
-				System.out.println(customer.toString());
 				Shop.getCustomers().add(customer);
 			}
 			return Shop.getCustomers();
@@ -134,7 +132,6 @@ public class Json {
 			while (in.hasNextLine()) {
 				Supplier supplier = mapper
 						.readValue(in.nextLine(), Supplier.class);
-				System.out.println(supplier.toString());
 				Shop.getSuppliers().add(supplier);
 			}
 			return Shop.getSuppliers();
@@ -183,7 +180,6 @@ public class Json {
 			while (in.hasNextLine()) {
 				StockOrder stockOrder = mapper
 						.readValue(in.nextLine(), 	StockOrder.class);
-				System.out.println(stockOrder.toString());
 				//repopulate Stock Orders with Staff members
 				for(Staff staff:Shop.getStaffMembers()){
 					if(staff.getId() == stockOrder.getStaff().getId()){
@@ -238,7 +234,6 @@ public class Json {
 			while (in.hasNextLine()) {
 				Staff staff = mapper
 						.readValue(in.nextLine(), Staff.class);
-				System.out.println(staff.toString());
 				Shop.getStaffMembers().add(staff);
 			}
 			return Shop.getStaffMembers();
@@ -334,7 +329,6 @@ public class Json {
 			while (in.hasNextLine()) {
 				CustomerOrder custOrder = mapper
 						.readValue(in.nextLine(), CustomerOrder.class);
-				System.out.println(custOrder.toString());
 				//repopulate Customer order's customers and staff members in case they have been edited
 				for(Staff staff:Shop.getStaffMembers()){
 					if (staff.getId() == custOrder.getStaff().getId()){
@@ -383,7 +377,6 @@ public class Json {
 			while (in.hasNextLine()) {
 				Finance finance = mapper
 						.readValue(in.nextLine(), Finance.class);
-				System.out.println(finance.toString());
 				Shop.getFinancialRecords().add(finance);
 			}
 			return Shop.getFinancialRecords();

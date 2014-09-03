@@ -85,7 +85,6 @@ public class StockManagementPanel extends JSplitPane {
 		notificationTimer = new Timer(3000, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				txtNotification.setVisible(false);
-				System.out.println("TimerEnded");
 				notificationTimer.stop();
 			}
 		});
@@ -111,8 +110,6 @@ public class StockManagementPanel extends JSplitPane {
 		menu = new JPopupMenu();
 		menuListener = new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				System.out.println("Popup menu item ["
-						+ event.getActionCommand() + "] was pressed.");
 				rightClick(event.getActionCommand());
 			}
 		};
@@ -546,7 +543,6 @@ public class StockManagementPanel extends JSplitPane {
 					return false;
 				}
 			} catch (NumberFormatException e) {
-				System.out.println("textId contains invaid string");
 				txtNotification.setText("Invalid id loaded");
 				notificationTimer.stop();
 				txtNotification.setVisible(true);
@@ -693,15 +689,11 @@ public class StockManagementPanel extends JSplitPane {
 															.getName()
 															.equalsIgnoreCase(
 																	textName.getText())) {
-														System.out
-																.println("Product already exists");
 														if (product
 																.getSupplier()
 																.getSupplierId() == supplier
 																.getSupplierId()) {
 															alreadyExists = true;
-															System.out
-																	.println("Supplier the same so product not added");
 															txtNotification
 																	.setText("Product Exists With Same Supplier");
 															notificationTimer
@@ -729,15 +721,11 @@ public class StockManagementPanel extends JSplitPane {
 																	.parseInt(textThreshold
 																			.getText()));
 													clearProductDetails();
-													System.out
-															.println("Product Created Succesfully");
 													return productToAdd;
 												}
 											}
 										}
 									} else {
-										System.out
-												.println("No supplier selected");
 										txtNotification
 												.setText("Please Select Supplier");
 										notificationTimer.stop();
@@ -759,8 +747,6 @@ public class StockManagementPanel extends JSplitPane {
 									return product;
 								}
 							} catch (NumberFormatException nfe) {
-								System.out
-										.println("number format exception on threshold");
 								txtNotification
 										.setText("Please Enter Valid Threshold");
 								notificationTimer.stop();
@@ -768,30 +754,24 @@ public class StockManagementPanel extends JSplitPane {
 								notificationTimer.start();
 							}
 						} catch (NumberFormatException nfe) {
-							System.out
-									.println("number format exception on price");
 							txtNotification.setText("Please Enter Valid Price");
 							notificationTimer.stop();
 							txtNotification.setVisible(true);
 							notificationTimer.start();
 						}
 					} catch (NumberFormatException nfe) {
-						System.out
-								.println("number format exception on quantity");
 						txtNotification.setText("Please Enter Valid Quantity");
 						notificationTimer.stop();
 						txtNotification.setVisible(true);
 						notificationTimer.start();
 					}
 				} else {
-					System.out.println("Blank category");
 					txtNotification.setText("Please Enter Valid Category");
 					notificationTimer.stop();
 					txtNotification.setVisible(true);
 					notificationTimer.start();
 				}
 			} else {
-				System.out.println("Blank Name");
 				txtNotification.setText("Please Enter Valid Name");
 				notificationTimer.stop();
 				txtNotification.setVisible(true);
@@ -883,7 +863,6 @@ public class StockManagementPanel extends JSplitPane {
 						}
 						loadProductDetails(tempId, Shop.getProducts());
 					} catch (NumberFormatException nfe) {
-						System.out.println("Entered value not a valid number");
 						txtNotification.setText("Entered Invalid Number");
 						notificationTimer.stop();
 						txtNotification.setVisible(true);
@@ -1000,11 +979,9 @@ public class StockManagementPanel extends JSplitPane {
 					menu = new JPopupMenu();
 					int row = table.getSelectedRow();
 					int id = (int) table.getValueAt(row, 0);
-					System.out.println("" + id);
 					JMenuItem item;
 					for (Product product : Shop.getProducts()) {
 						if (product.getId() == id) {
-							System.out.println("" + id);
 							if (product.isDeleted()) {
 								menu.add(item = new JMenuItem("Restore"));
 								item.addActionListener(menuListener);
@@ -1103,7 +1080,6 @@ public class StockManagementPanel extends JSplitPane {
 			}
 		}
 		if (!productExists) {
-			System.out.println("*****This Id Does Not Match A Product*****");
 			txtNotification.setText("Id Does Not Match A Product");
 			notificationTimer.stop();
 			txtNotification.setVisible(true);
@@ -1278,7 +1254,6 @@ public class StockManagementPanel extends JSplitPane {
 
 	public void saveAll() {
 		if (creatingNewProduct) {
-			System.out.println("Starting save new product");
 			// TODO
 			if (allFieldsValid()) {
 				for (Supplier supplier : Shop.getSuppliers()) {
@@ -1288,12 +1263,9 @@ public class StockManagementPanel extends JSplitPane {
 						for (Product product : Shop.getProducts()) {
 							if (product.getName().equalsIgnoreCase(
 									textName.getText())) {
-								System.out.println("Product already exists");
 								if (product.getSupplier().getSupplierId() == supplier
 										.getSupplierId()) {
 									alreadyExists = true;
-									System.out
-											.println("Supplier the same so product not added");
 									txtNotification
 											.setText("Product Exists With Same Supplier");
 									notificationTimer.stop();
@@ -1312,7 +1284,6 @@ public class StockManagementPanel extends JSplitPane {
 							productToAdd.setLowStockOrder(Integer
 									.parseInt(textThreshold.getText()));
 							clearProductDetails();
-							System.out.println("Product Created Succesfully");
 							Shop.getProducts().add(productToAdd);
 							txtNotification.setText("New Product Added");
 							notificationTimer.stop();
@@ -1337,7 +1308,6 @@ public class StockManagementPanel extends JSplitPane {
 					(String) comboSelectSupplier.getSelectedItem(),
 					Shop.getProducts(), Shop.getSuppliers());
 			if (notValid) {
-				System.out.println("Already Exists, Product Not Saved");
 				txtNotification.setText("Product With Same Supplier Already Exists");
 				notificationTimer.stop();
 				txtNotification.setVisible(true);
@@ -1384,7 +1354,6 @@ public class StockManagementPanel extends JSplitPane {
 		for (Product product : Shop.getProducts()) {
 			Json.saveProductToFile(product);
 		}
-		System.out.println("Finished saving products");
 	}
 
 	public void setDisplayedCategory(String str) {

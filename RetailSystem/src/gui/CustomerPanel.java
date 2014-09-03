@@ -97,8 +97,6 @@ public class CustomerPanel extends JPanel {
 		comboCustomerID.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				int chosen = (Integer) comboCustomerID.getSelectedItem();
-				System.out.println(chosen);
-
 				for (Customer customer : Shop.getCustomers()) {
 					if (customer.getCustomerID() == chosen
 							&& customer.isDeleted() == false) {
@@ -223,10 +221,6 @@ public class CustomerPanel extends JPanel {
 
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				// TODO Auto-generated method stub
-				
-				System.out.println(ItemEvent.SELECTED);
-				
 				if(comboSelectCustomer.getSelectedItem() != null){
 				String surname = comboSelectCustomer.getSelectedItem()
 						.toString();
@@ -235,7 +229,6 @@ public class CustomerPanel extends JPanel {
 					String fullname = customer.getCustomerFName() + " "
 							+ customer.getCustomerLName();
 					if (fullname.equalsIgnoreCase(surname)) {
-						// selectedCustomer = customer.getCustomerID();
 
 						comboCustomerID.setSelectedItem(customer
 								.getCustomerID());
@@ -323,7 +316,6 @@ public class CustomerPanel extends JPanel {
 		for (Customer customer : Shop.getCustomers()) {
 			Json.saveCustomerToFile(customer);
 		}
-		System.out.println("Finished save");
 	}
 
 	public Customer getCustomerbyID(String string) {
@@ -389,11 +381,6 @@ public class CustomerPanel extends JPanel {
 
 			Customer c1 = new Customer(fname, lname, address, mobile, home);
 			Shop.getCustomers().add(c1);
-			for (Customer customer : Shop.getCustomers()) {
-				System.out.println(customer.getCustomerID()
-						+ customer.getCustomerLName() + " "
-						+ customer.getCustomerAddress());
-			}
 			JOptionPane.showMessageDialog(
 					null,
 					"You have added " + c1.getCustomerFName() + " "
