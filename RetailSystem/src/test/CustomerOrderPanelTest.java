@@ -39,7 +39,12 @@ public class CustomerOrderPanelTest {
 	static ArrayList<ProductToOrder> productsToOrder = null;
 	static ArrayList<CustomerOrder> customerOrders = null;
 	static ArrayList<Customer> customers = new ArrayList<Customer>();
-	JComboBox comboSelectCustomer;
+	private static ArrayList<String> arrayCustomerNames;
+	private static ArrayList<String> arrayProductNames;
+	private Object[][] availableProductsArray ;
+	
+	static JComboBox comboSelectCustomer;
+	static JComboBox comboSearchForProducts;
 	final static int PRODUCT_1_PRICE =15;
 	final static int PRODUCT_1_AMOUNT = 10;
 	final static int PRODUCT_2_PRICE =20;
@@ -65,7 +70,15 @@ public class CustomerOrderPanelTest {
 		customerOrders.add(customerOrder);
 		Shop.getProducts().add(product);
 		Shop.getProducts().add(product1);
-		
+		comboSelectCustomer = new JComboBox();
+		comboSearchForProducts = new JComboBox();
+		Shop shop = new Shop();
+		shop.populateStaffMembers();
+		shop.populateCustomers();
+		shop.populateSuppliers();
+		shop.populateProducts();
+		shop.populateCustomerOrders();
+		shop.populateStockOrders();
 	}
 	
 	//returns an array of product names
@@ -109,27 +122,6 @@ public class CustomerOrderPanelTest {
 	}
 	
 	@Test
-	public void customerName_addingCustomerNamesConcatenationToArrayListOFStrings_concatenatedValues(){
-		ArrayList<String> customerNames = new ArrayList<String>();
-		customerNames.add("");
-		
-		//concatenate customer names and add them to the combo box
-		for (Customer customer:customers){
-			String name = customer.getCustomerFName()+" "+customer.getCustomerLName();
-			customerNames.add(name);
-		}
-		
-		comboSelectCustomer = new JComboBox(customerNames.toArray());
-		comboSelectCustomer.setEditable(true);
-		AutoCompleteDecorator.decorate(comboSelectCustomer);
-		
-		assertEquals(2, customerNames.size());
-		assertEquals("Jimmy surname", customerNames.get(1));
-		assertEquals("Jimmy surname", comboSelectCustomer.getItemAt(1));
-	}
-	
-	
-	@Test
 	public void product_decrementProductAvalableQuantity_quantityMinusAmount(){
 		Shop.getProducts().add(product);
 		Shop.getProducts().add(product1);
@@ -151,8 +143,101 @@ public class CustomerOrderPanelTest {
 		assertEquals(false, Shop.getProducts().get(0).isFlaggedForOrder());
 	}
 	
+	@Test
+	//populate customer names for the combo box
+	public void customerName_addingCustomerNamesConcatenationToArrayListOFStrings_concatenatedValues(){
+		arrayCustomerNames = new ArrayList<String>();
+		arrayCustomerNames.add("");
+		
+		//concatenate customer names and add them to the combo box
+		for (Customer customer: Shop.getCustomers()){
+			if(customer.isDeleted() == false){
+				String name = customer.getCustomerFName()+" "+customer.getCustomerLName();
+				arrayCustomerNames.add(name);
+			}
+		}		
+		comboSelectCustomer.removeAllItems();
+		for(String x:arrayCustomerNames){
+			comboSelectCustomer.addItem(x);
+		}
+		comboSelectCustomer.revalidate();
+		int count = Shop.getCustomers().size();
+		String firstCustomer = "";
+		String secondCustomer = Shop.getCustomers().get(0).getCustomerFName()+" "+Shop.getCustomers().get(0).getCustomerLName();
+		assertEquals(count+1, comboSelectCustomer.getItemCount());
+		assertEquals(firstCustomer, comboSelectCustomer.getItemAt(0).toString());
+		assertEquals(secondCustomer, comboSelectCustomer.getItemAt(1).toString());
+	}
 	
+	@Test
+	//populate product names for the combo box
+	public void productNames_populateProductNamesComboBoxWithValuesOfAllProducts_atomicProductNames(){
+		arrayProductNames = new ArrayList<String>();
+		int counter = 0;
+		for(Product product:Shop.getProducts()){
+			if(product.isAvailable() && product.isDeleted()==false){
+				boolean found = false;
+				innerFor:for(String s:arrayProductNames){
+					if(product.getName().equalsIgnoreCase(s)){
+						found=true;
+						break innerFor;
+					}
+				}
+				if(found==false){
+					counter++;
+					arrayProductNames.add(product.getName());
+				}
+			}
+		}
+		comboSearchForProducts.removeAllItems();
+		for(String x:arrayProductNames){
+			comboSearchForProducts.addItem(x);
+		}
+		comboSearchForProducts.revalidate();
+		
+		assertEquals(counter, comboSearchForProducts.getItemCount());
+	}
 	
+	@Test
+	public void populateAvailableProductsArayOfObjectsForAllProducts() {
+		int availableCounter = 0;
+		for(Product prod : Shop.getProducts()){
+			if(prod.isAvailable() && prod.isDeleted() == false)
+				availableCounter ++;
+		}
+		availableProductsArray = new Object[availableCounter][8];
+		int counter = 0;
+		//make products array to feed into the table model
+		DecimalFormat df = new DecimalFormat("#.00");
+		for(Product product:Shop.getProducts()){
+			if(product.isAvailable() && product.isDeleted()==false){
+				availableProductsArray[counter][0] = product.getId();
+				availableProductsArray[counter][1] = product.getName();
+				availableProductsArray[counter][2] = product.getSupplier().getSupplierName();
+				availableProductsArray[counter][3] = product.getCategory();
+				availableProductsArray[counter][4] = Double.parseDouble(df.format(product.getMarkupPrice()));
+				availableProductsArray[counter][5] = product.isDiscounted();
+				
+				//update the price of the array if there are orders made for this products that are yet to be sumbitted
+				//if the user adds to order but does not submit it, leaving the pane and coming back will redraw the table with current products
+				//therefore this will make sure that if you have products in the order that is not submitted, will reflect the quantities
+				availableProductsArray[counter][6] = product.getQuantity();
+				//this column will be editable
+				availableProductsArray[counter][7] = 0;
+				counter ++;
+			}
+		}
+		
+		boolean available, deleted;
+		Product product = Shop.getProducts().get(0);
+		available = product.isAvailable();
+		deleted = product.isDeleted();
+		product.setAvailable(true);
+		product.setDeleted(false);
+		assertEquals(product.getId(), (int)availableProductsArray[0][0]);
+		product.setAvailable(available);
+		product.setDeleted(deleted);
+	}
 	
 	
 	

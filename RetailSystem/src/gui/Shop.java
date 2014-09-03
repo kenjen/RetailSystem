@@ -61,7 +61,7 @@ public class Shop {
 	public void populateCustomers() {
 		customers = Json.readCustomersFromFile();
 
-		if (customers == null) {
+		if (customers.size() == 0) {
 			Customer c1 = new Customer("Dave", "Foley", "23 Main Street",
 					"0873727345", "012398045");
 			Customer c2 = new Customer("Jim", "McDonald", "6 High Street",
@@ -146,7 +146,7 @@ public class Shop {
 public void populateSuppliers(){
 		
 		suppliers = Json.readSuppliersFromFile();
-		if(suppliers == null){
+		if(suppliers.size() == 0){
 			System.out.println("reached null loop");
 			
 		Supplier supplier1 = new Supplier("Doyle's", "St.Stephens,Dublin");
@@ -168,7 +168,7 @@ public void populateSuppliers(){
 		
 		staffMembers = Json.readStaffFromFile();
 		
-		if (staffMembers == null) {
+		if (staffMembers.size() == 0) {
 			System.out.println("reached null loop");
 			
 			staffMembers = new ArrayList<Staff>();
@@ -198,7 +198,7 @@ public void populateSuppliers(){
 		products = Json.readProductsFromFile();
 		
 		// if error occured during load, load default products
-		if (products == null) {
+		if (products.size() == 0) {
 			System.out.println("REACHED NULL LOOP");
 			Product p1 = new Product("Pear", "Food", 70, 0.23,
 					suppliers.get(0), true, 80);
@@ -226,7 +226,7 @@ public void populateSuppliers(){
 		
 		stockOrders = Json.readStockOrdersFromFile();
 		
-		if(stockOrders == null){
+		if(stockOrders.size() == 0){
 		SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		ArrayList<ProductToOrder> toOrder = new ArrayList<ProductToOrder>();
 		toOrder.add(new ProductToOrder(Shop.getProducts().get(0), 20));
