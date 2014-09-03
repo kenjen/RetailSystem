@@ -31,12 +31,12 @@ public class Login extends JFrame {
 	private JPanel panel;
 	private Timer timer;
 	private JLabel lblError;
-	private ArrayList<Staff> listOfMemebers = new ArrayList<Staff>();
+	private ArrayList<Staff> listOfMembers = new ArrayList<Staff>();
 	private boolean admin = false;
 	private Staff loggedStaffMember;
 	
 	public Login(ArrayList<Staff> members){
-		listOfMemebers = members;
+		listOfMembers = members;
 	}
 	
 		
@@ -169,7 +169,7 @@ public class Login extends JFrame {
 	
 	public boolean findLoginDetailsFromList(){
 		boolean found = false;
-		for(Staff staff:listOfMemebers){
+		for(Staff staff:listOfMembers){
 			if(staff.getUsername().equalsIgnoreCase(txtUserName.getText().toString()) &&
 					staff.getPassword().equals(new String(passwordField.getPassword())) && 
 					staff.isDeleted() == false){

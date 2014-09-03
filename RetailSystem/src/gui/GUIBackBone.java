@@ -1,7 +1,5 @@
 package gui;
 
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -16,9 +14,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import data.Product;
 import data.Staff;
-import data.Supplier;
 
 public class GUIBackBone extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -105,8 +101,6 @@ public class GUIBackBone extends JFrame {
 				if (tabbedPane.getSelectedIndex() == 8
 						|| (tabbedPane.getSelectedIndex() == 5 && GUIBackBone.loggedStaffMember
 								.isAdmin() == false)) {
-					System.out.println("selected index - "
-							+ tabbedPane.getSelectedIndex());
 					int x = JOptionPane.showConfirmDialog(GUIBackBone.this,
 							"Are you sure you want to log out?", "Log Out?",
 							JOptionPane.YES_NO_OPTION);
@@ -150,7 +144,6 @@ public class GUIBackBone extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (GUIBackBone.loggedStaffMember.isAdmin()) {
-					System.out.println("Admin Click");
 					int x = JOptionPane.showConfirmDialog(GUIBackBone.this,
 							"Are you sure you want to log out?", "Log Out?",
 							JOptionPane.YES_NO_OPTION);
@@ -164,7 +157,6 @@ public class GUIBackBone extends JFrame {
 						tabbedPane.setSelectedIndex(previousTabIndex);
 					}
 				} else {
-					System.out.println("Not Admin Click");
 					int x = JOptionPane.showConfirmDialog(GUIBackBone.this,
 							"Are you sure you want to log out?", "Log Out?",
 							JOptionPane.YES_NO_OPTION);

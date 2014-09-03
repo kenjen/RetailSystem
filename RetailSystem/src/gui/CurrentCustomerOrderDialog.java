@@ -140,7 +140,6 @@ public class CurrentCustomerOrderDialog extends JDialog implements ActionListene
 	                int row = source.rowAtPoint( e.getPoint() );
 	                int column = source.columnAtPoint( e.getPoint() );
 
-	                System.out.println("Selecting row in table");
 	                if (! source.isRowSelected(row)){
 	                    source.changeSelection(row, column, false, false);
 	                }

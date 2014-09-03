@@ -257,7 +257,6 @@ public class CustomerOrderPanel extends JPanel {
 					} catch (InputMismatchException ex) {
 						ex.printStackTrace();
 					} catch (NumberFormatException nfe) {
-						System.out.println("Invalid Input");
 						// do nothing, swallow the exception
 						// not ideal but will do for now
 					}

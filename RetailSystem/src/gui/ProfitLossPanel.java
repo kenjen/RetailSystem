@@ -369,9 +369,6 @@ public class ProfitLossPanel extends JPanel{
 	    DateTime monthBeforeLastMonthDateTime = DateTime.now().minusMonths(2);
 	    
 	    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-	    System.out.println("now = "+now.toString());
-	    System.out.println("last month = "+lastMonthDateTime.toString());
-	    System.out.println("last month-1 = "+monthBeforeLastMonthDateTime.toString());
 	    
 	    int currentYear = now.getYear();
 	    int currentMonth=now.getMonthOfYear();
