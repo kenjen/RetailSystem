@@ -381,13 +381,13 @@ public class ProfitLossPanel extends JPanel{
 	    strMonthBeforeLastMonth = getMonthName(monthBeforeLastMonth);
 	    
 	    DateTime startDateOfThisMonth = now.withDayOfMonth(1).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
-	    DateTime endDateOfThisMonth = now.plusMonths(1).withDayOfMonth(1).minusDays(1).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
+	    DateTime endDateOfThisMonth = now.plusMonths(1).withDayOfMonth(1).minusDays(1).withHourOfDay(23).withMinuteOfHour(59).withSecondOfMinute(59);
 	    DateTime startDateOfLastMonth = now.minusMonths(1).withDayOfMonth(1).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
-	    DateTime endDateOfLastMonth = now.withDayOfMonth(1).minusDays(1).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
+	    DateTime endDateOfLastMonth = now.withDayOfMonth(1).minusDays(1).withHourOfDay(23).withMinuteOfHour(59).withSecondOfMinute(59);
 	    DateTime startDateOfMonthBeforeLastMonth = now.minusMonths(2).withDayOfMonth(1).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
-	    DateTime endDateOfMonthBwforeLastMonth = now.minusMonths(1).withDayOfMonth(1).minusDays(1).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
+	    DateTime endDateOfMonthBwforeLastMonth = now.minusMonths(1).withDayOfMonth(1).minusDays(1).withHourOfDay(23).withMinuteOfHour(59).withSecondOfMinute(59);
 	    DateTime startDateOfThisWeek = now.dayOfWeek().withMinimumValue().withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
-	    DateTime endDateOfThisWeek = now.dayOfWeek().withMaximumValue().withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
+	    DateTime endDateOfThisWeek = now.dayOfWeek().withMaximumValue().withHourOfDay(23).withMinuteOfHour(59).withSecondOfMinute(59);
 	    
 
 	    try {
