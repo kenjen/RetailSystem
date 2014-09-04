@@ -1,5 +1,7 @@
 package gui;
 
+import java.awt.Color;
+import java.awt.Paint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
@@ -22,7 +24,11 @@ import net.sourceforge.jdatepicker.impl.UtilDateModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.joda.time.DateTime;
 
@@ -82,7 +88,6 @@ public class StatisticsPanel extends JPanel {
 		add(btnDisplayProductsFromDatePicker,"wrap, gapy 30");
 		add(chartPanel, "span, split");
 		add(lblTextualStatistic,"aligny top");
-		
 	}//end constructor
 
 	private void createListenersForComponents() {
