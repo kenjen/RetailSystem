@@ -72,7 +72,7 @@ public class StatisticsPanel extends JPanel {
 		createPanelComponents();
 		createListenersForComponents();
 		comboDates.addActionListener(comboDatesListener);
-		comboProducts .addItemListener(new ItemListener() {
+		comboProductsA .addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if(e.getStateChange() == ItemEvent.SELECTED){
@@ -82,7 +82,7 @@ public class StatisticsPanel extends JPanel {
 	
 		});
 		
-		comboProducts1 .addItemListener(new ItemListener() {
+		comboProductsB .addItemListener(new ItemListener() {
 			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -97,6 +97,7 @@ public class StatisticsPanel extends JPanel {
 		comboDates.setSelectedIndex(0);
 		datePickerEnd.getModel().setValue(null);
 		datePickerStart.getModel().setValue(null);
+		
 
 		//add components to panel
 		setLayout(new MigLayout());
