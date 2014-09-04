@@ -506,15 +506,16 @@ public class StockOrderPanel extends JPanel {
 				arrayTableProducts[counter][8] = 0;
 				counter++;
 			}
+			//display table for all products
 		}else if(supplierName == ""){
 			//remove products that have deleted supplier
 			ArrayList<Product> productsArrayList = new ArrayList<Product>();
 			for(Product p : Shop.getProducts()){
-				if(p.getSupplier().isSupplierDeleted() == false){
+				if(p.getSupplier().isSupplierDeleted() == false && p.isDeleted() == false){
 					productsArrayList.add(p);
 				}
 			}
-			//display table for all products
+			
 			arrayTableProducts = new Object[productsArrayList.size()][9];
 			int counter = 0;
 			for (Product products : productsArrayList) {
@@ -533,7 +534,9 @@ public class StockOrderPanel extends JPanel {
 			// display products only for the selected supplier
 			ArrayList<Product> productsArrayList = new ArrayList<Product>();
 			for (Product products : Shop.getProducts()) {
-				if (products.getSupplier().getSupplierName().equalsIgnoreCase(supplierName) && products.getSupplier().isSupplierDeleted() == false) {
+				if (products.getSupplier().getSupplierName().equalsIgnoreCase(supplierName) && 
+						products.getSupplier().isSupplierDeleted() == false && 
+						products.isDeleted() == false) {
 					productsArrayList.add(products);
 				}
 			}
