@@ -975,7 +975,7 @@ public class StockManagementPanel extends JSplitPane {
 				int rowindex = table.getSelectedRow();
 				if (rowindex < 0)
 					return;
-				if (e.isPopupTrigger() && e.getComponent() instanceof JTable) {
+				if (e.isMetaDown() && e.getComponent() instanceof JTable) {
 					menu = new JPopupMenu();
 					int row = table.getSelectedRow();
 					int id = (int) table.getValueAt(row, 0);
