@@ -111,15 +111,16 @@ public class StatisticsPanel extends JPanel {
 
 		//add components to panel
 		setLayout(new MigLayout());
+		add(lblProductsTitle, ",wrap ");
+		add(comboProductsA, "span, split");
+		add(comboProductsB, "wrap");
 		add(lblDatesTitle);
-		add(comboDates,"wrap");
+		add(comboDates,"span, wrap, gapy 20");
 		add(label1);
 		add(datePickerStart, "split 3");
 		add(label2);
 		add(datePickerEnd, "wrap");
-		add(lblProductsTitle, "span,wrap, gapy 20");
-		add(comboProductsA, "span, split");
-		add(comboProductsB, "wrap");
+		
 		add(btnDisplayProductsFromDatePicker,"wrap, gapy 30");
 		add(chartPanel, "span, split");
 		add(lblTextualStatistic,"aligny top");
@@ -135,7 +136,7 @@ public class StatisticsPanel extends JPanel {
 					updateChart();
 					datePickerEnd.getModel().setValue(null);
 					datePickerStart.getModel().setValue(null);
-					
+					lblTextualStatistic.setText("");
 				}
 			}
 		};
@@ -240,23 +241,7 @@ public class StatisticsPanel extends JPanel {
 		String comboDatesItem = (String) comboDates.getSelectedItem().toString();
 		ArrayList<CustomerOrder> cusOrders = new ArrayList<CustomerOrder>();
 
-		if (comboDatesItem.equalsIgnoreCase("This week")) {
-			defaultCategoryDataSet.clear();
-			// set the date and display chart
-			for (CustomerOrder c : Shop.getCustomerOrders()) {
-				if (c.getCreationDate().before(endThisWeek.toDate()) && c.getCreationDate().after(startThisWeek.toDate()))
-					cusOrders.add(c);
-			}
-			generateData(cusOrders);
-		} else if (comboDates.getSelectedItem() == "This month") {
-			defaultCategoryDataSet.clear();
-			// set the date and display chart
-			for (CustomerOrder c : Shop.getCustomerOrders()) {
-				if (c.getCreationDate().before(endThisMonth.toDate())&& c.getCreationDate().after(startThisMonth.toDate()))
-					cusOrders.add(c);
-			}
-			generateData(cusOrders);
-		}else if (comboDates.getSelectedItem() == "Current year") {
+		if (comboDates.getSelectedItem() == "Current year") {
 			defaultCategoryDataSet.clear();
 			// set the date and display chart
 				for(CustomerOrder c: Shop.getCustomerOrders()){
