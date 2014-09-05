@@ -24,6 +24,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -40,18 +42,17 @@ public class StockManagementPanel extends JSplitPane {
 
 	private Object[][] arrayTableProducts;
 	//private JButton btnCreateNewProduct;
-	private JButton btnDeleteProduct;
 	private JButton btnDiscountProduct;
 	private JButton btnDisplayAllProducts;
 	private JButton btnDisplayLowStock;
 	private JButton btnDisplayDeletedStock;
 	private JButton btnDisplayProducts;
 	private JButton btnFlagForOrder;
-	private JButton btnRestoreProduct;
 	private JButton btnSaveAll;
 	private JComboBox<String> comboSelectSupplier;
 	private boolean creatingNewProduct = false;
 	private int currentTableView = 1;
+	private int searchBarLoopCount = 0;  //TODO
 	private JPopupMenu menu;
 	private ActionListener menuListener;
 	private Timer notificationTimer;
@@ -183,23 +184,39 @@ public class StockManagementPanel extends JSplitPane {
 			@Override
 			public void keyTyped(KeyEvent arg0) {
 			}
-
 			@Override
 			public void keyReleased(KeyEvent k) {
-				if (k.getKeyCode() == KeyEvent.VK_ENTER) {// TODO
-					boolean valid = loadProductDetails(
-							textSearchByName.getText(), Shop.getProducts());
+				if (k.getKeyCode() == KeyEvent.VK_ENTER) {
+					boolean valid = loadProductDetails(textSearchByName.getText(), Shop.getProducts());
+					searchBarLoopCount++;
 					if (valid) {
-						textName.requestFocusInWindow();
-						textSearchByName.setText("");
+						//textName.requestFocusInWindow();
+						//textSearchByName.setText("");
 					} else {
-						clearProductDetails();
+						//clearProductDetails();
 					}
+				}else if(k.getKeyCode() == KeyEvent.VK_TAB){
+					textName.requestFocusInWindow();
+					textSearchByName.setText("");
+					searchBarLoopCount = 0;
 				}
 			}
-
 			@Override
 			public void keyPressed(KeyEvent arg0) {
+			}
+		});
+		textSearchByName.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				searchBarLoopCount = 0;
+			}
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				searchBarLoopCount = 0;
+			}
+			@Override
+			public void changedUpdate(DocumentEvent arg0) {
+				searchBarLoopCount = 0;
 			}
 		});
 
@@ -849,19 +866,24 @@ public class StockManagementPanel extends JSplitPane {
 						double inputD = Double.parseDouble(input);
 						String test = String.format("%.2f", inputD);
 						Double percent = Double.parseDouble(test);
+						if(percent>100){
+							percent=100.0;
+						}if(percent<0){
+							percent=0.0;
+						}
 						product.setDiscountedPercentage(percent);
 						if (percent == 0) {
 							product.setDiscounted(false);
 						} else {
 							product.setDiscounted(true);
 						}
-						int tempId = 0;
+						/*int tempId = 0;
 						try {
 							id = Integer.parseInt(textId.getText());
 						} catch (ClassCastException e) {
 							System.out.println("textId contains invaid string");
-						}
-						loadProductDetails(tempId, Shop.getProducts());
+						}*/
+						loadProductDetails(id, Shop.getProducts());
 					} catch (NumberFormatException nfe) {
 						txtNotification.setText("Entered Invalid Number");
 						notificationTimer.stop();
@@ -1119,12 +1141,27 @@ public class StockManagementPanel extends JSplitPane {
 	public boolean loadProductDetails(String name, ArrayList<Product> products) {
 		Product tempProduct = null;
 		boolean productExists = false;
+		int loopCount = 0;
 		for (Product product : products) {
 			if (product.getName().equalsIgnoreCase(name)) {
-				productExists = true;
-				tempProduct = product;
-				productLoaded = true;
-				break;
+				if(searchBarLoopCount==loopCount){
+					productExists = true;
+					tempProduct = product;
+					productLoaded = true;
+					break;
+				}
+				loopCount++;
+			}
+		}if(!productExists){
+			searchBarLoopCount=0;
+			for(Product product : products){
+				if (product.getName().equalsIgnoreCase(name)) {
+					productExists = true;
+					tempProduct = product;
+					productLoaded = true;
+					searchBarLoopCount=0;
+					break;
+				}
 			}
 		}
 		if (!productExists) {
@@ -1133,7 +1170,7 @@ public class StockManagementPanel extends JSplitPane {
 			txtNotification.setVisible(true);
 			notificationTimer.start();
 			return false;
-		} else {
+		}else {
 			textId.setText("" + tempProduct.getId());
 			textName.setText(tempProduct.getName());
 			textCategory.setText(tempProduct.getCategory());

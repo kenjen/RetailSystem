@@ -46,7 +46,7 @@ public class StaffPanel extends JPanel {
 	//loop through the ids in json file till you reach the last value. id = this value
 
 	public StaffPanel() {
-		setLayout(new MigLayout("", "[][][][grow][][grow][][][][][][][][]", "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
+		setLayout(new MigLayout("", "[][][][][grow][][grow][][][][][][][][]", "[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
 		staffMembers = new ArrayList<String>();
 		staffComboBox = new JComboBox(staffMembers.toArray());
 		staffComboBox.addItem("");
@@ -64,52 +64,52 @@ public class StaffPanel extends JPanel {
 		saveDetails();
 
 		JLabel lblName = new JLabel("ADD NEW STAFF HERE: ");
-		add(lblName, "cell 0 0");
-
-		JLabel lblNewLabel = new JLabel("Name");
-		add(lblNewLabel, "cell 0 2,alignx trailing");
-
-		// Get values from each field and add to staffMembers
-		nameField = new JTextField();
-		add(nameField, "cell 3 2,growx");
-		nameField.setColumns(10);
+		add(lblName, "cell 1 0");
+		
+				JLabel lblNewLabel = new JLabel("Name");
+				add(lblNewLabel, "cell 0 2,alignx trailing");
+		
+				// Get values from each field and add to staffMembers
+				nameField = new JTextField();
+				add(nameField, "cell 1 2,growx");
+				nameField.setColumns(10);
 		
 		final JCheckBox chckbxEditDelete = new JCheckBox("Edit/Delete");
-		add(chckbxEditDelete, "cell 4 2");
-
-		JLabel lblSurname = new JLabel("Surname");
-		add(lblSurname, "cell 0 3,alignx trailing");
-
-		surNameField = new JTextField();
-		add(surNameField, "cell 3 3,growx");
-		surNameField.setColumns(10);
+		add(chckbxEditDelete, "cell 2 2");
+		
+				JLabel lblSurname = new JLabel("Surname");
+				add(lblSurname, "cell 0 3,alignx trailing");
+		
+				surNameField = new JTextField();
+				add(surNameField, "cell 1 3,growx");
+				surNameField.setColumns(10);
 		
 		final JCheckBox chckbxAdmin = new JCheckBox("Admin Access");
-		add(chckbxAdmin, "cell 4 3");
-
-		JLabel lblNewLabel_1 = new JLabel("Salary");
-		add(lblNewLabel_1, "cell 0 4,alignx trailing");
-
-		salaryField = new JTextField();
-		add(salaryField, "cell 3 4,growx");
-		salaryField.setColumns(10);
-
-		JLabel lblUsername = new JLabel("UserName");
-		add(lblUsername, "cell 0 5,alignx trailing");
-
-		userNameField = new JTextField();
-		add(userNameField, "cell 3 5,growx");
-		userNameField.setColumns(10);
+		add(chckbxAdmin, "cell 2 3");
+		
+				JLabel lblNewLabel_1 = new JLabel("Salary");
+				add(lblNewLabel_1, "cell 0 4,alignx trailing");
+				
+						salaryField = new JTextField();
+						add(salaryField, "cell 1 4,growx");
+						salaryField.setColumns(10);
+		
+				JLabel lblUsername = new JLabel("UserName");
+				add(lblUsername, "cell 0 5,alignx trailing");
+		
+				userNameField = new JTextField();
+				add(userNameField, "cell 1 5,growx");
+				userNameField.setColumns(10);
 		
 		JLabel lblTextGoesHere = new JLabel("");
-		add(lblTextGoesHere, "cell 5 5");
-
-		JLabel lblPassword = new JLabel("Password");
-		add(lblPassword, "cell 0 6,alignx trailing");
-
-		passwordField = new JPasswordField();
-		add(passwordField, "cell 3 6,growx");
-		passwordField.setColumns(10);
+		add(lblTextGoesHere, "cell 6 5");
+		
+				JLabel lblPassword = new JLabel("Password");
+				add(lblPassword, "cell 0 6,alignx trailing");
+		
+				passwordField = new JPasswordField();
+				add(passwordField, "cell 1 6,growx");
+				passwordField.setColumns(10);
 		
 
 		// Get the Values from each textField and save them to their respective slots in the StaffMenbers Array
@@ -195,11 +195,11 @@ public class StaffPanel extends JPanel {
 				
 			}
 		});
-
-		add(btnAddStaff, "flowx,cell 3 8");
+		
+				add(btnAddStaff, "flowx,cell 1 8");
 
 		JLabel lblMembers = new JLabel("Members");
-		add(lblMembers, "flowx,cell 0 15");
+		add(lblMembers, "flowx,cell 1 15");
 
 		// ComboBox Design with AutoComplete
 
@@ -246,70 +246,70 @@ public class StaffPanel extends JPanel {
 		
 		// add photo to left panel
 		JLabel supplierImage = new JLabel(new ImageIcon("resources/Working_Together.jpg"));
-		add(supplierImage, "flowx,cell 0 23");
-
-		final JButton btnRemove = new JButton("Remove");
-		add(btnRemove, "cell 3 8");
-		btnRemove.setEnabled(false);
-
-		// Remove Selected Item from ComboBox
-		btnRemove.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				Shop.deleteStaff((String) staffComboBox.getSelectedItem());
-				staffComboBox.removeItem(staffComboBox.getSelectedItem());
-				saveDetails();
-				resetTextFields();
-				staffComboBox.setSelectedItem(null);
-			}
-		});
-
-		// Edit Details
-		final JButton btnEditdetails = new JButton("EditDetails");
-		add(btnEditdetails, "cell 3 8");
-		btnEditdetails.setEnabled(false);
-
-		btnEditdetails.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				/*for (Staff s1 : Shop.getStaffMembers()) {
-					if (s1.getUsername().equals(userNameField.getText().trim())) {
-						JOptionPane.showMessageDialog(null,"Error: UserName Already Exists!!!");
-						return;
-					}
-				}*/
-				try {
-					// variables for parsing
-					double salaryD = Double.parseDouble(salaryField.getText().trim());
-
-					// find the selected user by username and get the id.
-					// The id never changes
-					int id = 0;
-					for (Staff staff : Shop.getStaffMembers()) {
-						if (staff.getUsername().equals(
-								staffComboBox.getSelectedItem())) {
-							id = staff.getId();
-						}
-					}
-					
-					Shop.EditDetails(nameField.getText().trim(),
-							surNameField.getText().trim(), salaryD,
-							userNameField.getText().trim(), passwordField.getText().trim(),
-							id, chckbxAdmin.isSelected());
-					
-					saveDetails();
-					DefaultComboBoxModel model = (DefaultComboBoxModel) staffComboBox
-							.getModel();
-					model.removeAllElements();
-					for (Staff staff : Shop.getStaffMembers()) {
-						model.addElement(staff.getUsername());
-					}
-					staffComboBox.repaint();
-				} catch (NumberFormatException er) {
-					JOptionPane.showMessageDialog(null,"All TextFields Must Be Filled And Salary Should Be Of Type Double eg: 10.23 !!!");
-				}
-			}
-		});
+		add(supplierImage, "flowx,cell 1 23");
+		
+				final JButton btnRemove = new JButton("Remove");
+				add(btnRemove, "cell 1 8");
+				btnRemove.setEnabled(false);
+				
+						// Edit Details
+						final JButton btnEditdetails = new JButton("EditDetails");
+						add(btnEditdetails, "cell 1 8");
+						btnEditdetails.setEnabled(false);
+						
+								btnEditdetails.addActionListener(new ActionListener() {
+									public void actionPerformed(ActionEvent e) {
+						
+										/*for (Staff s1 : Shop.getStaffMembers()) {
+											if (s1.getUsername().equals(userNameField.getText().trim())) {
+												JOptionPane.showMessageDialog(null,"Error: UserName Already Exists!!!");
+												return;
+											}
+										}*/
+										try {
+											// variables for parsing
+											double salaryD = Double.parseDouble(salaryField.getText().trim());
+						
+											// find the selected user by username and get the id.
+											// The id never changes
+											int id = 0;
+											for (Staff staff : Shop.getStaffMembers()) {
+												if (staff.getUsername().equals(
+														staffComboBox.getSelectedItem())) {
+													id = staff.getId();
+												}
+											}
+											
+											Shop.EditDetails(nameField.getText().trim(),
+													surNameField.getText().trim(), salaryD,
+													userNameField.getText().trim(), passwordField.getText().trim(),
+													id, chckbxAdmin.isSelected());
+											
+											saveDetails();
+											DefaultComboBoxModel model = (DefaultComboBoxModel) staffComboBox
+													.getModel();
+											model.removeAllElements();
+											for (Staff staff : Shop.getStaffMembers()) {
+												model.addElement(staff.getUsername());
+											}
+											staffComboBox.repaint();
+										} catch (NumberFormatException er) {
+											JOptionPane.showMessageDialog(null,"All TextFields Must Be Filled And Salary Should Be Of Type Double eg: 10.23 !!!");
+										}
+									}
+								});
+				
+						// Remove Selected Item from ComboBox
+						btnRemove.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+				
+								Shop.deleteStaff((String) staffComboBox.getSelectedItem());
+								staffComboBox.removeItem(staffComboBox.getSelectedItem());
+								saveDetails();
+								resetTextFields();
+								staffComboBox.setSelectedItem(null);
+							}
+						});
 		
 		
 		chckbxEditDelete.addItemListener(new ItemListener() {
