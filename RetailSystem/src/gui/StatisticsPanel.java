@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,12 +27,21 @@ import net.sourceforge.jdatepicker.impl.UtilDateModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.labels.CategoryItemLabelGenerator;
+import org.jfree.chart.labels.ItemLabelAnchor;
+import org.jfree.chart.labels.ItemLabelPosition;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.labels.StandardXYItemLabelGenerator;
+import org.jfree.chart.labels.XYItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.ui.TextAnchor;
 import org.joda.time.DateTime;
 
 import data.CustomerOrder;
@@ -123,8 +133,8 @@ public class StatisticsPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				if(comboDates.getSelectedIndex() != 0){
 					updateChart();
-//					datePickerEnd.getModel().setValue(null);
-//					datePickerStart.getModel().setValue(null);
+					datePickerEnd.getModel().setValue(null);
+					datePickerStart.getModel().setValue(null);
 					
 				}
 			}
@@ -183,10 +193,14 @@ public class StatisticsPanel extends JPanel {
 		chart = ChartFactory.createBarChart("Number of products sold", "Products", "Number of products",
 				defaultCategoryDataSet, PlotOrientation.VERTICAL, true, true, false);
 		chartPanel = new ChartPanel(chart);
-		chartPanel.setPreferredSize(new java.awt.Dimension(500, 400));
+		chartPanel.setPreferredSize(new java.awt.Dimension(500, 430));
+		// set dimension for bars
 		CategoryPlot categoryPlot = chart.getCategoryPlot();
 		BarRenderer br = (BarRenderer) categoryPlot.getRenderer();
 		br.setMaximumBarWidth(.15);
+		// display values above bars
+		br.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+		br.setBaseItemLabelsVisible(true);
 	}
 
 	private void initializeDateVariablesForChartData() {
@@ -256,10 +270,8 @@ public class StatisticsPanel extends JPanel {
 					}
 				}
 				generateDataD(defaultCategoryDataSet, cusOrders);
-				
 			}
 
-			//TODO
 			else if((comboDates.getSelectedItem()=="Last 2 months")){
 				defaultCategoryDataSet.clear();
 				// set the date and display chart
@@ -270,24 +282,7 @@ public class StatisticsPanel extends JPanel {
 				defaultCategoryDataSet.clear();
 				generateWeeklyData(defaultCategoryDataSet);
 			}	
-			else if (comboDates.getSelectedItem() == "Last month") {
-			defaultCategoryDataSet.clear();
-			// set the date and display chart
-			for (CustomerOrder c : Shop.getCustomerOrders()) {
-				if (c.getCreationDate().before(endLastMonth.toDate()) && c.getCreationDate().after(startLastMonth.toDate())) 
-					cusOrders.add(c);
-			}
-			generateData(cusOrders);
-		} else if (comboDates.getSelectedItem() == "Last week") {
-			defaultCategoryDataSet.clear();
-			// totalValues.clear();
-			// set the date and display chart
-			for (CustomerOrder c : Shop.getCustomerOrders()) {
-				if (c.getCreationDate().before(endLastWeek.toDate()) && c.getCreationDate().after(startLastWeek.toDate()))
-					cusOrders.add(c);
-			}
-			generateData(cusOrders);
-		}
+			
 	}//end updateChart()
 
 	/**
