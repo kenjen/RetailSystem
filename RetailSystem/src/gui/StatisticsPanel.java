@@ -1,12 +1,9 @@
 package gui;
 
-import java.awt.Color;
-import java.awt.Paint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,21 +24,11 @@ import net.sourceforge.jdatepicker.impl.UtilDateModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.labels.CategoryItemLabelGenerator;
-import org.jfree.chart.labels.ItemLabelAnchor;
-import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
-import org.jfree.chart.labels.StandardXYItemLabelGenerator;
-import org.jfree.chart.labels.XYItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.ui.TextAnchor;
 import org.joda.time.DateTime;
 
 import data.CustomerOrder;
@@ -238,7 +225,7 @@ public class StatisticsPanel extends JPanel {
 	 * the selected period. Note: The chart data is cleared even if no products have been found.
 	 */
 	private void updateChart() {
-		String comboDatesItem = (String) comboDates.getSelectedItem().toString();
+	//	String comboDatesItem = (String) comboDates.getSelectedItem().toString();
 		ArrayList<CustomerOrder> cusOrders = new ArrayList<CustomerOrder>();
 
 		if (comboDates.getSelectedItem() == "Current year") {
