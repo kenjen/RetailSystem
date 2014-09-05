@@ -9,7 +9,6 @@ import javax.swing.JTextField;
 import org.junit.Before;
 import org.junit.Test;
 
-import data.Product;
 import data.Supplier;
 
 public class SupplierPanelTest {
@@ -45,7 +44,7 @@ public class SupplierPanelTest {
 		s.setSupplierId(103);
 		suppliers.add(s);
 		String supplierList = "Id: 103, name: test2, address: test2";
-		int sArraySize = suppliers.size();
+		suppliers.size();
 		supplierPanel.deleteSupplier(supplierList, 103, s);
 		assertTrue(true);
 		if(s.isSupplierDeleted()== false){
