@@ -285,7 +285,7 @@ public class SupplierPanel extends JSplitPane{
 		if((nameField.getText().isEmpty()==false)&&(addressField.getText().isEmpty()==false)){
 			for(Supplier supplier:Shop.getSuppliers()){
 				// check if another supplier with the same details exists
-				if((nameField.getText().equalsIgnoreCase(supplier.getSupplierName()))&& (addressField.getText().equalsIgnoreCase(supplier.getSupplierAddress()))){
+				if((nameField.getText().equalsIgnoreCase(supplier.getSupplierName()))){
 					isValid = false;
 						if(supplier.isSupplierDeleted()==false){
 							showSuppliers();
