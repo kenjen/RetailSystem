@@ -139,6 +139,12 @@ public class StaffPanel extends JPanel {
 						&& salaryField.getText().trim().length() > 0
 						&& userNameField.getText().trim().length() > 0
 						&& passwordField.getText().trim().length() > 0) {
+					
+					//Regex
+					if(nameField.getText().matches("[a-zA-Z\\s']*") 
+							&& surNameField.getText().matches("[a-zA-Z\\s']*")
+							&& userNameField.getText().matches("[a-zA-Z\\s']*")
+							&& passwordField.getText().matches("[a-zA-Z\\s']*"+"[0-9\\s\\-\\+()]*")){
 
 					// if text entered to Salary field is not type double, make error message
 					try {
@@ -154,12 +160,6 @@ public class StaffPanel extends JPanel {
 						if(chckbxAdmin.isSelected()){
 							s.setAdmin(true);	
 					}
-					
-						
-				
-						
-
-
 						// Loop through Staff members match username entered to all
 						// Usernames in the list. dont allow to add new staff if their username matches any in the list
 
@@ -179,18 +179,28 @@ public class StaffPanel extends JPanel {
 								//Add null to ComboBox
 								//staffComboBox.addItem("");
 							}
+							
 						}
+					
 
 						resetTextFields();
 						saveDetails();
-					} catch (NumberFormatException e) {
+					
+					}
+					catch (NumberFormatException e) {
 						JOptionPane
 								.showMessageDialog(null,
 										"Salary Should Be Of Type Double eg: 10.23 !!!");
 					}
-				} else {
+				}
+					else{
+						JOptionPane.showMessageDialog(null,
+								"Error: only type letters in the Name, Surname, UserName and Password Fields");
+					}
+			}
+				else {
 					JOptionPane.showMessageDialog(null,
-							"You must fill in all details");
+							"Error: You must fill in all details");
 				}
 				
 			}
@@ -252,7 +262,9 @@ public class StaffPanel extends JPanel {
 				add(btnRemove, "cell 1 8");
 				btnRemove.setEnabled(false);
 				
+						//
 						// Edit Details
+						//
 						final JButton btnEditdetails = new JButton("EditDetails");
 						add(btnEditdetails, "cell 1 8");
 						btnEditdetails.setEnabled(false);
@@ -266,6 +278,13 @@ public class StaffPanel extends JPanel {
 												return;
 											}
 										}*/
+										
+										//Regex
+										if(nameField.getText().matches("[a-zA-Z\\s']*") 
+												&& surNameField.getText().matches("[a-zA-Z\\s']*")
+												&& userNameField.getText().matches("[a-zA-Z\\s']*")
+												&& passwordField.getText().matches("[a-zA-Z\\s']*"+"[0-9\\s\\-\\+()]*")){
+										
 										try {
 											// variables for parsing
 											double salaryD = Double.parseDouble(salaryField.getText().trim());
@@ -297,7 +316,12 @@ public class StaffPanel extends JPanel {
 											JOptionPane.showMessageDialog(null,"All TextFields Must Be Filled And Salary Should Be Of Type Double eg: 10.23 !!!");
 										}
 									}
-								});
+										else{
+											JOptionPane.showMessageDialog(null,
+													"Error: only type letters in the Name, Surname, UserName and Password Fields");
+										}
+								}
+							});
 				
 						// Remove Selected Item from ComboBox
 						btnRemove.addActionListener(new ActionListener() {
