@@ -1,6 +1,7 @@
-package gui;
+package test;
 
 import static org.junit.Assert.*;
+import gui.SupplierPanel;
 
 import java.util.ArrayList;
 
@@ -51,24 +52,5 @@ public class SupplierPanelTest {
 			fail("supplier wasn't set to deleted");
 		}
 	}
-
-	@Test
-	public void search() {
-		String testString = "message";
-		JTextField input = new JTextField("input");
-		assertNotNull(input); 
-		input.setText(testString);
-	    assertEquals(testString , input.getText());
-	    fail("No text input");
-	  }
 	
-	@Test
-	public void testEdit() {
-		supplierPanel.edit();
-		assertEquals("test1", suppliers.get(0).getSupplierName());
-		assertEquals("test1", suppliers.get(0).getSupplierAddress());
-		if(((!suppliers.get(0).getSupplierName().equals(test1))&&(!suppliers.get(0).getSupplierAddress().equals(test1)))){
-			fail("The supplier name and address wasn't set");
-		}
-	}
 }
