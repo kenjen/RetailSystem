@@ -107,7 +107,7 @@ public class StatisticsPanel extends JPanel {
 		add(datePickerStart, "split 3");
 		add(label2);
 		add(datePickerEnd, "wrap");
-		add(btnDisplayProductsFromDatePicker,"wrap, gapy 30");
+		add(btnDisplayProductsFromDatePicker,"wrap, gapx 170, span");
 		add(chartPanel, "span, split");
 		add(lblTextualStatistic,"aligny top");
 	}//end constructor
