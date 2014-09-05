@@ -1,6 +1,6 @@
 {"supplierId":101,"supplierName":"Doyle","supplierAddress":"St.Stephens,Dublin","supplierDeleted":false}
 {"supplierId":103,"supplierName":"Jane LTD","supplierAddress":"Kileen, Cork","supplierDeleted":false}
 {"supplierId":104,"supplierName":"G&M","supplierAddress":"Hunter's Lane, Navan","supplierDeleted":false}
-{"supplierId":105,"supplierName":"Dov","supplierAddress":"Swords","supplierDeleted":false}
-{"supplierId":106,"supplierName":"Dov","supplierAddress":"Swords","supplierDeleted":true}
-{"supplierId":107,"supplierName":"dov","supplierAddress":"swords","supplierDeleted":true}
+{"supplierId":105,"supplierName":"Alan","supplierAddress":"Ashbourne, Meath","supplierDeleted":false}
+{"supplierId":106,"supplierName":"BBB","supplierAddress":"Tallaght","supplierDeleted":true}
+{"supplierId":107,"supplierName":"Dunnes Stores","supplierAddress":"Swords","supplierDeleted":true}

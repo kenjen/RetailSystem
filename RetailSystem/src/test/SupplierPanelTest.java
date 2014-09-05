@@ -52,5 +52,4 @@ public class SupplierPanelTest {
 			fail("supplier wasn't set to deleted");
 		}
 	}
-	
 }
