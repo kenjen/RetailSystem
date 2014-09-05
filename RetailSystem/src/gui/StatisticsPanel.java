@@ -107,7 +107,6 @@ public class StatisticsPanel extends JPanel {
 		add(datePickerStart, "split 3");
 		add(label2);
 		add(datePickerEnd, "wrap");
-		
 		add(btnDisplayProductsFromDatePicker,"wrap, gapy 30");
 		add(chartPanel, "span, split");
 		add(lblTextualStatistic,"aligny top");
@@ -536,7 +535,7 @@ public class StatisticsPanel extends JPanel {
 					for(ProductToOrder pO : cusOrdersBeforeLast.get(i).getProducts()){
 						if(pO.getId() == selectedProduct1ID){
 							value5 += pO.getAmount();
-							dataset.setValue(value5, "Second last week", selectedProduct1);		
+							dataset.setValue(value5, "Two weeks ago", selectedProduct1);		
 						}
 					}
 				}
