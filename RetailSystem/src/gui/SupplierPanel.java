@@ -429,13 +429,24 @@ public class SupplierPanel extends JSplitPane{
 
 					// get the edited details from the GUI textfield
 					if(id.equals(ids)){
-						// replace old details with new details using index of selected supplier
-						supplier.setSupplierName(nameField.getText());
-						supplier.setSupplierAddress(addressField.getText());
+						if(supplier.isSupplierDeleted()==false){
+							// replace old details with new details using index of selected supplier
+							supplier.setSupplierName(nameField.getText());
+							supplier.setSupplierAddress(addressField.getText());
 
-						Object newElement = "Id: "+ ids +", name: " + nameField.getText()+
-							", address: "+ addressField.getText();
-						listModel.setElementAt(newElement, index);
+							Object newElement = "Id: "+ ids +", name: " + nameField.getText()+
+								", address: "+ addressField.getText();
+							listModel.setElementAt(newElement, index);
+						}
+						else if(supplier.isSupplierDeleted()==true){
+							// replace old details with new details using index of selected supplier
+							supplier.setSupplierName(nameField.getText());
+							supplier.setSupplierAddress(addressField.getText());
+
+							Object newElement = "Id: "+ ids +", name: " + nameField.getText()+
+								", address: "+ addressField.getText()+"- SUPPLIER IS DELETED.";
+							listModel.setElementAt(newElement, index);
+						}
 
 						nameField.setText("");
 						addressField.setText("");
