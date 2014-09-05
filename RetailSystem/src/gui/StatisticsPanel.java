@@ -501,7 +501,7 @@ public class StatisticsPanel extends JPanel {
 					if(pO.getId() == selectedProductID){
 						value2 += pO.getAmount();
 						// upload data to chart
-						dataset.setValue(value2, "Second last week", selectedProduct);
+						dataset.setValue(value2, "Two weeks ago", selectedProduct);
 					}
 				}
 			}
