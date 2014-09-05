@@ -221,44 +221,40 @@ public class CustomerPanel extends JPanel {
 
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if(comboSelectCustomer.getSelectedItem() != null){
-				String surname = comboSelectCustomer.getSelectedItem()
-						.toString();
+				if (comboSelectCustomer.getSelectedItem() != null) {
+					String surname = comboSelectCustomer.getSelectedItem()
+							.toString();
 
-				for (Customer customer : Shop.getCustomers()) {
-					String fullname = customer.getCustomerFName() + " "
-							+ customer.getCustomerLName();
-					if (fullname.equalsIgnoreCase(surname)) {
+					for (Customer customer : Shop.getCustomers()) {
+						String fullname = customer.getCustomerFName() + " "
+								+ customer.getCustomerLName();
+						if (fullname.equalsIgnoreCase(surname)) {
 
-						comboCustomerID.setSelectedItem(customer
-								.getCustomerID());
+							comboCustomerID.setSelectedItem(customer
+									.getCustomerID());
 
-					} else {
-						System.out.println("ERROR");
+						} else {
+							System.out.println("ERROR");
+						}
 					}
 				}
 			}
-			}
-				/*
-				//if (e.getStateChange() == ItemEvent.SELECTED) {
-					Customer customer = getCustomerbyID(e.getItem().toString());
-					if (customer != null) {
-						selectedCustomer = customer;
-						comboCustomerID.setSelectedItem(selectedCustomer
-								.getCustomerID());
-						
-					}
+			/*
+			 * //if (e.getStateChange() == ItemEvent.SELECTED) { Customer
+			 * customer = getCustomerbyID(e.getItem().toString()); if (customer
+			 * != null) { selectedCustomer = customer;
+			 * comboCustomerID.setSelectedItem(selectedCustomer
+			 * .getCustomerID());
+			 * 
+			 * }
+			 * 
+			 * }
+			 */
 
-				}*/
-				
+		});
 
-			});
+		// });
 
-			
-
-		//});
-		
-		
 		/*
 		 * btnSearch = new JButton("Search"); add(btnSearch, "cell 1 9");
 		 * btnSearch.addActionListener(new ActionListener() { public void
@@ -371,29 +367,36 @@ public class CustomerPanel extends JPanel {
 		if (fNameInput.getText().trim().length() > 0
 				&& lNameInput.getText().trim().length() > 0
 				&& addressInput.getText().trim().length() > 0
-				&& (mobileInput.getText().trim().length() > 0 || homeInput.getText().trim()
-						.length() > 0)) {
-			String fname = fNameInput.getText().trim();
-			String lname = lNameInput.getText().trim();
-			String address = addressInput.getText().trim();
-			String mobile = mobileInput.getText().trim();
-			String home = homeInput.getText().trim();
+				&& (mobileInput.getText().trim().length() > 0 || homeInput
+						.getText().trim().length() > 0)) {
+			if ((mobileInput.getText().trim().length() > 0 && mobileInput
+					.getText().trim().matches("[0-9\\s\\-\\+()]*"))
+					|| (homeInput.getText().trim().length() > 0 && homeInput
+							.getText().trim().matches("[0-9\\s\\-\\+()]*"))) {
+				String fname = fNameInput.getText().trim();
+				String lname = lNameInput.getText().trim();
+				String address = addressInput.getText().trim();
+				String mobile = mobileInput.getText().trim();
+				String home = homeInput.getText().trim();
 
-			Customer c1 = new Customer(fname, lname, address, mobile, home);
-			Shop.getCustomers().add(c1);
-			JOptionPane.showMessageDialog(
-					null,
-					"You have added " + c1.getCustomerFName() + " "
-							+ c1.getCustomerLName());
-			comboCustomerID.addItem(c1.getCustomerID());
+				Customer c1 = new Customer(fname, lname, address, mobile, home);
+				Shop.getCustomers().add(c1);
+				JOptionPane.showMessageDialog(
+						null,
+						"You have added " + c1.getCustomerFName() + " "
+								+ c1.getCustomerLName());
+				comboCustomerID.addItem(c1.getCustomerID());
 
-			// refreshCombo();
-			fNameInput.setText("");
-			lNameInput.setText("");
-			addressInput.setText("");
-			mobileInput.setText("");
-			homeInput.setText("");
-
+				// refreshCombo();
+				fNameInput.setText("");
+				lNameInput.setText("");
+				addressInput.setText("");
+				mobileInput.setText("");
+				homeInput.setText("");
+			} else {
+				JOptionPane.showMessageDialog(null,
+						"Phone number must be numeric");
+			}
 		} else {
 			JOptionPane.showMessageDialog(null, "Please input into all fields");
 		}
@@ -405,12 +408,16 @@ public class CustomerPanel extends JPanel {
 		if (fNameInput.getText().trim().length() > 0
 				&& lNameInput.getText().trim().length() > 0
 				&& addressInput.getText().trim().length() > 0
-				&& (mobileInput.getText().trim().length() > 0 || homeInput.getText().trim()
-						.length() > 0)) {
+				&& (mobileInput.getText().trim().length() > 0 || homeInput
+						.getText().trim().length() > 0)) {
+			if ((mobileInput.getText().trim().length() > 0 && mobileInput
+					.getText().trim().matches("[0-9\\s\\-\\+()]*"))
+					|| (homeInput.getText().trim().length() > 0 && homeInput
+							.getText().trim().matches("[0-9\\s\\-\\+()]*"))) {
 			Shop.editCustomer((Integer) comboCustomerID.getSelectedItem(),
 					fNameInput.getText().trim(), lNameInput.getText().trim(),
-					addressInput.getText().trim(), mobileInput.getText().trim(),
-					homeInput.getText().trim());
+					addressInput.getText().trim(),
+					mobileInput.getText().trim(), homeInput.getText().trim());
 
 			// fNameInput.setText("");
 			// lNameInput.setText("");
@@ -418,7 +425,12 @@ public class CustomerPanel extends JPanel {
 			// mobileInput.setText("");
 			// homeInput.setText("");
 			JOptionPane.showMessageDialog(null, "You have editted customer "
-					+ fNameInput.getText().trim() + " " + lNameInput.getText().trim());
+					+ fNameInput.getText().trim() + " "
+					+ lNameInput.getText().trim());}
+			else{
+				JOptionPane.showMessageDialog(null,
+						"Phone number must be numeric");
+			}
 			// comboCustomerID.setSelectedIndex(0);
 		} else {
 			JOptionPane.showMessageDialog(null,
