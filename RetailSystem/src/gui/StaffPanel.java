@@ -249,7 +249,7 @@ public class StaffPanel extends JPanel {
 		add(supplierImage, "flowx,cell 0 23");
 
 		final JButton btnRemove = new JButton("Remove");
-		add(btnRemove, "cell 6 30");
+		add(btnRemove, "cell 3 8");
 		btnRemove.setEnabled(false);
 
 		// Remove Selected Item from ComboBox
@@ -266,7 +266,7 @@ public class StaffPanel extends JPanel {
 
 		// Edit Details
 		final JButton btnEditdetails = new JButton("EditDetails");
-		add(btnEditdetails, "cell 7 30");
+		add(btnEditdetails, "cell 3 8");
 		btnEditdetails.setEnabled(false);
 
 		btnEditdetails.addActionListener(new ActionListener() {
