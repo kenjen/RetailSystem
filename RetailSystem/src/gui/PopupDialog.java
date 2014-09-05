@@ -53,10 +53,12 @@ public class PopupDialog extends JDialog implements ActionListener {
 		contentPanePanel.add(btnOk,"pushx, alignx center");
 		setContentPane(scrollPane);
 		
+		setTitle("Order");
+		setModal(true);
+		toFront();
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
-		
 	}
 	
 	public PopupDialog(ProfitLossPanel panel){
@@ -79,6 +81,9 @@ public class PopupDialog extends JDialog implements ActionListener {
 		contentPanePanel.add(btnCancel);
 		setContentPane(contentPanePanel);
 		
+		setTitle("New expense");
+		setModal(true);
+		toFront();
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);

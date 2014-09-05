@@ -36,7 +36,6 @@ public class CurrentStockOrderDialog extends JDialog implements ActionListener  
 	
 	
 	public CurrentStockOrderDialog() {
-		
 	}
 	
 	public CurrentStockOrderDialog(ArrayList<Object[]> list) {
@@ -59,6 +58,9 @@ public class CurrentStockOrderDialog extends JDialog implements ActionListener  
 
 		setLayout(new GridBagLayout());
 		setContentPane(contentPanePanel);
+		setTitle("Current Order");
+		setModal(true);
+		toFront();
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);

@@ -34,7 +34,7 @@ public class CurrentCustomerOrderDialog extends JDialog implements ActionListene
 	int choice;
 	
 	public CurrentCustomerOrderDialog() {
-		setModal(true);
+		
 	}
 	
 	public void confirmOrder(ArrayList<Object[]> list){
@@ -55,6 +55,9 @@ public class CurrentCustomerOrderDialog extends JDialog implements ActionListene
 
 		setLayout(new GridBagLayout());
 		setContentPane(contentPanePanel);
+		setModal(true);
+		setTitle("Order confirmation");
+		toFront();
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
@@ -78,6 +81,9 @@ public class CurrentCustomerOrderDialog extends JDialog implements ActionListene
 
 		setLayout(new GridBagLayout());
 		setContentPane(contentPanePanel);
+		setModal(true);
+		toFront();
+		setTitle("Current order");
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
@@ -135,7 +141,7 @@ public class CurrentCustomerOrderDialog extends JDialog implements ActionListene
 		table.addMouseListener(new MouseAdapter(){
 			//selects the row at right click
 			public void mousePressed(MouseEvent e){
-				if(e.isPopupTrigger()){
+				if(e.isMetaDown()){
 					JTable source = (JTable)e.getSource();
 	                int row = source.rowAtPoint( e.getPoint() );
 	                int column = source.columnAtPoint( e.getPoint() );

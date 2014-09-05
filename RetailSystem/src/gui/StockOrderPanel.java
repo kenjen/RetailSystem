@@ -29,6 +29,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -697,6 +698,15 @@ public class StockOrderPanel extends JPanel {
 			AbstractTableModel tableModel = (AbstractTableModel) tableProducts
 					.getModel();
 			tableModel.fireTableDataChanged();
+			
+			for(int i=0; i<arrayTableProducts.length; i++){
+				if((int) arrayTableProducts[i][8] < 0){
+					displayErrorMessage("You cannot add negative amount!", Color.RED);
+					tableProducts.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+					tableProducts.addRowSelectionInterval(i, i);
+					return;
+				}
+			}
 
 			boolean found = false;
 			tableProducts.editCellAt(0, 0);

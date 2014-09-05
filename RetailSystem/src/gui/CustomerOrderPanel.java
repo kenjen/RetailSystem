@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Dialog.ModalityType;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +28,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -817,6 +819,14 @@ public class CustomerOrderPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			tableAvailableProducts.editCellAt(0, 0);
+			for(int i=0; i<availableProductsArray.length; i++){
+				if((int) availableProductsArray[i][7] < 0){
+					displayErrorMessage("You cannot add negative amount!", Color.RED);
+					tableAvailableProducts.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+					tableAvailableProducts.addRowSelectionInterval(i, i);
+					return;
+				}
+			}
 			boolean found = false;
 			for (int i = 0; i < availableProductsArray.length; i++) {
 				if ((int) availableProductsArray[i][7] > 0
@@ -990,6 +1000,11 @@ public class CustomerOrderPanel extends JPanel {
 
 					// update previousCustomerOrderTable with the new order.
 					displayOrderTable(false, 0);
+					
+					// repopulate product search combo box in case some of the
+					// products are no longer available
+					populateProductNamesComboBox();
+					comboSearchForProducts.getEditor().setItem("");
 
 					// update products table just in case a product has been
 					// sold out
@@ -1013,10 +1028,6 @@ public class CustomerOrderPanel extends JPanel {
 						displayErrorMessage("Could not persist changes!",
 								Color.red);
 					}
-
-					// repopulate product search combo box in case some of the
-					// products are no longer available
-					populateProductNamesComboBox();
 
 				}// end else
 			}
