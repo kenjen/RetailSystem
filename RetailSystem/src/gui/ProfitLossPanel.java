@@ -25,10 +25,12 @@ import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -122,7 +124,7 @@ public class ProfitLossPanel extends JPanel{
 	    CategoryPlot plot = thisChart.getCategoryPlot();
 	    plot.setBackgroundPaint(new Color(0xEE, 0xEE, 0xFF));
 	    plot.setDomainAxisLocation(AxisLocation.BOTTOM_OR_RIGHT);
-
+	    
 	    CategoryAxis domainAxis = plot.getDomainAxis();
 	    domainAxis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
 	    ValueAxis axis2 = new NumberAxis("Secondary");
@@ -132,7 +134,10 @@ public class ProfitLossPanel extends JPanel{
 	    renderer2.setToolTipGenerator(new StandardCategoryToolTipGenerator());
 	    plot.setRenderer(1, renderer2);
 	    plot.setDatasetRenderingOrder(DatasetRenderingOrder.REVERSE);
-	    
+	    BarRenderer br = (BarRenderer) plot.getRenderer();
+	    br.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+		br.setBaseItemLabelsVisible(true);
+		
 	    // add the chart to a panel...
 	    chartPanel = new ChartPanel(thisChart);
 	}
