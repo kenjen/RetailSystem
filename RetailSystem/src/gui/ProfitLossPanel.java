@@ -86,7 +86,8 @@ public class ProfitLossPanel extends JPanel{
 		
 		// create and add the chart to a panel...
 	    createChart();
-	    add(chartPanel, "alignx right, pushx");
+	    add(chartPanel, "grow, push");
+	    chartPanel.setPreferredSize(new java.awt.Dimension(500, 800));
 
 	    // add the written finance report
 	    add(lblWrittenReport,"aligny top, alignx left, pushx ,wrap");
@@ -98,7 +99,7 @@ public class ProfitLossPanel extends JPanel{
 	    lblExpenses.setForeground(Shop.TITLE_COLOR);
 	    add(lblExpenses,"split 2");
 	    add(btnAddExpense, "gapx 50, wrap");
-	    add(scrollPane,"span, grow, push");
+	    add(scrollPane,"pushx, spanx, growx");
 	    drawTable();
 	    btnAddExpense.addActionListener(new AddExpenseHandler());
 	    

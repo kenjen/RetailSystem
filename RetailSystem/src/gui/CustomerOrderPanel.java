@@ -85,10 +85,9 @@ public class CustomerOrderPanel extends JPanel {
 		comboSelectCustomer = new JComboBox<String>();
 		populateCustomerNames();
 		comboSelectCustomer.setEditable(true);
-		AutoCompleteDecorator.decorate(comboSelectCustomer); // allow for
-																// auto-completion
-		comboSelectCustomer.getEditor().getEditorComponent()
-				.addKeyListener(new ComboBoxKeyListener());
+		AutoCompleteDecorator.decorate(comboSelectCustomer); // allow for auto-completion
+		
+		comboSelectCustomer.getEditor().getEditorComponent().addKeyListener(new ComboBoxKeyListener());
 		comboSelectCustomer.addItemListener(new ComboBoxItemListener());
 
 		lblActiveCustomerText = new JLabel("Active Customer: ");
@@ -99,14 +98,12 @@ public class CustomerOrderPanel extends JPanel {
 		populateProductNamesComboBox();
 		comboSearchForProducts.setEditable(true);
 		AutoCompleteDecorator.decorate(comboSearchForProducts);
-		comboSearchForProducts.getEditor().getEditorComponent()
-				.addKeyListener(new ComboBoxKeyListener());
+		comboSearchForProducts.getEditor().getEditorComponent().addKeyListener(new ComboBoxKeyListener());
 		comboSearchForProducts.addItemListener(new ComboBoxItemListener());
 
 		btnAllProducts.addActionListener(new ButtonActionListener());
 		btnOrder.addActionListener(new ButtonOrderHandler());
-		btnDisplayAllOrders
-				.addActionListener(new ButtonDisplayOrdersForAllCustomersHandler());
+		btnDisplayAllOrders.addActionListener(new ButtonDisplayOrdersForAllCustomersHandler());
 		btnAddToOrder.addActionListener(new BtnAddToOrderActionListener());
 		txtInvoiceIDSearch.addKeyListener(new TxtInvoiceIDSearchKeyListener());
 
@@ -151,8 +148,7 @@ public class CustomerOrderPanel extends JPanel {
 		add(txtInvoiceIDSearch);
 		add(btnDisplayAllOrders, "wrap");
 		add(scrollPaneForOrdersTable, "span 5 3, grow, push");
-		add(new JLabel(new ImageIcon("resources/Shopping.png")),
-				"aligny bottom");
+		add(new JLabel(new ImageIcon("resources/Shopping.png")),"aligny bottom");
 
 		lblPreviousCustomerOrder.setFont(Shop.TITLE_FONT);
 		lblPreviousCustomerOrder.setForeground(Shop.TITLE_COLOR);
@@ -178,8 +174,7 @@ public class CustomerOrderPanel extends JPanel {
 		// concatenate customer names and add them to the combo box
 		for (Customer customer : Shop.getCustomers()) {
 			if (customer.isDeleted() == false) {
-				String name = customer.getCustomerFName() + " "
-						+ customer.getCustomerLName();
+				String name = customer.getCustomerFName() + " "+ customer.getCustomerLName();
 				arrayCustomerNames.add(name);
 			}
 		}
@@ -262,8 +257,7 @@ public class CustomerOrderPanel extends JPanel {
 			}
 
 		});
-		tableAvailableProducts.getColumnModel().getSelectionModel()
-				.addListSelectionListener(new ListSelectionListener() {
+		tableAvailableProducts.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 					@Override
 					public void valueChanged(ListSelectionEvent e) {
@@ -294,18 +288,15 @@ public class CustomerOrderPanel extends JPanel {
 			if (product.isAvailable() && product.isDeleted() == false) {
 				availableProductsArray[counter][0] = product.getId();
 				availableProductsArray[counter][1] = product.getName();
-				availableProductsArray[counter][2] = product.getSupplier()
-						.getSupplierName();
+				availableProductsArray[counter][2] = product.getSupplier().getSupplierName();
 				availableProductsArray[counter][3] = product.getCategory();
-				availableProductsArray[counter][4] = Double.parseDouble(df
-						.format(product.getMarkupPrice()));
+				availableProductsArray[counter][4] = Double.parseDouble(df.format(product.getMarkupPrice()));
 				availableProductsArray[counter][5] = product.isDiscounted();
 
 				// update the price of the array if there are orders made for
 				// this products that are yet to be sumbitted
 				// if the user adds to order but does not submit it, leaving the
-				// pane and coming back will redraw the table with current
-				// products
+				// pane and coming back will redraw the table with current products
 				// therefore this will make sure that if you have products in
 				// the order that is not submitted, will reflect the quantities
 				availableProductsArray[counter][6] = product.getQuantity();
@@ -334,11 +325,9 @@ public class CustomerOrderPanel extends JPanel {
 					&& product.getName().equalsIgnoreCase(productName)) {
 				availableProductsArray[counter][0] = product.getId();
 				availableProductsArray[counter][1] = product.getName();
-				availableProductsArray[counter][2] = product.getSupplier()
-						.getSupplierName();
+				availableProductsArray[counter][2] = product.getSupplier().getSupplierName();
 				availableProductsArray[counter][3] = product.getCategory();
-				availableProductsArray[counter][4] = Double.parseDouble(df
-						.format(product.getMarkupPrice()));
+				availableProductsArray[counter][4] = Double.parseDouble(df.format(product.getMarkupPrice()));
 				availableProductsArray[counter][5] = product.isDiscounted();
 				availableProductsArray[counter][6] = product.getQuantity();
 				availableProductsArray[counter][7] = 0; // amount
@@ -352,8 +341,7 @@ public class CustomerOrderPanel extends JPanel {
 	// ---------------------------//
 	public void displayOrderTable(boolean forCustomerOnly, int stockOrderID) {
 		// display the order in the previousOrderTable
-		String columnNames1[] = { "Id", "Customer", "Staff", "Date",
-				"Total Net", "Total Gross", "Completed?" };
+		String columnNames1[] = { "Id", "Customer", "Staff", "Date","Total Net", "Total Gross", "Completed?" };
 		ArrayList<CustomerOrder> currentCustomerOrders = Shop.getCustomerOrders();
 
 		// if forCustomerOnly = false then display all orders in the
@@ -365,8 +353,7 @@ public class CustomerOrderPanel extends JPanel {
 		} else {
 			populateArrayordersOfObjectsForSelectedCustomer(currentCustomerOrders, columnNames1);
 		}
-			tableModelForOrdersTable = new UneditableTableModel(arrayOrders,
-					columnNames1);
+			tableModelForOrdersTable = new UneditableTableModel(arrayOrders,columnNames1);
 			tableOrders = new JTable(tableModelForOrdersTable);
 			tableOrders.setAutoCreateRowSorter(true);
 			// Handle double clicking on table to display details of the
@@ -463,8 +450,7 @@ public class CustomerOrderPanel extends JPanel {
 		ArrayList<CustomerOrder> customerOrd = new ArrayList<CustomerOrder>();
 		boolean foundAtLeastOne = false;
 		for (CustomerOrder order : Shop.getCustomerOrders()) {
-			if (order.getCustomer().getCustomerID() == selectedCustomer
-					.getCustomerID()) {
+			if (order.getCustomer().getCustomerID() == selectedCustomer.getCustomerID()) {
 				customerOrd.add(order);
 				foundAtLeastOne = true;
 			}
@@ -485,8 +471,7 @@ public class CustomerOrderPanel extends JPanel {
 	 */
 	public Customer getCustomerFromConcatenatedName(String name) {
 		for (Customer customer : Shop.getCustomers()) {
-			String thisFullName = customer.getCustomerFName() + " "
-					+ customer.getCustomerLName();
+			String thisFullName = customer.getCustomerFName() + " "+ customer.getCustomerLName();
 			if (thisFullName.equalsIgnoreCase(name)) {
 				return customer;
 			}
@@ -546,8 +531,7 @@ public class CustomerOrderPanel extends JPanel {
 	 */
 	public boolean decrementProductAvalableQuantity(int productId,
 			int deductableAmount) {
-		Object[][] productList = CustomerOrderPanel.this
-				.getAvailableProductsArray();
+		Object[][] productList = CustomerOrderPanel.this.getAvailableProductsArray();
 		for (Object[] x : productList) {
 			if ((int) x[0] == productId) {
 				x[6] = (int) x[6] - deductableAmount;
