@@ -56,8 +56,6 @@ public class CustomerOrderPanel extends JPanel {
 	private JLabel lblFindInvoice = new JLabel("Find Invoice");
 	private JLabel lblProductList = new JLabel("Product list:");
 	private JButton btnOrder = new JButton("Submit Order");
-	// private JButton btnDisplayOrdersForSelectedCustomer = new
-	// JButton("Customer Orders");
 	private JButton btnDisplayAllOrders = new JButton("All orders");
 	private JButton btnAddToOrder = new JButton("Add to order");
 	private JButton btnViewCurrentOrder = new JButton("Current Order");
@@ -716,8 +714,7 @@ public class CustomerOrderPanel extends JPanel {
 		@Override
 		public void keyPressed(KeyEvent event) {
 			if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-				if (event.getSource() == comboSelectCustomer.getEditor()
-						.getEditorComponent()) {
+				if (event.getSource() == comboSelectCustomer.getEditor().getEditorComponent()) {
 					setSelectedCustomer();
 					displayTableForSelectedCustomerOnly();
 				} else if (event.getSource() == comboSearchForProducts
@@ -826,6 +823,7 @@ public class CustomerOrderPanel extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == btnAllProducts) {
+				comboSearchForProducts.getEditor().setItem("");
 				displayProductsTable("");
 			}
 		}
