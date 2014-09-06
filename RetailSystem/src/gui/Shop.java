@@ -8,6 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.alee.laf.WebLookAndFeel;
+
 import data.Customer;
 import data.CustomerOrder;
 import data.Finance;
@@ -15,7 +17,6 @@ import data.Json;
 import data.Product;
 import data.ProductToOrder;
 import data.Staff;
-//import data.Product;
 import data.StockOrder;
 import data.Supplier;
 
@@ -39,6 +40,9 @@ public class Shop {
 	}
 
 	public Shop(boolean run) {
+		//set a custom look and feel
+		WebLookAndFeel.install ();
+
 		// populate data
 		populateCustomers();
 		populateSuppliers();

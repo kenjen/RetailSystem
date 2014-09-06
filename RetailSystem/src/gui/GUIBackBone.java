@@ -42,9 +42,9 @@ public class GUIBackBone extends JFrame {
 		if (isAdmin == true) {
 			userTypeAdmin = true;
 			loggedStaffMember = logStaff;
-			tabbedPane.addTab("StockManagement", panelStockManagement);
-			tabbedPane.addTab("CustomerOrders", panelCustomerOrders);
-			tabbedPane.addTab("StockOrders", panelStockOrder);
+			tabbedPane.addTab("Stock Management", panelStockManagement);
+			tabbedPane.addTab("Customer Orders", panelCustomerOrders);
+			tabbedPane.addTab("Stock Orders", panelStockOrder);
 			tabbedPane.addTab("Staff", panelStaff);
 			tabbedPane.addTab("Customer", panelCustomer);
 			tabbedPane.addTab("Supplier", panelSupplier);
@@ -73,9 +73,9 @@ public class GUIBackBone extends JFrame {
 
 		} else {
 			loggedStaffMember = logStaff;
-			tabbedPane.addTab("StockManagement", panelStockManagement);
-			tabbedPane.addTab("CustomerOrders", panelCustomerOrders);
-			tabbedPane.addTab("Management", panelStockOrder);
+			tabbedPane.addTab("Stock Management", panelStockManagement);
+			tabbedPane.addTab("Customer Orders", panelCustomerOrders);
+			tabbedPane.addTab("Stock Orders", panelStockOrder);
 			tabbedPane.addTab("Customer", panelCustomer);
 			tabbedPane.addTab("Supplier", panelSupplier);
 			tabbedPane.addTab("", logoutPanel);
@@ -178,7 +178,7 @@ public class GUIBackBone extends JFrame {
 		setLocationRelativeTo(null);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setTitle("RetailSystem");
+		setTitle("RetailSystem - "+loggedStaffMember.getName()+" "+loggedStaffMember.getSurname());
 
 		// When frame is closed, save all details
 		addWindowListener(new WindowAdapter() {

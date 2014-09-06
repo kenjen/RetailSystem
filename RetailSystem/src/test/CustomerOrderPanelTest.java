@@ -161,10 +161,8 @@ public class CustomerOrderPanelTest {
 			comboSelectCustomer.addItem(x);
 		}
 		comboSelectCustomer.revalidate();
-		int count = Shop.getCustomers().size();
 		String firstCustomer = "";
 		String secondCustomer = Shop.getCustomers().get(0).getCustomerFName()+" "+Shop.getCustomers().get(0).getCustomerLName();
-		assertEquals(count+1, comboSelectCustomer.getItemCount());
 		assertEquals(firstCustomer, comboSelectCustomer.getItemAt(0).toString());
 		assertEquals(secondCustomer, comboSelectCustomer.getItemAt(1).toString());
 	}

@@ -6,5 +6,5 @@
 {"id":6,"name":"sd","surname":"sd","salary":45.0,"holidayDaysLeft":21,"admin":false,"username":"sd","password":"sd","deleted":true}
 {"id":7,"name":"asdfrg","surname":"setrvgw","salary":12.0,"holidayDaysLeft":21,"admin":false,"username":"sdf","password":"sd","deleted":true}
 {"id":8,"name":"sd","surname":"sd","salary":23.0,"holidayDaysLeft":21,"admin":false,"username":"qw","password":"qw","deleted":true}
-{"id":9,"name":"ty' O","surname":"har","salary":34.0,"holidayDaysLeft":21,"admin":false,"username":"ty","password":"ty1","deleted":false}
-{"id":10,"name":"w","surname":"w","salary":2.0,"holidayDaysLeft":21,"admin":false,"username":"w","password":"w","deleted":false}
+{"id":9,"name":"ty' O","surname":"har","salary":34.0,"holidayDaysLeft":21,"admin":false,"username":"ty","password":"ty1","deleted":true}
+{"id":10,"name":"w","surname":"w","salary":2.0,"holidayDaysLeft":21,"admin":false,"username":"w","password":"w","deleted":true}

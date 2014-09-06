@@ -233,8 +233,6 @@ public class CustomerPanel extends JPanel {
 							comboCustomerID.setSelectedItem(customer
 									.getCustomerID());
 
-						} else {
-							System.out.println("ERROR");
 						}
 					}
 				}

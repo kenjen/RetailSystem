@@ -208,7 +208,7 @@ public class StaffPanel extends JPanel {
 		
 				add(btnAddStaff, "flowx,cell 1 8");
 
-		JLabel lblMembers = new JLabel("Members");
+		JLabel lblMembers = new JLabel("Usernames");
 		add(lblMembers, "flowx,cell 1 15");
 
 		// ComboBox Design with AutoComplete
@@ -255,7 +255,7 @@ public class StaffPanel extends JPanel {
 		});
 		
 		// add photo to left panel
-		JLabel supplierImage = new JLabel(new ImageIcon("resources/Working_Together.jpg"));
+		JLabel supplierImage = new JLabel(new ImageIcon("resources/Working_Together.png"));
 		add(supplierImage, "flowx,cell 1 23");
 		
 				final JButton btnRemove = new JButton("Remove");
@@ -406,7 +406,7 @@ public class StaffPanel extends JPanel {
 					Staff selectedStaff = getStaffbyID(username);
 					staffComboBox.setSelectedItem(selectedStaff.getUsername());
 				} else {
-					System.out.println("ERROR");
+					//System.out.println("ERROR");
 				}
 			}
 		}
