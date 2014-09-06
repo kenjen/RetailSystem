@@ -36,6 +36,7 @@ public class SupplierPanel extends JSplitPane{
 	private JMenuItem  removeSupplier;
 	private JMenuItem showProducts;
 	private JMenuItem editDetails;
+	private JTextField txtNotification;
 	
 
 
@@ -76,6 +77,17 @@ public class SupplierPanel extends JSplitPane{
 		buttonPanel.add(nameField, "cell 1 3,flowx");
 		buttonPanel.add(addressLabel, "cell 0 4,alignx trailing");
 		buttonPanel.add(addressField, "cell 1 4,flowx");
+		
+		// text displaying notifications for the user
+		txtNotification = new JTextField();
+		txtNotification.setFont(new Font("Tahoma",Font.ITALIC, 10));
+		txtNotification.setForeground(Color.RED);
+		txtNotification.setEditable(false);
+		txtNotification.setVisible(false);
+		txtNotification.setHorizontalAlignment(SwingConstants.CENTER);
+		txtNotification.setText("Submit changes or cancel ");
+		buttonPanel.add(txtNotification, "cell 1 0,growx");
+		txtNotification.setColumns(10);
 
 		/**
 		 ** create buttons 
@@ -133,7 +145,8 @@ public class SupplierPanel extends JSplitPane{
 			public void actionPerformed(ActionEvent e){
 				addEditedSupplier();
 				add.setEnabled(true);
-				edited.setEnabled(false);	
+				edited.setEnabled(false);
+				txtNotification.setVisible(false);
 			}
 		});
 		buttonPanel.add(edited, "flowx,cell 1 7");
@@ -145,6 +158,7 @@ public class SupplierPanel extends JSplitPane{
 				addressField.setText("");
 				edited.setEnabled(false);
 				add.setEnabled(true);
+				txtNotification.setVisible(false);
 			}
 		});
 		buttonPanel.add(cancel, "flowx,cell 1 8");
@@ -184,6 +198,7 @@ public class SupplierPanel extends JSplitPane{
 				edited.setEnabled(true);
 				edit();
 				add.setEnabled(false);
+				txtNotification.setVisible(true);
 			}
 		});
 		rightClickMenu.add(editDetails);
