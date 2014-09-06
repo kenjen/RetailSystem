@@ -122,6 +122,8 @@ public class SupplierPanel extends JSplitPane{
 		add.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				addSupplier();
+				removeSupplier.setEnabled(true);
+				restore.setEnabled(false);
 			}
 		});
 		buttonPanel.add(add, "flowx,cell 1 6");
