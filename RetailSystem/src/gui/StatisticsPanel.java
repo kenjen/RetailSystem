@@ -99,22 +99,20 @@ public class StatisticsPanel extends JPanel {
 		//add components to panel
 		setLayout(new MigLayout());
 		add(lblProductsTitle, ",wrap ");
-		add(comboProductsA, "span, split");
+		add(comboProductsA, "split");
 		add(comboProductsB, "wrap");
 		add(lblDatesTitle);
-		add(comboDates,"span, wrap, gapy 20");
+		add(comboDates,"wrap");
 		add(label1);
 		add(datePickerStart, "split 3");
 		add(label2);
 		add(datePickerEnd, "wrap");
-		add(btnDisplayProductsFromDatePicker,"wrap, gapx 170, span");
+		add(btnDisplayProductsFromDatePicker,"wrap, span 2, alignx center");
 		add(chartPanel, "span, split");
 		add(lblTextualStatistic,"aligny top");
 	}//end constructor
 
 	private void createListenersForComponents() {
-		// add action listener to combo box items
-			
 		//clear datepickers if a nonNull value has been selected
 		comboDatesListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -206,7 +204,7 @@ public class StatisticsPanel extends JPanel {
 	}
 
 	private void generateComboBoxesData() {
-		comboDatesData = new String[] { "", "Last 3 weeks","Last 2 months", "Current year"};
+		comboDatesData = new String[] { "", "Last 3 weeks","Current and last month", "Current year"};
 		comboProductsAData = getProductNamesWithId();
 		comboProducts = new JComboBox<String>(comboProductsAData );
 		
@@ -224,9 +222,7 @@ public class StatisticsPanel extends JPanel {
 	 * the selected period. Note: The chart data is cleared even if no products have been found.
 	 */
 	private void updateChart() {
-	//	String comboDatesItem = (String) comboDates.getSelectedItem().toString();
 		ArrayList<CustomerOrder> cusOrders = new ArrayList<CustomerOrder>();
-
 		if (comboDates.getSelectedItem() == "Current year") {
 			defaultCategoryDataSet.clear();
 			// set the date and display chart
@@ -235,21 +231,15 @@ public class StatisticsPanel extends JPanel {
 						if(c.getCreationDate().before(sdf.parse("31/12/"+currentYear)) && c.getCreationDate().after(sdf.parse("01/01/"+currentYear))){
 							cusOrders.add(c);
 						}
-					} 
-					catch (ParseException e1) {
+					}catch (ParseException e1) {
 						e1.printStackTrace();
 					}
 				}
-				generateDataD(defaultCategoryDataSet, cusOrders);
-			}
-
-			else if((comboDates.getSelectedItem()=="Last 2 months")){
+				generateData(cusOrders);
+			}else if((comboDates.getSelectedItem()=="Current and last month")){
 				defaultCategoryDataSet.clear();
-				// set the date and display chart
-
 				generateMonthlyData(defaultCategoryDataSet);
-			}	
-			else if(comboDates.getSelectedItem()=="Last 3 weeks"){
+			}else if(comboDates.getSelectedItem()=="Last 3 weeks"){
 				defaultCategoryDataSet.clear();
 				generateWeeklyData(defaultCategoryDataSet);
 			}	
@@ -339,69 +329,20 @@ public class StatisticsPanel extends JPanel {
 			lblTextualStatistic.setText("<html>"+comboProductsA.getSelectedItem()+", sales count is: "+productASalesCount+"<br>"+
 					comboProductsB.getSelectedItem()+", sales count is: "+productBSalesCount+"</html>");
 	}	
-	
-	
-	
-	
-	// generate data and upload data to chart
-
-		public void generateDataD(DefaultCategoryDataset dataset, ArrayList<CustomerOrder> cusOrders ){
-
-			String selectedProduct = comboProductsA.getSelectedItem().toString();
-			String [] arraySplitSelectedProduct = selectedProduct.split(" ");
-			int selectedProductID = Integer.parseInt(arraySplitSelectedProduct[arraySplitSelectedProduct.length-1]);
-
-			// get the data from customer orders
-			int value = 0;
-			int value1 = 0;
-			
-			for(int i=0; i<cusOrders.size(); i++){
-				for(ProductToOrder pO : cusOrders.get(i).getProducts()){
-					// set up counter for each product
-					//for(Product product : Shop.getProducts()){
-					if(pO.getId() == selectedProductID){
-
-						value += pO.getAmount();
-						// upload data to chart
-						dataset.setValue(value, "Current year", selectedProduct);
-
-					}
-				}
-			}
-			String selectedProduct1 = comboProductsB.getSelectedItem().toString();
-			if(!selectedProduct1.equals("")){
-				String [] arraySplitSelectedProduct1 = selectedProduct1.split(" ");
-				int selectedProduct1ID = Integer.parseInt(arraySplitSelectedProduct1[arraySplitSelectedProduct1.length-1]);
-				for(int i=0; i<cusOrders.size(); i++){
-					for(ProductToOrder pO : cusOrders.get(i).getProducts()){
-						//for(Product product : cusOrders.){
-							if(pO.getId() == selectedProduct1ID){
-								value1 += pO.getAmount();
-								
-								dataset.setValue(value1, "Current year", selectedProduct1);		
-								}
-								
-								
-							}
-					}
-				}
-		}
 		
-		// generate last two months data for chart
+		// generate this month and last month data for chart
 		public void generateMonthlyData(DefaultCategoryDataset dataset ){
 			// store the data from customer orders in new array list
 			ArrayList<CustomerOrder> cusOrdersThis = new ArrayList<CustomerOrder>();
 			ArrayList<CustomerOrder> cusOrdersLast = new ArrayList<CustomerOrder>();
 			
-			for( CustomerOrder c:	Shop.getCustomerOrders()){
-				if(c.getCreationDate().before(endThisMonth.toDate()) && c.getCreationDate().after(startThisMonth.toDate())){
+			for( CustomerOrder c:Shop.getCustomerOrders()){
+				if(c.getCreationDate().before(new Date()) && c.getCreationDate().after(startThisMonth.toDate())){
 					cusOrdersThis.add(c);
 				}
 				else if(c.getCreationDate().before(endLastMonth.toDate()) && c.getCreationDate().after(startLastMonth.toDate())){
 					cusOrdersLast.add(c);
-					
 				}
-				
 			}
 			
 			// get the first selected product and its id
@@ -462,24 +403,22 @@ public class StatisticsPanel extends JPanel {
 			}
 		}
 		
-		// generate three weeks data for chart
+		// generate data for current and previous 2 weeks
 		public void generateWeeklyData(DefaultCategoryDataset dataset ){
 			// store the data from customer orders in new array list
 			ArrayList<CustomerOrder> cusOrdersThis = new ArrayList<CustomerOrder>();
 			ArrayList<CustomerOrder> cusOrdersLast = new ArrayList<CustomerOrder>();
 			ArrayList<CustomerOrder> cusOrdersBeforeLast = new ArrayList<CustomerOrder>();
 			
-			for( CustomerOrder c:	Shop.getCustomerOrders()){
-				if(c.getCreationDate().before(endThisWeek.toDate()) && c.getCreationDate().after(startThisWeek.toDate())){
+			for( CustomerOrder c:Shop.getCustomerOrders()){
+				if(c.getCreationDate().before(new Date()) && c.getCreationDate().after(startThisWeek.toDate())){
 					cusOrdersThis.add(c);
 				}
 				else if(c.getCreationDate().before(endLastWeek.toDate()) && c.getCreationDate().after(startLastWeek.toDate())){
 					cusOrdersLast.add(c);
-					
 				}
 				else if(c.getCreationDate().before(endBeforeLastWeek.toDate()) && c.getCreationDate().after(startBeforeLastWeek.toDate())){
 					cusOrdersBeforeLast.add(c);
-					
 				}
 				
 			}
