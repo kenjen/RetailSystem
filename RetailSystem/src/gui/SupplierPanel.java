@@ -43,7 +43,7 @@ public class SupplierPanel extends JSplitPane{
 
 		// create list type
 		createList();
-		showSuppliers();
+	//	showSuppliers();
 
 		/**
 		 ** create a split pane with a scroll pane in it and a Jpanel
@@ -99,7 +99,8 @@ public class SupplierPanel extends JSplitPane{
 		editDetails = new JMenuItem("Edit Supplier");
 		removeSupplier = new JMenuItem("Remove Supplier");
 		restore = new JMenuItem("Restore deleted supplier");
-		restore.setEnabled(false);
+		showSuppliers();
+	//	restore.setEnabled(false);
 
 		/*
 		 * add action listener to buttons
@@ -122,8 +123,7 @@ public class SupplierPanel extends JSplitPane{
 		add.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				addSupplier();
-				removeSupplier.setEnabled(true);
-				restore.setEnabled(false);
+				
 			}
 		});
 		buttonPanel.add(add, "flowx,cell 1 6");
@@ -155,7 +155,7 @@ public class SupplierPanel extends JSplitPane{
 				showDeletedSuppliers();
 			}
 		});
-				buttonPanel.add(showDeleted, "cell 4 4, growx");
+		buttonPanel.add(showDeleted, "cell 4 4, growx");
 
 		// add listener to suppliers list to bring up popup menu
 		MouseListener popupListener = new PopupListener();
@@ -264,6 +264,10 @@ public class SupplierPanel extends JSplitPane{
 	// display suppliers
 
 	public void showSuppliers(){
+		editDetails.setEnabled(true);
+		showProducts.setEnabled(true);
+		removeSupplier.setEnabled(true);
+		restore.setEnabled(false);
 		listModel.clear();
 		// show suppliers list on GUI
 		for(Supplier supplier:Shop.getSuppliers()){
@@ -322,7 +326,6 @@ public class SupplierPanel extends JSplitPane{
 		
 			// if a supplier with the same details doesn't exist add the new supplier to the list
 			if(isValid){
-			//	Supplier newSupplier = new Supplier();
 				createSupplier(nameField.getText(), addressField.getText());
 				showSuppliers();
 				nameField.setText("");
@@ -470,7 +473,7 @@ public class SupplierPanel extends JSplitPane{
 				if((searchField.getText().isEmpty()==false)){
 					// check if the entered supplier name exists in the Array List
 					for(Supplier supplier:Shop.getSuppliers()){
-						if(searchField.getText().equalsIgnoreCase(supplier.getSupplierName())){
+						if(searchField.getText().equals(supplier.getSupplierName())){
 							// check the suppliers list for the name entered if supplier isn't deleted
 							if(supplier.isSupplierDeleted()==false){
 								showSuppliers();
